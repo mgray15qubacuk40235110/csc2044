@@ -1,0 +1,798 @@
+
+package uk.ac.qub.eeecs.additions;
+
+public class Additions {
+
+//    To do:
+//
+
+// TO DO include text drawing features - so you can have a button with drawn text
+
+// ANd also ability to draw text to the game layer and have it mapped ot the screen
+
+//    Sound effects for platform game – jump + music for space demo
+//
+//    To record:
+//
+//    Collision handling for ships
+//    Platform object creation no – overlaps
+//    Progress bar linked to ship speed
+//
+//    To demo:
+//
+//    Add in new screen – with demos in Gage
+//
+//    Overview view of what to expect – Gage in general
+//    Main Activity + Fragments -> Game class
+//    Game class – central repository of stuff
+//    Graphics rendering – Use demo for code
+//    Input handling – Gage demo - collect touch input show event type - have list of input types
+//    Asset management – Gage demo - load in JSON, graphics, text, sound, and fonts
+//    Screen management + Game Screen – Gage demo - Screen A,B and C - shared content between screens
+//    Game Object + Sprite class – Gage demo - Create couple of front end objects and moving sprites
+//    Viewports – Gage demo - Two game views - moving, one changing size, mapped onto two screen viewports
+//    Animation – Gage demo - Character animated+moving with different animations
+//    Collision Handling – Gage demo
+//    Steering Behaviour – Gage demo
+
+
+// To do lists for sprints - add in arrow class - which can track a drawn arrow on the screen
+
+
+
+    // User story refactor the spaceship into two separate classes - seeker and turret - with base class
+
+    // Add a user story to combine several bitmaps together, e.g. for a card front - but link
+    // to the existing demos
+
+    // Make sure you review your todo statements to ensure they are all done
+
+    // Have a class full of interesting code snippets of things you
+    // can do - and maybe encourage their use - or work into user stories
+
+    // Uset story - animation - add in play once animation has completed
+
+    // Also explore past projects from previus years - in particular th eone with the
+    // thumbstic controls
+
+    // Look for other maths utils you can add
+
+    // Standarise the naming conveions - in the created demo (space, platoform) you're
+    // not using proper conventions.
+
+    // In the AISpaceShip - have one of the user stories being to refactor the class to
+    // seperate it into a base class and two refined types
+
+
+    // Pop up window                                118
+    // Pop up dialgoue windows                      120
+    // Overlay                                      138 (overlay manager - maybe better screen manager)
+
+    // Text button GUI element                      58
+
+    // Stretchable Arrow GUI element                108
+
+    // Fade Message                                 108
+
+    // Scroller GUI items                           118
+
+    // Asset Loader                                 120, 131
+
+    // Haptic Controls                              120
+
+    // Text Helper Utility                          58, 120 (MiscUtils)
+
+    // Draw composite objects                       108 (Card + MinionCard), 120
+
+
+
+}
+
+
+
+
+
+package uk.ac.qub.eeecs.additions;
+
+public class CodeSnippets {
+
+/************************** Drawing to a bitmap  **********************************/
+
+    @Override
+    public void createCardFrontBitmap() {
+        super.createCardFrontBitmap();
+        Bitmap mergedBitmap = Bitmap.createBitmap(super.frontBitmap.getWidth(),
+                super.frontBitmap.getHeight(), super.frontBitmap.getConfig());
+        Canvas canvas = new Canvas(mergedBitmap);
+        canvas.drawBitmap(super.frontBitmap, 0, 0, null);
+        // Layer attack, defense and type on card
+        TextPaint paint = new TextPaint();
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
+
+        drawDefence(paint, canvas);
+        drawAttack(paint, canvas);
+        if (this.playLine.equals(PlayLine.BACK_LINE)) {
+            super.drawType(paint, canvas, "⚶");
+        } else {
+            super.drawType(paint, canvas, "⚔");
+        }
+        super.frontBitmap = mergedBitmap;
+    }
+
+    /**
+     * Draw Defence onto canvas
+     * @author Joshua Barber
+     * @param paint
+     * @param canvas
+     */
+    private void drawDefence(TextPaint paint, Canvas canvas) {
+        paint.setColor(Color.GREEN);
+        paint.setTextSize(12);
+        canvas.drawText(defence + "", CardLeft, CardBottom, paint);
+    }
+
+    /**
+     * Draw Attack onto canvas
+     * @author Joshua Barber
+     * @param paint
+     * @param canvas
+     */
+    private void drawAttack(TextPaint paint, Canvas canvas) {
+        paint.setColor(Color.RED);
+        paint.setTextSize(12);
+        canvas.drawText(attack + "", CardRight, CardBottom, paint);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+/****************************** Drawing to a bitmap **************************/
+
+    /**
+     * This will draw the markings on both corners of the card
+     *
+     * @param gameScreen   this allows access to the asset store
+     * @param victim       this is the bitmap which the markings will be drawn to
+     * @param face_marking this is the marking which is to drawn
+     * @param suit         This is the suit which is to be drawn
+     * @return returns the marked up bitmap
+     */
+    @TargetApi(21)
+    private Bitmap draw_markings(GameScreen gameScreen, Bitmap victim, String face_marking, Suits suit) {
+        //Sets up all thats required to draw the markings
+        Bitmap mutableBitmap = victim.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+        Paint text_paint = new Paint();
+
+        //Setting uo the styling of the text
+        text_paint.setARGB(0, 255, 0, 0);
+        text_paint.setTextSize(200.0f);
+
+        //Adjusts text kerning if the value is 10
+        if (face_marking.equals("10")) {
+            text_paint.setTextSize(180.0f);
+            text_paint.setLetterSpacing(-0.25f);
+        }
+
+        //Gets the suit bitmap and flips the asset
+        Bitmap suit_to_draw = gameScreen.getGame().getAssetManager().getBitmap(suit.toString());
+        Bitmap flipped_suit = flip_bitmap(suit_to_draw);
+
+        //Determines the colour of text required
+        if (suit.toString().equals("Spades") || suit.toString().equals("Clubs")) {
+            text_paint.setColor(Color.BLACK);
+        } else {
+            text_paint.setColor(Color.rgb(204,0,0));
+        }
+
+        //Draws to the top left
+        canvas.drawText(face_marking, 15, 177, text_paint);
+        canvas.drawBitmap(suit_to_draw, 27, 200, null);
+
+        //Draws text to the bottom right
+        canvas.save();
+        canvas.rotate(180f, victim.getWidth() - 80, victim.getHeight() - 105);
+        canvas.drawText(face_marking, victim.getWidth() - 147, victim.getHeight() - 38, text_paint);
+        canvas.restore();
+
+        //Draws the flipped asset to the bottom right
+        canvas.drawBitmap(flipped_suit, victim.getWidth() - 127, victim.getHeight() - 287, null);
+
+        return mutableBitmap;
+    }
+
+    /**
+     * This merges two images together
+     *
+     * @param center the center image to be merged
+     * @param target the image which center is to be merged to
+     * @return the merged bitmap
+     */
+    private Bitmap merge_bitmaps(Bitmap center, Bitmap target) {
+        //Sets up all thats required to draw the centers
+        Bitmap mutableBitmap = target.copy(Bitmap.Config.ARGB_8888, true);
+        Canvas canvas = new Canvas(mutableBitmap);
+
+        //Drawing bitmap to another
+        canvas.drawBitmap(center, 158, 164, null);
+
+        return mutableBitmap;
+    }
+
+    /**
+     * This method will build the centers of value cards and return it as a bitmap
+     *
+     * @param gameScreen This allows access to the asset store
+     * @param suit       This is the suit which is to be draw to build the center
+     * @param card_pos   This is the position within the tuple array which references this cards plotting positions
+     * @return returns the built center bitmap
+     */
+    private Bitmap build_center(GameScreen gameScreen, Suits suit, int card_pos) {
+        //Sets up all thats required to draw the centers
+        Bitmap mutableBitmap = Bitmap.createBitmap(317, 553, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(mutableBitmap);
+
+        //Gets the suit bitmap and flips the asset
+        Bitmap suit_to_draw = gameScreen.getGame().getAssetManager().getBitmap(suit.toString());
+        Bitmap flipped_suit = flip_bitmap(suit_to_draw);
+
+        //iterates over all the positions to allow for the asset to be drawn
+        for (Tuple pos : positions[card_pos]) {
+            //Casting the object back to type tuple
+            Tuple<Float, Float> post = (Tuple<Float, Float>) pos.left;
+
+            //Depending on the bool a specific asset will be drawn
+            if (!(Boolean) pos.right) {
+                canvas.drawBitmap(suit_to_draw, post.left, post.right, null);
+            } else {
+                canvas.drawBitmap(flipped_suit, post.left, post.right, null);
+            }
+        }
+
+        return mutableBitmap;
+    }
+
+    /**
+     * This flips a given bitmap
+     *
+     * @param victim bitmap to be flipped
+     * @return the flipped bitmap
+     */
+    private Bitmap flip_bitmap(Bitmap victim) {
+        Bitmap flipped;
+
+        //Defines the flipping matrix
+        Matrix matrix = new Matrix();
+        matrix.preScale(1.0f, -1.0f);
+
+        //creates the bitmap from the matrix
+        flipped = Bitmap.createBitmap(victim, 0, 0, victim.getWidth(), victim.getHeight(), matrix, true);
+
+        return flipped;
+    }
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Building up a card to contain several elements/////////////////////////
+
+
+/**
+ * This function combines the portrait and card front into a single bitmap.
+ * @author Joshua Barber
+ * @return Bitmap - Merged Bitmap containing both the portrait and the front of the card
+ */
+public void createCardFrontBitmap() {
+        // Desired resize height and width for portrait bitmap - 4/3 aspect ratio.
+        int portraitHeight = 280, portraitWidth = 210;
+        // MergedBitmap to create Canvas from
+        Bitmap mergedBitmap = Bitmap.createBitmap(frontBitmap.getWidth(),
+        frontBitmap.getHeight(), frontBitmap.getConfig());
+        Canvas canvas = new Canvas(mergedBitmap);
+        // Draw the portrait first
+        canvas.drawBitmap(Bitmap.createScaledBitmap(portrait, portraitWidth,
+        portraitHeight, false), 0, 0, null);
+        canvas.drawBitmap(frontBitmap, 0, 0, null);
+        // Layer required text on card
+        // Paint to draw text on canvas
+        TextPaint paint = new TextPaint();
+        paint.setAntiAlias(true); // Anti Alias to improve readability
+        drawCost(paint, canvas);
+        drawEffect(paint, canvas);
+        frontBitmap = mergedBitmap;
+        }
+
+/**
+ *Creates a bitmap the same as the front bitmap but with a blue filter
+ * @author Catherine Little
+ * @reference https://stackoverflow.com/questions/5699810/how-to-change-bitmap-image-color-in-android
+ *          Answer by: Breeno (https://stackoverflow.com/users/2001934/breeno)
+ *          Answer was cherry picked and adapted to make the colour blue, and because I didnt need all of it
+ */
+protected void createCardSelectableFrontBitmap(){
+        Paint selectedPaint = new Paint();
+        ColorFilter blueFilter = new PorterDuffColorFilter(Color.CYAN, PorterDuff.Mode.SRC_IN);
+        selectedPaint.setColorFilter(blueFilter);
+        selectedPaint.setAlpha(50);
+        cardFrontSelectable = Bitmap.createScaledBitmap(frontBitmap, frontBitmap.getWidth(), frontBitmap.getHeight(), false);
+        Canvas selectedCanvas = new Canvas(cardFrontSelectable);
+        selectedCanvas.drawBitmap(cardFrontSelectable, 0, 0, selectedPaint);
+        }
+
+/**
+ * Method to draw the cards cost.
+ * @author Joshua Barber
+ * @param paint
+ * @param canvas
+ */
+private void drawCost(TextPaint paint, Canvas canvas) {
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(14); // Size 14 for variables like cost
+        canvas.drawText(cost + "", CardLeft, CardTop, paint);
+        }
+
+/**
+ * Method to draw the effect information onto the card.
+ * @author Joshua Barber
+ * @param paint
+ * @param canvas
+ */
+private void drawEffect(TextPaint paint, Canvas canvas) {
+        paint.setTextSize(11); // Size 11 for Effect text
+        paint.setColor(Color.BLACK);
+        // Use Static Layout to create wrapped text for the card with padding to properly fit allocated space on bitmap.
+        StaticLayout effectTextLayout = new StaticLayout(effect.effectInfo(), paint, 190,
+        Layout.Alignment.ALIGN_NORMAL, 1, 1, true);
+        canvas.save(); // Save canvas as is
+        canvas.translate(CardLeft, CardEffectPosition); // Move to desired position of effect Text
+        effectTextLayout.draw(canvas);
+        canvas.restore(); // Restore initial positioning
+        }
+
+/**
+ * Method to draw symbol representing the type of Card.
+ * @author Joshua Barber
+ * @param paint
+ * @param canvas
+ * @param symbol
+ */
+protected void drawType(TextPaint paint, Canvas canvas, String symbol) {
+        paint.setColor(Color.YELLOW);
+        paint.setTextSize(16);
+        canvas.drawText(symbol, CardRight, CardTop, paint);
+        }
+
+
+
+
+
+
+
+
+////////////////////////// Drawing a card image from different bits //////////////
+
+/**
+ * Author: Kevin
+ */
+// merge images into one - call on constructor and with any subsequent change of attack, mana cost, health from setters
+//modified from https://www.skoumal.net/en/android-how-draw-text-bitmap/
+private void createCardImage() {
+
+        Bitmap.Config mFrameConfig = mFrameBitmap.getConfig();
+        // set default bitmap config if none
+        if(mFrameConfig == null) {
+        mFrameConfig = Bitmap.Config.ARGB_8888;
+        }
+        // resource bitmaps are immutable,
+        // so we need to convert it to mutable one
+        mMergedBitmap = mFrameBitmap.copy(mFrameConfig, true);
+
+        Canvas canvas = new Canvas(mMergedBitmap);
+        //draw card image
+        canvas.drawBitmap(mBitmap, CARD_IMAGE_OFFSET, 0, null);
+        //draw card frame
+        canvas.drawBitmap(mFrameBitmap, 0, 0, null);
+        // DRAW CARD TEXT
+        // new antialiased Paint
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        // text color - #3D3D3D
+        paint.setColor(Color.WHITE);
+        // text shadow
+        paint.setShadowLayer(1f, 0f, 1f, Color.BLACK);
+        //set font
+        paint.setTypeface(mGameScreen.getGame().getAssetManager().getFont("Belwe-medium"));
+        paint.setTextAlign(Paint.Align.LEFT);
+
+        /**
+         * Draw the text on the image
+         */
+        //NAME
+        // text size in pixels
+        paint.setTextSize(NAME_TEXT_SIZE);
+        Vector2 location = getTextLocation(paint, NAME_X, NAME_Y, mName);
+        canvas.drawText(mName, location.x, location.y, paint);
+
+        //DESCRIPTION
+        //Description needs to be split into multiple lines if too long for single line
+        //set text size and colour for the description
+        paint.setTextSize(DESCRIPTION_TEXT_SIZE);
+        paint.setColor(Color.BLACK);
+        //split description up by spaces
+        String[] descriptionWords = mDescription.split("\\s+");
+        //list to hold each constructed line of the description
+        List<String> description = new ArrayList<>();
+        description.add("");
+        //index of line currently being constructed
+        int lineIndex= 0;
+        //for each word in the description add to the current line and check if line is > available width
+        for (int i = 0; i < descriptionWords.length; i++){
+        Rect bounds = new Rect();
+        //new potential line to check
+        String potentialLine = description.get(lineIndex) + " " + descriptionWords[i];
+        //get bounds of the text
+        paint.getTextBounds(potentialLine, 0, potentialLine.length(), bounds);
+        //if \n then description wants a new line regardless of length, increment index and
+        // and ignore this word
+        if (descriptionWords.equals("\n")){
+        lineIndex++;
+        description.add("");
+        }
+        //if width of text < width of card description area set line as this new line
+        if(bounds.width() < DESCRIPTION_WIDTH ){
+        description.set(lineIndex, potentialLine);
+        }
+        //if text too long start a new line with this word
+        else {
+        lineIndex++;
+        description.add(descriptionWords[i]);
+        }
+        }
+        //print each line of text to the canvas
+        for (int i = 0; i < description.size(); i++){
+        //get the location of each line, taking care to center text vertically based on number of
+        //lines and put each new line below the last
+        location = getTextLocation(paint, DESCRIPTION_X,
+        DESCRIPTION_Y - (NAME_TEXT_SIZE * (description.size() - 1) / 2) + (NAME_TEXT_SIZE * i),
+        description.get(i));
+        canvas.drawText(description.get(i), location.x, location.y, paint);
+        }
+
+        // text size in pixels
+        paint.setTextSize(ATTRB_TEXT_SIZE);
+        paint.setColor(Color.WHITE);
+        //COST
+        String cost = Integer.toString(mCost);
+        location = getTextLocation(paint, COST_X, COST_Y, cost);
+        canvas.drawText(cost, location.x, location.y, paint);
+
+        //ATTACK
+        String attack = Integer.toString(mAttack);
+        location = getTextLocation(paint, ATTACK_X, ATTACK_HEALTH_Y, attack);
+        canvas.drawText(attack, location.x, location.y, paint);
+
+        //HEALTH
+        String health = Integer.toString(mHealth);
+        location = getTextLocation(paint, HEALTH_X, ATTACK_HEALTH_Y, health);
+        canvas.drawText(health, location.x, location.y, paint);
+        }
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////// Text / bitmap process //////////////////
+
+
+/**
+ * Returns the input string wrapped to the specified width. Words longer than totalWidth will
+ * be forcefully broken.
+ *
+ * @param text            text to wrap.
+ * @param singleCharWidth width of a singe character.
+ * @param totalWidth      maximum width of a line.
+ * @return
+ */
+public static String wrapText(String text, int singleCharWidth, int totalWidth) {
+        int wordsPerLine = 0;
+        if(totalWidth != 0 && singleCharWidth != 0)
+        wordsPerLine = totalWidth / singleCharWidth;
+
+        // If the string is smaller than maximum width just return it as-is
+        if (text.length() * singleCharWidth < totalWidth)
+        return text;
+
+        StringBuilder returnString = new StringBuilder();
+        String[] words = text.split(" ");
+
+        int curWord = 0;
+        int curLineStart = 0;
+        while (curWord < words.length) {
+        while (true) {
+        int returnStringLength = returnString.toString().length();
+
+        // Deal with individual words longer than the maximum length
+        if (words[curWord].length() * singleCharWidth > totalWidth) {
+        int wordStart = 0;
+        int wordEnd = wordsPerLine;
+
+        boolean lastIteration = false;
+        while (wordStart < words[curWord].length()) {
+        if (wordEnd > words[curWord].length()) {
+        wordEnd = words[curWord].length();
+        lastIteration = true;
+        }
+
+        returnString.append(words[curWord].substring(wordStart, wordEnd));
+        wordStart += wordsPerLine;
+        wordEnd += wordsPerLine;
+
+        if (!lastIteration)
+        returnString.append("\n");
+        }
+        } else {
+        returnString.append(words[curWord]);
+        }
+        curWord++;
+
+        if (curWord == words.length ||
+        (returnString.toString().substring(curLineStart, returnStringLength).length() + words[curWord].length()) * singleCharWidth >= totalWidth) {
+        curLineStart = returnStringLength - 1;
+        break;
+        }
+
+        returnString.append(" ");
+        }
+
+        // Don't add a new line if we're on the last line
+        if (curWord < words.length)
+        returnString.append("\n");
+        }
+
+        return returnString.toString();
+        }
+
+/**
+ * Get a font size where the height of the text is equal to the height specified.
+ *
+ * @param height height of text.
+ * @return font size.
+ */
+public static float getSizeOfTextAtHeight(Paint textPaint, int height, String textString) {
+        textPaint.setTextSize(1f);
+
+        Rect textBounds = new Rect();
+        textPaint.getTextBounds(textString, 0, textString.length(), textBounds);
+
+        while (textBounds.height() < height) {
+        textPaint.setTextSize(textPaint.getTextSize() + 1);
+        textPaint.getTextBounds(textString, 0, textString.length(), textBounds);
+        }
+
+        return textPaint.getTextSize();
+        }
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////// JSON Examples //////////////////////////////
+
+/**
+ * Method for parsing a JSON file containing data for all of the cards.
+ *
+ * @return Returns a Hashmap<String, JSONObject> containing all the cards that have been written.
+ * @param jsonString The JSON file in string form. New lines should be denoted with newline characters.
+ */
+public static HashMap<String, JSONObject> parseLibrary(String jsonString){
+
+        HashMap<String, JSONObject> library = new HashMap<String, JSONObject>();
+
+        try {
+        JSONObject toParse = new JSONObject(jsonString);
+        JSONArray cardArray = toParse.getJSONArray("cards");
+
+        for (int i = 0; i < cardArray.length(); i++){
+        String name = cardArray.getJSONObject(i).getString("name");
+        library.put(name, cardArray.getJSONObject(i));
+        }
+
+        } catch (JSONException e){
+        System.err.print("Json parsing error: " + e.getMessage());
+
+        }
+
+        return library;
+        }
+
+public static HashMap<String, HashMap<String, Integer>> parseDeckFile(String jsonString){
+
+        HashMap<String, HashMap<String, Integer>> allDecks = new HashMap<>();
+
+        try {
+        JSONObject toParse = new JSONObject(jsonString);
+        JSONArray deckArray = toParse.getJSONArray("decks");
+        for (int i = 0; i < deckArray.length(); i++){
+        JSONObject deckJSON = deckArray.getJSONObject(i);
+
+        String identifier = deckJSON.getString("identifier");
+        //HashMap<String, Integer> deck = parseDeck(deckJSON);
+        //allDecks.put(identifier, deck);
+        }
+        } catch (JSONException e){
+        System.err.print("Json parsing error: " + e.getMessage());
+
+        }
+
+        return allDecks;
+        }
+
+    // JSON String identifiers for save games
+    public static final String SLOT = "id";
+    public static final String COMPLETED = "completed";
+
+    // The save slot the save is in, only 1 save game per slot
+    private int slot;
+    // The player's deck in the save game
+    private List<String> completed;
+
+    /**
+     * Converts the save game to a JSON string form for writing to a file
+     *
+     * @return JSON String form of this save game
+     */
+    public String toJSON() {
+        try {
+            // Set up overall JSON Object
+            JSONObject jsonObject = new JSONObject();
+            // Add the integer save slot
+            jsonObject.put(SLOT, slot);
+            // Create a JSON Array for storing the levels the player has completed
+            JSONArray jsonCompleted = new JSONArray();
+            for (int i = 0; i < completed.size(); i++) {
+                // Loop through each of the player's complete levels and add them to the JSON array
+                jsonCompleted.put(completed.get(i));
+            }
+            // Add the list of complete levels tot he overall JSON object
+            jsonObject.put(COMPLETED, jsonCompleted);
+            // Convert the overall JSON object will all the information to a JSON string and return
+            return jsonObject.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void writeSaveFile(SaveGame save, Context context) {
+        // Read in any existing save file
+        final String SAVE_LIST = "saves";
+        final String SAVE_FILE = "save_games.json";
+
+        List<SaveGame> saveList = new ArrayList<>();
+
+        try {
+            // Set up JSON Object for the save file
+            JSONObject jsonSaveObject = new JSONObject();
+            // Set up JSON array for the list of save games
+            JSONArray jsonSaveList = new JSONArray();
+            for (int i = 0; i < saveList.size(); i++) {
+                // Loop through each save game and add it to the JSON list
+                jsonSaveList.put(new JSONObject(saveList.get(i).toJSON()));
+            }
+            // Add the list of JSON save games to the JSON save object
+            jsonSaveObject.put(SAVE_LIST, jsonSaveList);
+            // Convert the JSON save object to a JSON string
+            String saveString = jsonSaveObject.toString();
+            try {
+                // Create output stream
+                OutputStream outputStream;
+                // Open save file for writing to
+                outputStream = context.openFileOutput(SAVE_FILE, Context.MODE_PRIVATE);
+                // Write to the save file
+                outputStream.write(saveString.getBytes());
+                // Close stream
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////////  Haptic Handler ///////////////////////////
+
+
+private Vibrator v;
+
+/**
+ * Constructor - Creates a new HapticHandler
+ * @param game The game to which the HapticHandler belongs
+ */
+public HapticHandler(Game game) {
+        this.v = (Vibrator) game.getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        }
+
+/**
+ * @param milliseconds
+ * @param pattern      Either set a static vibration duration in milliseconds or set a dynamic pattern.
+ *                     Set milliseconds to <= 0 if not in use
+ *                     Set pattern to null if not in use
+ *                     If neither are in use
+ */
+public void vibrate(long milliseconds, long[] pattern) {
+        if (milliseconds <= 0) {
+        if (pattern == null) {
+        Log.e("Haptic Handler", "No milliseconds or pattern defined");
+        } else {
+        if (v.hasVibrator()) {
+        Log.i("Haptic Handler", "Success, the device has a vibrator - pattern mode");
+        v.vibrate(pattern, 0);
+        } else {
+        Log.e("Haptic Handler", "The device does not have a vibrator error - pattern mode");
+        }
+        }
+        } else if (milliseconds > 0 && pattern == null) {
+        if (v.hasVibrator()) {
+        Log.i("Haptic Handler", "Success, the device has a vibrator - milliseconds mode");
+        v.vibrate(milliseconds);
+        } else {
+        Log.e("Haptic Handler", "The device does not have a vibrator error - milliseconds mode");
+        }
+        } else if (milliseconds > 0 && pattern != null) {
+        Log.e("Haptic Handler", "Parameter overload exception");
+        }
+        }
+
+public void stopVibrating() {
+        v.cancel();
+        }
+
+public Vibrator getV() {
+        return v;
+        }
+
+public void setV(Vibrator v) {
+        this.v = v;
+        }
