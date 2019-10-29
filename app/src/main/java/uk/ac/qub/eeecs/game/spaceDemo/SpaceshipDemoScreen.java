@@ -38,8 +38,8 @@ public class SpaceshipDemoScreen extends GameScreen {
     /**
      * Width and height of the level
      */
-    private final float LEVEL_WIDTH = 3000.0f;
-    private final float LEVEL_HEIGHT = 3000.0f;
+    private final float LEVEL_WIDTH = 1000.0f;
+    private final float LEVEL_HEIGHT = 1000.0f;
 
     /**
      * Define a viewport for the game objects (spaceships, asteroids)
@@ -61,8 +61,7 @@ public class SpaceshipDemoScreen extends GameScreen {
      */
     private final int NUM_ASTEROIDS = 20;
     private final int NUM_SEEKERS = 20;
-    private final int NUM_TURRETS = 15;
-    private final int NUM_BLACKHOLES = 15;
+    private final int NUM_TURRETS = 10;
 
     /**
      * Define storage for the space entities (non-player)
@@ -87,10 +86,6 @@ public class SpaceshipDemoScreen extends GameScreen {
      * Define HUD elements
      */
     private Bar mMovementSpeedBar;
-
-    /**
-     *   Movement
-     */
 
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -160,24 +155,12 @@ public class SpaceshipDemoScreen extends GameScreen {
         mPlayerSpaceship = new PlayerSpaceship(100, 100, this);
 
         // Create storage for the space entities
-        mSpaceEntities = new ArrayList<>(NUM_ASTEROIDS+NUM_SEEKERS+NUM_TURRETS+NUM_BLACKHOLES);
+        mSpaceEntities = new ArrayList<>(NUM_ASTEROIDS+NUM_SEEKERS+NUM_TURRETS);
 
-        // Asteroid 1
+        // Create a number of randomly positioned asteroids
         Random random = new Random();
         for (int idx = 0; idx < NUM_ASTEROIDS; idx++)
             mSpaceEntities.add(new Asteroid(random.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Asteroid 2
-        Random random2 = new Random();
-        for (int idx = 0; idx < NUM_ASTEROIDS; idx++)
-            mSpaceEntities.add(new Asteroid2(random2.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Blackhole
-        Random random3 = new Random();
-        for (int idx = 0; idx < NUM_BLACKHOLES; idx++)
-            mSpaceEntities.add(new Blackhole(random3.nextFloat() * LEVEL_WIDTH,
                     random.nextFloat() * LEVEL_HEIGHT, this));
 
         // Create a number of randomly positioned AI controlled seekers
@@ -185,34 +168,9 @@ public class SpaceshipDemoScreen extends GameScreen {
             mSpaceEntities.add(new Seeker(random.nextFloat() * LEVEL_WIDTH,
                     random.nextFloat() * LEVEL_HEIGHT, this));
 
-        // Seeker 2 //
-        for (int idx = 0; idx < NUM_SEEKERS; idx++)
-            mSpaceEntities.add(new Seeker2(random.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Seeker 3 //
-        for (int idx = 0; idx < NUM_SEEKERS; idx++)
-            mSpaceEntities.add(new Seeker3(random.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Seeker 4 //
-        for (int idx = 0; idx < NUM_SEEKERS; idx++)
-            mSpaceEntities.add(new Seeker4(random.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Flee Ship
-        for (int idx = 0; idx < NUM_SEEKERS; idx++)
-            mSpaceEntities.add(new FleeShip(random.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Turret 1 //
+        // Create a number of randomly positioned AI controlled turrets
         for (int idx = 0; idx < NUM_TURRETS; idx++)
             mSpaceEntities.add(new Turret(random.nextFloat() * LEVEL_WIDTH,
-                    random.nextFloat() * LEVEL_HEIGHT, this));
-
-        // Turret 2 //
-        for (int idx = 0; idx < NUM_TURRETS; idx++)
-            mSpaceEntities.add(new Turret2(random.nextFloat() * LEVEL_WIDTH,
                     random.nextFloat() * LEVEL_HEIGHT, this));
     }
 
@@ -306,31 +264,17 @@ public class SpaceshipDemoScreen extends GameScreen {
 
         // Update the GUI elements
         updateGUIGameObjects(elapsedTime);
-
-        // Spaceship sound
-//        playSpaceshipSound();
-
-        }
+    }
 
     /**
      * Play background music,
      */
-
     private void playBackgroundMusic() {
         AudioManager audioManager = getGame().getAudioManager();
         if(!audioManager.isMusicPlaying())
             audioManager.playMusic(
                     getGame().getAssetManager().getMusic("SpaceBackgroundMusic"));
     }
-
-    // Spaceship sounds
-
-//    private void playSpaceshipSound() {
-//        AudioManager audioManager = getGame().getAudioManager();
-//        do { audioManager.playMusic(
-//            getGame().getAssetManager().getMusic("spaceShipSound"));
-//    } while (!getPlayerSpaceship().velocity.isZero());
-//}
 
     /**
      * Update the space game object
@@ -342,7 +286,6 @@ public class SpaceshipDemoScreen extends GameScreen {
         mPlayerSpaceship.update(elapsedTime, mMovementThumbStick);
 
         // Ensure the player cannot leave the confines of the world
-
         BoundingBox playerBound = mPlayerSpaceship.getBound();
         if (playerBound.getLeft() < 0)
             mPlayerSpaceship.position.x -= playerBound.getLeft();
@@ -353,14 +296,7 @@ public class SpaceshipDemoScreen extends GameScreen {
             mPlayerSpaceship.position.y -= playerBound.getBottom();
         else if (playerBound.getTop() > LEVEL_HEIGHT)
             mPlayerSpaceship.position.y -= (playerBound.getTop() - LEVEL_HEIGHT);
-        //
-        // Prevent seekers leaving confines of the world
-        //
-        //
-//       BoundingBox();
-        //
-        //
-        //
+
         // Focus the layer viewport on the player
         mSpaceLayerViewport.x = mPlayerSpaceship.position.x;
         mSpaceLayerViewport.y = mPlayerSpaceship.position.y;

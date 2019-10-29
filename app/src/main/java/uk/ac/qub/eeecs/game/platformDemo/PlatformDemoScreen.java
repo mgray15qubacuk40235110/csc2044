@@ -117,15 +117,49 @@ public class PlatformDemoScreen extends GameScreen {
         // to avoid overlapping.
         Random random = new Random();
         int numPlatforms = 30, platformOffset = 200;
+        int platformChoice = 0;
         float platformWidth = 70, platformHeight = 70, platformX, platformY = platformHeight;
+        Platform newPlat;
+
         for (int idx = 0; idx < numPlatforms; idx++) {
+            platformChoice = random.nextInt(2) + 1;
             platformX = platformOffset;
-            if(random.nextFloat() > 0.33f)
-                platformY = (random.nextFloat() * (LEVEL_HEIGHT - platformHeight));
-            mPlatforms.add(new Platform( platformX, platformY, platformWidth, platformHeight,
-                    "Platform", this));
-            platformOffset += (random.nextFloat() > 0.5f ?
-                    platformWidth : platformWidth + random.nextFloat()*platformWidth);
+            if(random.nextFloat() > 0.33f) {
+                platformY = (random.nextFloat() * (LEVEL_HEIGHT - platformHeight - 70));
+            }
+            if (platformY < groundTileHeight + (groundTileHeight / 2)) {
+                platformY = 70;
+            }
+            if (platformChoice == 1) {
+                newPlat = new Platform( platformX, platformY, platformWidth, platformHeight,
+                        "Platform", this);
+                if (overlap(mPlatforms, newPlat)) {}
+                else {
+                    mPlatforms.add(newPlat);
+                }
+            } else {
+                platformChoice = random.nextInt(2) + 1;
+                if (platformChoice == 1) {
+                    newPlat =  new Platform( platformX, platformY, platformWidth * 2, platformHeight,
+                            "Platform2", this);
+                    if (overlap(mPlatforms, newPlat)) {}
+                    else {
+                        mPlatforms.add(newPlat);
+                    }
+                } else {
+                    newPlat =  new Platform( platformX, platformY, platformWidth * 2, platformHeight,
+                            "Platform3", this);
+                    if (overlap(mPlatforms, newPlat)) {}
+                    else {
+                        mPlatforms.add(newPlat);
+                    }
+                }
+            }
+            if (random.nextFloat() > 0.5f) {
+                    platformOffset += (2 * platformWidth) + 5;
+            } else {
+                platformOffset += (2*platformWidth) + 5 + random.nextFloat()*platformWidth;
+            }
         }
     }
 
@@ -197,5 +231,24 @@ public class PlatformDemoScreen extends GameScreen {
         // Draw the controls last of all
         for (PushButton control : mControls)
             control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+    }
+
+    public boolean overlap(ArrayList<Platform> mPlatforms, Platform plat) {
+
+        if (mPlatforms.size() == 0 || mPlatforms == null) {
+            return false;
+        }
+        for (int i = 0; i < mPlatforms.size(); i++) {
+
+            if (plat.get_x() >= mPlatforms.get(i).get_x() && plat.get_x() <= (mPlatforms.get(i).get_x() + mPlatforms.get(i).getWidth())
+            || (plat.get_x() + plat.getWidth()) >= mPlatforms.get(i).get_x() && (plat.get_x() + plat.getWidth()) <= (mPlatforms.get(i).get_x() + mPlatforms.get(i).getWidth()))
+            {
+                if (plat.get_y() >= mPlatforms.get(i).get_y() && plat.get_y() <= (mPlatforms.get(i).get_y() + mPlatforms.get(i).getHeight())
+                || (plat.get_y() + plat.getHeight()) >= mPlatforms.get(i).get_y() && (plat.get_y() + plat.getHeight()) <= (mPlatforms.get(i).get_y() + mPlatforms.get(i).getHeight())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

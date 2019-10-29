@@ -80,6 +80,14 @@ public class Platform extends GameObject {
     // Methods
     // /////////////////////////////////////////////////////////////////////////
 
+    public float get_x() {
+        return super.position.x;
+    }
+
+    public float get_y() {
+        return super.position.y;
+    }
+
     /**
      * Private helper variable used to provide a layer bound for the tile
      * being drawn.

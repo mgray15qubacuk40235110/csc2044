@@ -17,26 +17,6 @@
     },
     {
       "type": "Bitmap",
-      "name": "Asteroid3",
-      "file": "img/Asteroid3.png"
-    },
-    {
-      "type": "Bitmap",
-      "name": "Asteroid4",
-      "file": "img/Asteroid4.png"
-    },
-    {
-      "type": "Bitmap",
-      "name": "Blackhole",
-      "file": "img/Blackhole.png"
-    },
-    {
-      "type": "Bitmap",
-      "name": "Blackhole2",
-      "file": "img/Blackhole2.png"
-    },
-    {
-      "type": "Bitmap",
       "name": "Spaceship1",
       "file": "img/Spaceship1.png"
     },
@@ -52,38 +32,13 @@
     },
     {
       "type": "Bitmap",
-      "name": "Spaceship4",
-      "file": "img/Spaceship4.png"
-    },
-    {
-      "type": "Bitmap",
-      "name": "Spaceship5",
-      "file": "img/Spaceship5.png"
-    },
-    {
-      "type": "Bitmap",
-      "name": "Spaceship6",
-      "file": "img/Spaceship6.png"
-    },
-    {
-      "type": "Bitmap",
       "name": "Turret",
       "file": "img/Turret.png"
     },
     {
-      "type": "Bitmap",
-      "name": "Turret2",
-      "file": "img/Turret2.png"
-    },
-    {
       "type": "Music",
       "name": "SpaceBackgroundMusic",
-      "file": "sound/Resonance.mp3"
-    },
-    {
-      "type": "Music",
-      "name": "spaceShipSound",
-      "file": "sound/SpaceshipSoundEffect.wav"
+      "file": "sound/InPursuitOfSilence.mp3"
     }
   ]
 }

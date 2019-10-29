@@ -34,7 +34,6 @@ public class PlayerSpaceship extends SpaceEntity {
      */
     private Emitter mMovementEmitterLeft;
     private Emitter mMovementEmitterRight;
-    private Emitter mMovementEmitterCentre;
 
     /**
      * Offset for the movement emitters so they appears to exit from the back
@@ -42,7 +41,6 @@ public class PlayerSpaceship extends SpaceEntity {
      */
     private Vector2 mMovementEmitterOffsetLeft;
     private Vector2 mMovementEmitterOffsetRight;
-    private Vector2 mMovementEmitterOffsetCentre;
     private Vector2 mMovementEmitterLocation;
 
 
@@ -59,28 +57,26 @@ public class PlayerSpaceship extends SpaceEntity {
      */
     public PlayerSpaceship(float startX, float startY, GameScreen gameScreen) {
         super(startX, startY, DEFAULT_RADIUS*2.0f, DEFAULT_RADIUS*2.0f, gameScreen.getGame()
-                .getAssetManager().getBitmap("Spaceship4"), gameScreen);
+                .getAssetManager().getBitmap("Spaceship1"), gameScreen);
 
         // Define the maximum velocities and accelerations of the spaceship
-        maxAcceleration = 1000.0f;
-        maxVelocity = 1000.0f;
-        maxAngularVelocity = 150.0f;
-        maxAngularAcceleration = 150.0f;
+        maxAcceleration = 600.0f;
+        maxVelocity = 100.0f;
+        maxAngularVelocity = 1440.0f;
+        maxAngularAcceleration = 1440.0f;
 
         mRadius = DEFAULT_RADIUS;
-        mMass = 800.0f;
+        mMass = 1000.0f;
 
         // Create an offset for the movement emitters based on the size of the spaceship
         mMovementEmitterOffsetLeft = new Vector2(-20.0f, 20.0f);
         mMovementEmitterOffsetRight = new Vector2(-20.0f, -20.0f);
-        mMovementEmitterOffsetCentre = new Vector2(-25.0f, 0.0f);
 
         // Create and add a particle effect for the movement of the ship
         ParticleSystemManager particleSystemManager =
                 ((SpaceshipDemoScreen) mGameScreen).getParticleSystemManager();
 
         // Create and add the left emitter
-
         mMovementEmitterLocation = new Vector2(position);
         mMovementEmitterLocation.add(mMovementEmitterOffsetLeft);
         mMovementEmitterLeft = new Emitter(
@@ -89,22 +85,12 @@ public class PlayerSpaceship extends SpaceEntity {
         particleSystemManager.addEmitter(mMovementEmitterLeft);
 
         // Create and add the right emitter
-
         mMovementEmitterLocation.set(position);
         mMovementEmitterLocation.add(mMovementEmitterOffsetRight);
         mMovementEmitterRight = new Emitter(
                 particleSystemManager, "txt/particle/ThrusterEmitter.JSON",
                 mMovementEmitterLocation);
         particleSystemManager.addEmitter(mMovementEmitterRight);
-
-        // Create and add the centre emitter
-
-        mMovementEmitterLocation.set(position);
-        mMovementEmitterLocation.add(mMovementEmitterOffsetCentre);
-        mMovementEmitterCentre = new Emitter(
-                particleSystemManager, "txt/particle/ThrusterEmitter.JSON",
-                mMovementEmitterLocation);
-        particleSystemManager.addEmitter(mMovementEmitterCentre);
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -130,38 +116,27 @@ public class PlayerSpaceship extends SpaceEntity {
         angularAcceleration = SteeringBehaviours.alignWithMovement(this);
 
         // Dampen the linear and angular acceleration and velocity
-        angularAcceleration *= 1.0f;
-        angularVelocity *= 1.0f;
+        angularAcceleration *= 0.95f;
+        angularVelocity *= 0.75f;
         acceleration.multiply(0.75f);
         velocity.multiply(0.95f);
 
         // Apply the determined accelerations
         super.update(elapsedTime);
 
-        // Update the particle emitters associated with this ship to the new position,
+        // Update the particle emitters associated with this ship to rhe new position,
         // calculating an offset so the steam comes from the rear of the ship
-
         MathsHelper.rotateOffsetAboutCentre(
                 position, mMovementEmitterOffsetLeft, orientation, mMovementEmitterLocation);
         mMovementEmitterLeft.setPosition(mMovementEmitterLocation.x, mMovementEmitterLocation.y);
-
         MathsHelper.rotateOffsetAboutCentre(
                 position, mMovementEmitterOffsetRight, orientation, mMovementEmitterLocation);
         mMovementEmitterRight.setPosition(mMovementEmitterLocation.x, mMovementEmitterLocation.y);
 
-        MathsHelper.rotateOffsetAboutCentre(
-                position, mMovementEmitterOffsetCentre, orientation, mMovementEmitterLocation);
-        mMovementEmitterCentre.setPosition(mMovementEmitterLocation.x, mMovementEmitterLocation.y);
-
         // Depending on the speed of the spaceship tweak the number of created particles
-
         mMovementEmitterLeft.getEmitterSettings().minParticleDensity = (int) velocity.length();
         mMovementEmitterLeft.getEmitterSettings().maxParticleDensity = (int) (1.2f * velocity.length());
-
         mMovementEmitterRight.getEmitterSettings().minParticleDensity = (int) velocity.length();
         mMovementEmitterRight.getEmitterSettings().maxParticleDensity = (int) (1.2f * velocity.length());
-
-        mMovementEmitterCentre.getEmitterSettings().minParticleDensity = (int) velocity.length();
-        mMovementEmitterCentre.getEmitterSettings().maxParticleDensity = (int) (1.2f * velocity.length());
     }
 }

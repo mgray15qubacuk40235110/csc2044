@@ -137,7 +137,7 @@ public class Card extends Sprite {
      * @param screenViewport Screen viewport
      */
     private void drawBitmap(Bitmap bitmap, Vector2 offset, Vector2 scale,
-                            IGraphics2D graphics2D, LayerViewport layerViewport, ScreenViewport screenViewport) {
+        IGraphics2D graphics2D, LayerViewport layerViewport, ScreenViewport screenViewport) {
 
 //        // Calculate a game layer bound for the bitmap to be drawn
 //        bound.set(position.x + mBound.halfWidth * offset.x,

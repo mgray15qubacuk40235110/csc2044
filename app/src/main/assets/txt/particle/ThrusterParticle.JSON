@@ -1,7 +1,7 @@
 {
   "name": "ThrusterParticle",
-  "width": 12.5,
-  "height": 3.0,
+  "width": 6.0,
+  "height": 6.0,
   "minVelocityDirection": 0.0,
   "maxVelocityDirection": 360.0,
   "minVelocityMagnitude": 0.0,
@@ -24,5 +24,5 @@
   "maxFadeInBy": 0.08,
   "minFadeOutFrom": 0.45,
   "maxFadeOutFrom": 0.55,
-  "bitmapFilename": "img/particle/MultiDot.png"
+  "bitmapFilename": "img/particle/PurpleDot.png"
 }

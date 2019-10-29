@@ -1,0 +1,3014 @@
+    @Test
+    public void menuScreenTransitionToSpaceDemo() {
+        // Define the simulated screensize and the
+        int screenWidth = 1920, screenHeight = 1080;
+
+        // Ensure the mocked object will return this screensize
+        when(game.getScreenWidth()).thenReturn(1920);
+        when(game.getScreenHeight()).thenReturn(1080);
+
+        // Calculate the expected centre position of the spaceship demo (see constructor for menu)
+        float buttonX = (screenWidth/5) * 1.0f, buttonY = (screenHeight/3) * 1.5f;
+
+        // Create a fake input event and touch event array
+        TouchEvent touchEvent = new TouchEvent();
+        touchEvent.type = TouchEvent.TOUCH_UP;
+        touchEvent.x = buttonX;
+        touchEvent.y = buttonY;
+        List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
+        touchEvents.add(touchEvent);
+
+        // Setup a mock so the above touch event array is returned from the mocked input object
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        // Create a ScreenManager to be updated by the menuscreen and return this from the mock gameobject
+        ScreenManager screenManager = new ScreenManager(game);
+        when(game.getScreenManager()).thenReturn(screenManager);
+
+        // Create a menu screen and call the update method
+        MenuScreen menuScreen = new MenuScreen(game);
+        menuScreen.update(new ElapsedTime());
+
+        // Asset that the current screen is now the spaceship demo
+        assertEquals(screenManager.getCurrentScreen().getName(), spaceshipDemoScreen.getName());
+    }
+
+
+
+
+======================================================================================
+Instrumented Tests
+======================================================================================
+
+
+package uk.ac.qub.eeecs.gage;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
+import uk.ac.qub.eeecs.gage.engine.io.FileIO;
+import uk.ac.qub.eeecs.gage.world.GameScreen;
+import uk.ac.qub.eeecs.game.CardDefenseGame;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.Card;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.CardStore;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.MinionCard;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.SpellCard;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.TowerCard;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.WeaponCard;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+
+/**
+ * Created by Dylan Milligan on 24/11/2017.
+ * This class contains instrumented tests for the CardStore class.
+ */
+
+@RunWith(AndroidJUnit4.class)
+public class CardStoreTest
+{
+	private CardStore cardStore;
+	private GameScreen gameScreen;
+
+	/**
+	 * Set up a new CardStore object.
+	 */
+	@Before
+	public void cardStore_setup()
+	{
+		Context context = InstrumentationRegistry.getTargetContext();
+		CardDefenseGame game = new CardDefenseGame();
+		FileIO fileIO = new FileIO(context);
+		game.mFileIO = fileIO;
+		game.mAssetManager = new AssetStore(fileIO);
+		gameScreen = new GameScreen("TestScreen", game)
+		{
+			@Override
+			public void update(ElapsedTime elapsedTime) {}
+
+			@Override
+			public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {}
+
+		};
+		cardStore = new CardStore(gameScreen, "testCards");
+	}
+
+	/**
+	 * Check that supplied parameters and default instance variable values have been
+	 * processed correctly by the CardStore constructor.
+	 */
+	@Test
+	public void cardStore_CheckConstructor() {
+		assertEquals(gameScreen, cardStore.getGameScreen());
+		assertEquals("testCards/minions.xml", cardStore.getMinionsXML());
+		assertEquals("testCards/towers.xml", cardStore.getTowersXML());
+		assertEquals("testCards/weapons.xml", cardStore.getWeaponsXML());
+		assertEquals("testCards/spells.xml", cardStore.getSpellsXML());
+	}
+
+	/**
+	 * Check the getMinionCard() method, ensuring the variables of the returned object match the test XML file.
+	 */
+	@Test
+	public void cardStore_GetMinionCard()
+	{
+		MinionCard card;
+
+		card = cardStore.getMinionCard(0);
+		assertEquals("Minion1", card.getName());
+		assertEquals("Special text 1.", card.getText());
+		assertEquals(1, card.getMana());
+		assertEquals(2, card.getDamage());
+		assertEquals(3, card.getHealth());
+		assertEquals(4, card.getMovementSpeed());
+		assertEquals(5, card.getGroupSize());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+
+		card = cardStore.getMinionCard(1);
+		assertEquals("Minion2", card.getName());
+		assertEquals("Special text 2.", card.getText());
+		assertEquals(6, card.getMana());
+		assertEquals(7, card.getDamage());
+		assertEquals(8, card.getHealth());
+		assertEquals(9, card.getMovementSpeed());
+		assertEquals(10, card.getGroupSize());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+	}
+
+	/**
+	 * Check the getTowerCard() method, ensuring the variables of the returned object match the test XML file.
+	 */
+	@Test
+	public void cardStore_GetTowerCard()
+	{
+		TowerCard card;
+
+		card = cardStore.getTowerCard(0);
+		assertEquals("Tower1", card.getName());
+		assertEquals("Special text 1.", card.getText());
+		assertEquals(1, card.getMana());
+		assertEquals(2, card.getDamage());
+		assertEquals(3, card.getRateOfFire());
+		assertEquals(4, card.getAttackRadius());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+
+		card = cardStore.getTowerCard(1);
+		assertEquals("Tower2", card.getName());
+		assertEquals("Special text 2.", card.getText());
+		assertEquals(5, card.getMana());
+		assertEquals(6, card.getDamage());
+		assertEquals(7, card.getRateOfFire());
+		assertEquals(8, card.getAttackRadius());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+	}
+
+	/**
+	 * Check the getWeaponCard() method, ensuring the variables of the returned object match the test XML file.
+	 */
+	@Test
+	public void cardStore_GetWeaponCard()
+	{
+		WeaponCard card;
+
+		card = cardStore.getWeaponCard(0);
+		assertEquals("Weapon1", card.getName());
+		assertEquals("Special text 1.", card.getText());
+		assertEquals(1, card.getMana());
+		assertEquals(2, card.getDamage());
+		assertEquals(3, card.getDurability());
+		assertEquals(4, card.getHealth());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+
+		card = cardStore.getWeaponCard(1);
+		assertEquals("Weapon2", card.getName());
+		assertEquals("Special text 2.", card.getText());
+		assertEquals(5, card.getMana());
+		assertEquals(6, card.getDamage());
+		assertEquals(7, card.getDurability());
+		assertEquals(8, card.getHealth());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+	}
+
+	/**
+	 * Check the getSpellCard() method, ensuring the variables of the returned object match the test XML file.
+	 */
+	@Test
+	public void cardStore_GetSpellCard()
+	{
+		SpellCard card;
+
+		card = cardStore.getSpellCard(0);
+		assertEquals("Spell1", card.getName());
+		assertEquals("Special text 1.", card.getText());
+		assertEquals(1, card.getMana());
+		assert(card.getBitmap() != null);
+		assert(card.getBitmap() != null);
+
+		card = cardStore.getSpellCard(1);
+		assertEquals("Spell2", card.getName());
+		assertEquals("Special text 2.", card.getText());
+		assertEquals(2, card.getMana());
+		assert(card.getBitmap() != null);
+		assert(card.getArtwork().getBitmap() != null);
+	}
+
+	/**
+	 * Check the getRandomCard() method by calling it 10 times.
+	 * Make sure the card is initialised by checking it is not null.
+	 */
+	@Test
+	public void cardStore_GetRandomCard()
+	{
+		Card card;
+		for (int i = 0; i < 10; i++)
+		{
+			card = cardStore.getRandomCard();
+			assert(card != null);
+		}
+	}
+
+	/**
+	 * Check that calling the numOfUniqueCards() method returns the total number of cards across all xml files.
+	 */
+	@Test
+	public void cardStore_NumOfUniqueCards()
+	{
+		assertEquals(8, cardStore.numOfUniqueCards());
+	}
+}
+
+
+
+
+======================================================================================
+
+
+
+
+package uk.ac.qub.eeecs.gage.cardTests;
+
+import android.graphics.Bitmap;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import uk.ac.qub.eeecs.gage.Game;
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.world.GameScreen;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import uk.ac.qub.eeecs.game.cardDefenseGame.card.MinionCard;
+
+/**
+ * Created by Ainsley on 05/12/2017.
+ */
+
+public class MinionCardTestAinsley
+{
+    @Mock
+    private GameScreen gameScreen = mock(GameScreen.class);
+    @Mock
+    private Game game = mock(Game.class);
+    @Mock
+    private AssetStore assetManager = mock(AssetStore.class);
+    @Mock
+    private Bitmap mockMinionBackground = mock(Bitmap.class);
+    @Mock
+    private Bitmap mockMinionBackground01 = mock(Bitmap.class);
+    @Mock
+    private Bitmap mockMinionArtwork = mock(Bitmap.class);
+    @Mock
+    private Bitmap mockCardBackgroundFaceDown = mock(Bitmap.class);
+    @Mock
+    private Bitmap bitmap = mock(Bitmap.class);
+
+    @Before
+    public void setup() {
+        when(gameScreen.getGame()).thenReturn(game);
+        when(game.getAssetManager()).thenReturn(assetManager);
+        when(assetManager.getBitmap("minionBackground")).thenReturn(mockMinionBackground);
+        when(assetManager.getBitmap("minionBackground01")).thenReturn(mockMinionBackground01);
+        when(assetManager.getBitmap("minionArtwork")).thenReturn(mockMinionArtwork);
+        when(assetManager.getBitmap("cardBackgroundFaceDown")).thenReturn(mockCardBackgroundFaceDown);
+    }
+
+    // Construct a new MinionCard object.
+    @Test
+    public void minionCardConstructor() {
+        MinionCard minionCard = new MinionCard("Tank", "Text",
+                mockMinionArtwork, 2, 1, 4, 5, 3, gameScreen);
+        assertTrue(minionCard.getName().equals("Tank"));
+        assertEquals(mockMinionArtwork, minionCard.getArtwork().getBitmap());
+        assertTrue(minionCard.getText().equals("Text"));
+        assert (minionCard.getMana() == 2);
+        assert (minionCard.getDamage() == 1);
+        assert (minionCard.getHealth() == 4);
+        assert (minionCard.getMovementSpeed() == 5);
+        assert (minionCard.getGroupSize() == 3);
+    }
+
+    @Test
+    public void minionSetBackground() {
+        MinionCard minionCard = new MinionCard("Tank", "Text",
+                assetManager.getBitmap("minionArtwork"), 2, 1, 4, 5, 3, gameScreen);
+        minionCard.setBitmap(assetManager.getBitmap("minionBackground01"));
+
+        assertTrue(minionCard.getBitmap().equals(assetManager.getBitmap("minionBackground01")));
+
+    }
+
+}
+
+
+
+
+
+======================================================================================
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gage.mazeTests;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import uk.ac.qub.eeecs.game.cardDefenseGame.maze.Maze;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
+/**
+ * Created by Matthew McGowan on 14/02/2018.
+ */
+
+@RunWith(MockitoJUnitRunner.class)
+public class MazeTest
+{
+	//This is an example state of the game board
+	String manyPathMaze =
+					"#################"+
+					"#   #   #       #"+
+					"# #   #   ##### #"+
+					"#  ##  ###    # #"+
+					"##  ## #   ## # #"+
+					"  #    # ##      "+
+					"# # ####  #######"+
+					"# #     #       #"+
+					"# ##### ####### #"+
+					"#               #"+
+					"#################";
+
+	String loopMaze =
+					"#################"+
+					"#   #   #       #"+
+					"# #   #   ##### #"+
+					"#   #   ##    # #"+
+					"##  ### ## ## # #"+
+					"  # ##   ##      "+
+					"# # ## # ########"+
+					"# #  #   #      #"+
+					"# ##### #########"+
+					"#               #"+
+					"#################";
+
+	String noSolutionMaze =
+					"#################"+
+					"#   #   #      ##"+
+					"# #   #   #### ##"+
+					"#  ##  ###     ##"+
+					"##  ## #   ##  ##"+
+					"  #    # ##     #"+
+					"# # ####  #######"+
+					"# #     #       #"+
+					"# ##### ####### #"+
+					"#               #"+
+					"#################";
+
+	String fullMaze =
+					"#################"+
+					"#               #"+
+					"# ############# #"+
+					"#             # #"+
+					"############# # #"+
+					"  #           #  "+
+					"# # #############"+
+					"# #             #"+
+					"# ############# #"+
+					"#               #"+
+					"#################";
+
+
+
+	//This was the worst case scenario, but isn't anymore
+	String basicMaze =
+					"#################"+
+					"#               #"+
+					"#           #   #"+
+					"#     #         #"+
+					"#        #      #"+
+					"        #   #    "+
+					"#  #            #"+
+					"#     #   #     #"+
+					"#               #"+
+					"#               #"+
+					"#################";
+
+	//This was the worst case scenario, but isn't anymore
+	String memeMaze =
+			"#################"+
+			"#        #      #"+
+			"#      ###      #"+
+			"#        #      #"+
+			"#      ###      #"+
+			"         #       "+
+			"#        #      #"+
+			"#        #      #"+
+			"#        #      #"+
+			"#        #      #"+
+			"#################";
+
+	@Test
+	public void constructor()
+	{
+		Maze testMaze = new Maze();
+		assertNotNull(testMaze);
+	}
+
+	@Test
+	public void solveMazeEmpty()
+	{
+		Maze testMaze = new Maze();
+		assertTrue(testMaze.solveMaze());
+	}
+
+	@Test
+	public void solveMazeBasic()
+	{
+		Maze testMaze = new Maze();
+		testMaze.updateMaze(basicMaze);
+		assertTrue(testMaze.solveMaze());
+
+	}
+
+	@Test
+	public void solveMazeFull()
+	{
+		Maze testMaze = new Maze();
+		testMaze.updateMaze(fullMaze);
+		assertTrue(testMaze.solveMaze());
+	}
+
+	@Test
+	public void solveMazeLoop()
+	{
+		Maze testMaze = new Maze();
+		testMaze.updateMaze(loopMaze);
+		assertTrue(testMaze.solveMaze());
+	}
+
+	@Test
+	public void solveMazeManyPath()
+	{
+		Maze testMaze = new Maze();
+		testMaze.updateMaze(manyPathMaze);
+		assertTrue(testMaze.solveMaze());
+	}
+
+	@Test
+	public void solveMazeNoSolution()
+	{
+		Maze testMaze = new Maze();
+		testMaze.updateMaze(noSolutionMaze);
+		assertFalse(testMaze.solveMaze());
+	}
+
+	@Test
+	public void memeMaze()
+	{
+		Maze testMaze = new Maze();
+		testMaze.updateMaze(memeMaze);
+		assertFalse(testMaze.solveMaze());
+	}
+}
+
+
+
+
+
+
+===========================================================================================
+
+
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gage.screenTests;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.os.Bundle;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.qub.eeecs.gage.Game;
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.ScreenManager;
+import uk.ac.qub.eeecs.gage.engine.audio.Music;
+import uk.ac.qub.eeecs.gage.engine.audio.Sound;
+import uk.ac.qub.eeecs.gage.engine.input.Input;
+import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
+import uk.ac.qub.eeecs.game.CardDefenseGame;
+import uk.ac.qub.eeecs.game.cardDefenseGame.Timer;
+import uk.ac.qub.eeecs.game.cardDefenseGame.screen.CardDefenseScreen;
+import uk.ac.qub.eeecs.game.cardDefenseGame.screen.SettingsScreen;
+import uk.ac.qub.eeecs.game.cardDefenseGame.ui.UI;
+
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Created by Johny on 25/01/2018.
+ */
+
+@RunWith(MockitoJUnitRunner.class)
+public class SettingsScreenTest
+{
+    @Mock
+    private CardDefenseGame game = mock(CardDefenseGame.class);
+
+    @Mock
+    private AssetStore assetManager = mock(AssetStore.class);
+
+    @Mock
+    private CardDefenseScreen cardDefenseScreen = mock(CardDefenseScreen.class);
+
+    @Mock
+    private UI ui = mock(UI.class);
+
+    @Mock
+    private Music music = mock(Music.class);
+
+    @Mock
+    private Sound sound = mock(Sound.class);
+
+    @Mock
+    Activity activity = mock(Activity.class);
+
+    @Mock
+    Bitmap bitmap = mock(Bitmap.class);
+
+    @Mock
+    Input input = mock(Input.class);
+
+    @Mock
+    private ElapsedTime elapsedTime = mock(ElapsedTime.class);
+    @Mock
+    private Timer timer = mock(Timer.class);
+
+    @Before
+    public void setUp(){
+        when(game.getAssetManager()).thenReturn(assetManager);
+        when(game.getAssetManager().getMusic("BuildMusic")).thenReturn(music);
+        when(game.getAssetManager().getMusic("AttackMusic")).thenReturn(music);
+        when(game.getAssetManager().getSound("buttonClick")).thenReturn(sound);
+        when(game.getActivity()).thenReturn(activity);
+        when(game.getScreenWidth()).thenReturn(1920);
+        when(game.getScreenHeight()).thenReturn(1080);
+        when(game.getAssetManager().getBitmap(any(String.class))).thenReturn(bitmap);
+        when(cardDefenseScreen.getTimer()).thenReturn(timer);
+
+    }
+
+	//test to see if settings screen is created
+     @Test
+    public void settingsScreen_Create(){
+         SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+         assertEquals(game, settingsScreen.getGame());
+     }
+
+     @Test
+    public void resumeButtonClicked(){
+         ScreenManager screenManager = new ScreenManager();
+         when(game.getScreenManager()).thenReturn(screenManager);
+         when(cardDefenseScreen.getName()).thenReturn("CardDefenseScreen");
+         SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+
+         float posX = settingsScreen.getResumeButton().position.x;
+         float posY = settingsScreen.getResumeButton().position.y;
+         List touchEvents = returnTouchEvent(posX, posY);
+
+         when(game.getInput()).thenReturn(input);
+         when(input.getTouchEvents()).thenReturn(touchEvents);
+
+         settingsScreen.update(elapsedTime);
+
+         assertEquals("CardDefenseScreen", screenManager.getCurrentScreen().getName());
+     }
+
+    @Test
+    public void howToPlayButtonClicked(){
+        ScreenManager screenManager = new ScreenManager();
+        when(game.getScreenManager()).thenReturn(screenManager);
+
+        SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+
+        float posX = settingsScreen.getHowToPlayButton().position.x;
+        float posY = settingsScreen.getHowToPlayButton().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        settingsScreen.update(elapsedTime);
+
+        assertEquals("HelpScreen", screenManager.getCurrentScreen().getName());
+    }
+
+    @Test
+    public void volUpButtonPressed(){
+		when(game.getMusicVolume()).thenReturn(0.3f);
+		SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui);
+        float posX = settingsScreen.getVolUp().position.x;
+        float posY = settingsScreen.getVolUp().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+		when(game.getMusicVolume()).thenReturn(0.4f);
+
+        settingsScreen.update(elapsedTime);
+        assertEquals(40, settingsScreen.getVolumeBar().getCurrentValue());
+    }
+
+    @Test
+    public void volDownButtonPressed(){
+		when(game.getMusicVolume()).thenReturn(1.0f);
+        SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+        float posX = settingsScreen.getVolDown().position.x;
+        float posY = settingsScreen.getVolDown().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+        settingsScreen.getVolumeBar().maxVolumeLevel();
+		when(game.getMusicVolume()).thenReturn(0.9f);
+
+        settingsScreen.update(elapsedTime);
+        assertEquals(90, settingsScreen.getVolumeBar().getCurrentValue());
+    }
+
+    @Test
+    public void muteVolButtonPressed(){
+        SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+		((CardDefenseGame)settingsScreen.getGame()).setMusicVolume(0.3f);
+        float posX = settingsScreen.getMuteButton().position.x;
+        float posY = settingsScreen.getMuteButton().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        settingsScreen.update(elapsedTime);
+        assertEquals(0.0f, ((CardDefenseGame)settingsScreen.getGame()).getMusicVolume());
+    }
+
+    @Test
+    public void maxVolButtonPressed(){
+		when(game.getMusicVolume()).thenReturn(0.3f);
+        SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+        float posX = settingsScreen.getMaxVolButton().position.x;
+        float posY = settingsScreen.getMaxVolButton().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+		when(game.getMusicVolume()).thenReturn(1.0f);
+
+        settingsScreen.update(elapsedTime);
+        assertEquals(100, settingsScreen.getVolumeBar().getCurrentValue());
+    }
+
+    @Test
+    public void sfxButtonPressed(){
+        SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+        float posX = settingsScreen.getmSFXVol().position.x;
+        float posY = settingsScreen.getmSFXVol().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        settingsScreen.update(elapsedTime);
+
+        assertEquals(false,((CardDefenseGame)settingsScreen.getGame()).isSfxVolOn());
+    }
+
+    @Test
+    public void giveUpButtonPressed(){
+        SettingsScreen settingsScreen = new SettingsScreen(game, cardDefenseScreen, ui );
+        float posX = settingsScreen.getGiveUp().position.x;
+        float posY = settingsScreen.getGiveUp().position.y;
+        List touchEvents = returnTouchEvent(posX, posY);
+
+        when(game.getInput()).thenReturn(input);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        settingsScreen.update(elapsedTime);
+        assertEquals(true, settingsScreen.getShowConfirmDialog());
+    }
+
+    private List returnTouchEvent(float touchX, float touchY) {
+        TouchEvent touchEvent = new TouchEvent();
+        touchEvent.type = TouchEvent.TOUCH_UP;
+        touchEvent.x = touchX;
+        touchEvent.y = touchY;
+        List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
+        touchEvents.add(touchEvent);
+        return touchEvents;
+    }
+}
+
+
+
+
+
+
+====================================================================================
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gage;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ScreenManager;
+import uk.ac.qub.eeecs.gage.engine.io.FileIO;
+import uk.ac.qub.eeecs.game.DemoGame;
+import uk.ac.qub.eeecs.game.cardDemo.Board;
+
+
+/**
+ * Test that the creation of each card work and all the getter and setters work properly
+ * Created by BlairRobinson on 05/01/2018.
+ */
+
+@RunWith(AndroidJUnit4.class)
+public class MinionCardCreationTest {
+
+    private Context context;
+    private Game cardGame;
+    private Board cardGameScreen;
+
+    //Expected positions that are used in all tests
+    private float expectedXPosition = 250.0f;
+    private float expectedYPosition = 150.0f;
+
+
+    @Before
+    public void setup() throws Exception{
+        context = InstrumentationRegistry.getTargetContext();
+        cardGame = new DemoGame();
+        cardGame.mScreenManager = new ScreenManager();
+        FileIO fileIO = new FileIO(context);
+        cardGame.mFileIO = fileIO;
+        cardGame.mAssetManager = new AssetStore(fileIO);
+        cardGameScreen = new Board(cardGame);
+
+        //Add Minon Card Bitmap to assetStore to be able to create Card instance using the bitmap
+        cardGame.mAssetManager.loadAndAddBitmap("BattlePig", "Cards/Battle_Pig.png");
+    }
+
+    @Test
+    public void MinonCard_Construction_Expected_Position_Valid_Data(){
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        assertTrue(minion.position.x == expectedXPosition);
+        assertTrue(minion.position.y == expectedYPosition);
+    }
+
+    @Test
+    public void MinonCard_Construction_Expected_Position_InValid_Data(){
+        MinionCard minion = new MinionCard(240.0f, 100.0f, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        assertFalse(minion.position.x == expectedXPosition);
+        assertFalse(minion.position.y == expectedYPosition);
+    }
+
+    @Test
+    public void MinonCard_Construction_Get_Mana_Test(){
+        int expectedMana = 4;
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        assertTrue(minion.getMana() == expectedMana);
+    }
+
+    @Test
+    public void MinonCard_Construction_Get_Attack_Test(){
+        int expectedAttack = 4;
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        assertTrue(minion.getAttack() == expectedAttack);
+    }
+
+    @Test
+    public void MinonCard_Construction_Get_Defense_Test(){
+        int expectedDefense = 4;
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        assertTrue(minion.getDefense() == expectedDefense);
+    }
+
+    @Test
+    public void MinonCard_Construction_Set_Mana_Test(){
+        int expectedMana = 2;
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        minion.setMana(2);
+
+        assertTrue(minion.getMana() == expectedMana);
+    }
+
+    @Test
+    public void MinonCard_Construction_Set_Attack_Test(){
+        int expectedAttack = 6;
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        minion.setAttack(6);
+
+        assertTrue(minion.getAttack() == expectedAttack);
+    }
+
+    @Test
+    public void MinonCard_Construction_Set_Defense_Test(){
+        int expectedDefense = 3;
+
+        MinionCard minion = new MinionCard(expectedXPosition, expectedYPosition, cardGameScreen, cardGame.mAssetManager.getBitmap("BattlePig"), 4, 4, 4);
+        minion.setDefense(3);
+
+        assertTrue(minion.getDefense() == expectedDefense);
+    }
+
+}
+
+
+
+
+
+
+====================================================================================
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gage;
+
+import android.graphics.Bitmap;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.ScreenManager;
+import uk.ac.qub.eeecs.gage.engine.input.Input;
+import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
+import uk.ac.qub.eeecs.game.AvatarScreen;
+import uk.ac.qub.eeecs.game.MapScreen;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
+
+/**
+ * Created by chloethompson on 05/12/2017.
+ */
+
+@RunWith(MockitoJUnitRunner.class)
+public class AvatarScreenTest {
+
+        @Mock Game mGame;
+        ScreenManager screenManager;
+
+        @Mock AssetStore assetManager;
+        @Mock Bitmap bitmap;
+
+        @Mock Input input;
+
+        @Before
+        public void setup() {
+            screenManager = new ScreenManager();
+            when(mGame.getScreenManager()).thenReturn(screenManager);
+
+            when(mGame.getAssetManager()).thenReturn(assetManager);
+            when(assetManager.getBitmap(any(String.class))).thenReturn(bitmap);
+
+            when(mGame.getInput()).thenReturn(input);
+        }
+
+        @Test
+        public void testInCorrectScreenTransitionGirlAvatar() {
+
+            AvatarScreen avatarScreen = new AvatarScreen(mGame);
+            mGame.getScreenManager().addScreen(avatarScreen);
+            MapScreen mapScreen = new MapScreen(mGame);
+
+            TouchEvent touchPosition = new TouchEvent();
+            touchPosition.x = 391; //values from log
+            touchPosition.y = 607;
+            touchPosition.type = TouchEvent.TOUCH_DOWN;
+            List<TouchEvent> touchEvents = new ArrayList<>();
+            touchEvents.add(touchPosition);
+            when(input.getTouchEvents()).thenReturn(touchEvents);
+
+            ElapsedTime elapsedTime = new ElapsedTime();
+
+            avatarScreen.update(elapsedTime);
+
+            assertNotEquals(mGame.getScreenManager().getCurrentScreen().getName(), mapScreen.getName());
+
+    }
+    @Test
+    public void testInCorrectScreenTransitionBoyAvatar() {
+
+        AvatarScreen avatarScreen = new AvatarScreen(mGame);
+        mGame.getScreenManager().addScreen(avatarScreen);
+        MapScreen mapScreen = new MapScreen(mGame);
+
+        TouchEvent touchPosition = new TouchEvent();
+        touchPosition.x = 1524; //values from log
+        touchPosition.y = 580;
+        touchPosition.type = TouchEvent.TOUCH_DOWN;
+        List<TouchEvent> touchEvents = new ArrayList<>();
+        touchEvents.add(touchPosition);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        ElapsedTime elapsedTime = new ElapsedTime();
+
+        avatarScreen.update(elapsedTime);
+
+        assertNotEquals(mGame.getScreenManager().getCurrentScreen().getName(), mapScreen.getName());
+
+    }
+    @Test
+    public void testCorrectScreenTransitionAnimalAvatar() {
+
+        AvatarScreen avatarScreen = new AvatarScreen(mGame);
+        mGame.getScreenManager().addScreen(avatarScreen);
+        MapScreen mapScreen = new MapScreen(mGame);
+
+        TouchEvent touchPosition = new TouchEvent();
+        touchPosition.x = 950; //values from log
+        touchPosition.y = 580;
+        touchPosition.type = TouchEvent.TOUCH_DOWN;
+        List<TouchEvent> touchEvents = new ArrayList<>();
+        touchEvents.add(touchPosition);
+        when(input.getTouchEvents()).thenReturn(touchEvents);
+
+        ElapsedTime elapsedTime = new ElapsedTime();
+
+        avatarScreen.update(elapsedTime);
+
+        assertNotEquals(mGame.getScreenManager().getCurrentScreen().getName(), mapScreen.getName());
+
+    }
+}
+
+
+
+
+
+
+====================================================================================
+
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gage;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ScreenManager;
+import uk.ac.qub.eeecs.gage.engine.io.FileIO;
+import uk.ac.qub.eeecs.gameScreens.DemoGame;
+import uk.ac.qub.eeecs.gameScreens.MenuScreen;
+import uk.ac.qub.eeecs.gameScreens.helpDemo.HelpScreen;
+import uk.ac.qub.eeecs.gameScreens.optionsDemo.OptionsScreen;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+/**
+ * Created by mark6 on 13/04/2018.
+ */
+@RunWith(AndroidJUnit4.class)
+public class HelpScreenInstrumentedMA {
+    private Context context;
+    private DemoGame demo;
+    AssetStore assetStore;
+    HelpScreen helpScreen;
+    ScreenManager screenManager;
+
+    @Before
+    public void setUp(){
+        context = InstrumentationRegistry.getTargetContext();
+        demo = new DemoGame();
+        assetStore = new AssetStore(new FileIO(context));
+
+        demo.redefineAssetManager(assetStore);
+        screenManager = new ScreenManager();
+        demo.mScreenManager = screenManager;
+        helpScreen = new HelpScreen(demo);
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly1(){
+        assertTrue(helpScreen.getSentence1() == "The objective of the game is to reduce your opponents hero to");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly2(){
+        assertTrue(helpScreen.getSentence2() == "0 life points before they do the same to you!");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly3(){
+        assertTrue(helpScreen.getSentence3() == "In order to do this you have to break all 6 of your opponents");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly4(){
+        assertTrue(helpScreen.getSentence4() == "\"Shields\" by attacking them directly before you can deal");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly5(){
+        assertTrue(helpScreen.getSentence5() == "damage to their life points.");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly6(){
+        assertTrue(helpScreen.getSentence6() == "In this game you choose your hero (Wizard/Knight) and battle");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly7(){
+        assertTrue(helpScreen.getSentence7() == "against each other for supremacy!");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly8(){
+        assertTrue(helpScreen.getSentence8() == "");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly9(){
+        assertTrue(helpScreen.getSentence9() == "");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly10(){
+        assertTrue(helpScreen.getSentence10() == "");
+    }
+
+    @Test
+    public void helpTextInitialisedCorrectly11(){
+        assertTrue(helpScreen.getSentence11() == "");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence1(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence1() == "The objective of the game is to reduce your opponents hero to");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence2(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence2() == "0 life points before they do the same to you!");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence3(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence3() == "In order to do this you have to break all 6 of your opponents");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence4(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence4() == "\"Shields\" by attacking them directly before you can deal");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence5(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence5() == "damage to their life points.");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence6(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence6() == "In this game you choose your hero (Wizard/Knight) and battle");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence7(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence7() == "against each other for supremacy!");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence8(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence8() == "");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence9(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence9() == "");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence10(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence10() == "");
+    }
+
+    @Test
+    public void setHelpTextInvalidInputSentence11(){
+        helpScreen.setHelpText(10); //valid input 1, 2 or 3 so 10 out of range
+        //nothing should of changed so same as first one
+        assertTrue(helpScreen.getSentence11() == "");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence1(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence1() == "In this game you use mana which starts at 1 and increases by 1");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence2(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence2() == "per turn until a maximum of 10. Each monster and spell has its");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence3(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence3() == "mana cost shown at the top of the card with the ATK and HP");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence4(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence4() == "at the bottom of a monster card. When you play a monster");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence5(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence5() == "you can either attack an opponent directly, if there are no");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence6(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence6() == "monsters, or attack one of their monsters. When attacking");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence7(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence7() == "another monster each monster will take damage equal to");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence8(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence8() == "the other monsters' attack value, if the health reaches 0 then");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence9(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence9() == "the monster moves to the grave. Attacking a hero will either");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence10(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence10() == "break a shield or deal the monsters ATK to the heros health");
+    }
+
+    @Test
+    public void setHelpTextValidInput2Sentence11(){
+        helpScreen.setHelpText(2); //Valid input 1, 2 or 3 so 2 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence11() == "if there are no shields, when your hero reaches 0 HP you lose!");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence1(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence1() == "This game works off of a tap based system.");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence2(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence2() == "Drawing cards is automatic.");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence3(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence3() == "Playing a Card");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence4(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence4() == "Simply tap on the card in hand you wish to play and it will be");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence5(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence5() == "played provided there is enough mana.");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence6(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence6() == "Attacking");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence7(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence7() == "Tap on the monster you wish to make an attack with and then tap");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence8(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence8() == "on the target, either an enemy monster or the enemy hero, and");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence9(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence9() == "the attack will be made.");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence10(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence10() == "");
+    }
+
+    @Test
+    public void setHelpTextValidInput3Sentence11(){
+        helpScreen.setHelpText(3); //Valid input 1, 2 or 3 so 3 is valid
+        //should be set to the correct sentence
+        assertTrue(helpScreen.getSentence11() == "Any other interactions are dependant on specific card effects.");
+    }
+
+    @Test
+    public void helpScreen_onScreenChangeMenuScreen_correct(){
+        helpScreen.changeToScreen(new MenuScreen(demo));
+
+        assertTrue(demo.getScreenManager().getCurrentScreen().getName().equals("MenuScreen"));
+    }
+
+    @Test
+    public void helpScreen_onScreenChangeOptionsScreen_Correct(){
+        helpScreen.changeToScreen(new OptionsScreen(demo));
+
+        assertTrue(demo.getScreenManager().getCurrentScreen().getName().equals("OptionsScreen"));
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gameStructure;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import uk.ac.qub.eeecs.gage.util.Vector2;
+import uk.ac.qub.eeecs.gameScreens.DemoGame;
+import uk.ac.qub.eeecs.gameScreens.DemoScreen;
+import uk.ac.qub.eeecs.gameStructure.cardStacks.CardStack;
+import uk.ac.qub.eeecs.gameStructure.cardStacks.StackType;
+import uk.ac.qub.eeecs.gameStructure.cards.MonsterCard;
+import uk.ac.qub.eeecs.gameStructure.field.CardContainerCollection;
+import uk.ac.qub.eeecs.gameStructure.heros.Hero;
+import uk.ac.qub.eeecs.gameStructure.heros.Knight;
+import uk.ac.qub.eeecs.gameStructure.heros.Wizard;
+import uk.ac.qub.eeecs.gameStructure.player.*;
+import uk.ac.qub.eeecs.gameStructure.rounds.Round;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(MockitoJUnitRunner.class)
+public class AiTests {
+
+    @Mock
+    DemoGame game;
+    @Mock
+    DemoScreen DemoScreen = new DemoScreen(game);
+    @Mock
+    Round currentRound;
+    @Mock
+    Round currentRound2;
+
+    //methods to set up card stacks for human player for testing
+    public Human setupHumanWithHand()
+    {
+        CardStack deck = new CardStack(StackType.DECK);
+        Human Human = new Human(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 0; i < 5; i++)
+            Human.getHand().addCard(new MonsterCard(i+"","",0,DemoScreen,0,0, false));
+        return Human;
+    }
+
+    public Human setupHumanWithInPlay()
+    {
+        CardStack deck = new CardStack(StackType.DECK);
+        Human Human = new Human(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 0; i < 5; i++)
+            Human.getInPlay().addCard(new MonsterCard(i+"","",0,DemoScreen,0,0, false));
+        return Human;
+    }
+
+
+    //methods for setting up ai cardstacks for testing
+    public Ai setupAiWithHand()
+    {
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai Ai = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 0; i < 5; i++)
+            Ai.getHand().addCard(new MonsterCard(i+"","",0,DemoScreen,0,0, false));
+        return Ai;
+    }
+
+    public Ai setupAiWithInPlay()
+    {
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai Ai = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 0; i < 5; i++)
+            Ai.getInPlay().addCard(new MonsterCard(i+"","",0,DemoScreen,0,0, false));
+        return Ai;
+    }
+
+    @Test
+    public void ai_onCreate_playerDeck_Correct() {
+        StackType myDeck = StackType.DECK;
+        CardStack myDeckStack = new CardStack(myDeck);
+        Ai myAi = new Ai(myDeckStack, null);
+        assert(myAi.getDeck() == myDeckStack);
+    }
+
+    @Test
+    public void ai_onCreate_playerDeck_Incorrect() {
+        StackType myDeck = StackType.DECK;
+        CardStack myDeckStack = new CardStack(myDeck);
+        Ai myAi = new Ai(myDeckStack, null);
+        assert(myAi.getDeck() != myDeckStack );
+    }
+
+    @Test
+    public void ai_onCreate_playerHero_Correct() {
+        Knight myHero = new Knight(0,0,DemoScreen, false);
+        Ai myAi = new Ai(null, myHero);
+        assertTrue(myAi.getHero() == myHero);
+    }
+
+    @Test
+    public void ai_onCreate_playerHero_Incorrect() {
+        Knight myHero = new Knight(0,0,DemoScreen, false);
+        Knight myHero2 = new Knight(0,0,DemoScreen,false);
+        Ai myAi = new Ai(null, myHero);
+        assertFalse(myAi.getHero() == myHero2);
+    }
+
+    @Test
+    public void ai_onCreate_playerGraveyard_Correct() {
+        StackType myGrave = StackType.GRAVEYARD;
+        CardStack myGraveStack = new CardStack(myGrave);
+        Ai myAi = new Ai(myGraveStack, null);
+        assert(myAi.getGraveyard() == myGraveStack);
+    }
+
+    @Test
+    public void ai_onCreate_playerGraveyard_Incorrect() {
+        StackType myGrave = StackType.GRAVEYARD;
+        CardStack myGraveStack = new CardStack(myGrave);
+        Ai myAi = new Ai(myGraveStack, null);
+        assertFalse(myAi.getGraveyard() == myGraveStack);
+    }
+
+    @Test
+    public void ai_onCreate_playerHand_Correct() {
+        StackType myHand = StackType.HAND;
+        CardStack myHandStack = new CardStack(myHand);
+        Ai myAi = new Ai(myHandStack, null);
+        assert(myAi.getHand() == myHandStack);
+    }
+
+    @Test
+    public void ai_onCreate_playerHand_Incorrect() {
+        StackType myHand = StackType.HAND;
+        CardStack myHandStack = new CardStack(myHand);
+        Ai myAi = new Ai(myHandStack, null);
+        assertFalse(myAi.getHand() == myHandStack);
+    }
+
+    @Test
+    public void ai_onCreate_playerInPlay_Correct() {
+        StackType myInPlay = StackType.INPLAY;
+        CardStack myInPlayStack = new CardStack(myInPlay);
+        Ai myAi = new Ai(myInPlayStack, null);
+        assert(myAi.getInPlay() == myInPlayStack);
+    }
+
+    @Test
+    public void ai_onCreate_playerInPlay_Incorrect() {
+        StackType myInPlay = StackType.INPLAY;
+        CardStack myInPlayStack = new CardStack(myInPlay);
+        Ai myAi = new Ai(myInPlayStack, null);
+        assertFalse(myAi.getInPlay() == myInPlayStack);
+    }
+
+    @Test
+    public void ai_onSet_cardContainerCollection_Correct() {
+        Vector2 a = new Vector2();
+        Vector2 b = new Vector2();
+        Vector2 c = new Vector2();
+        Vector2 d = new Vector2();
+        CardContainerCollection myContainerCollection = new CardContainerCollection(a,b,c,d,DemoScreen, false);
+        Ai myAi = new Ai(null,null);
+        myAi.setContainers(myContainerCollection);
+        assertTrue(myAi.getContainerCollection() == myContainerCollection);
+    }
+
+    @Test
+    public void ai_onSet_cardContainerCollection_Incorrect() {
+        Vector2 a = new Vector2();
+        Vector2 b = new Vector2();
+        Vector2 c = new Vector2();
+        Vector2 d = new Vector2();
+        CardContainerCollection myContainerCollection = new CardContainerCollection(a,b,c,d,DemoScreen, false);
+        Ai myAi = new Ai(null,null);
+        myAi.setContainers(myContainerCollection);
+        assertFalse(myAi.getContainerCollection() != myContainerCollection);
+    }
+
+    @Test
+    public void ai_fieldCheck_Correct() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        for (int i = myHuman.getInPlay().size(); i >0; i--) {
+            myHuman.handToGrave(i, false);
+        }
+        assert(myAi.fieldCheck(false));
+    }
+
+    @Test
+    public void ai_fieldCheck_Incorrect_opponentHasCards() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        assert(!(myAi.fieldCheck(false)));
+    }
+
+    @Test
+    public void ai_fieldCheck_Incorrect_AiHasNoCards() {
+        Ai myAi = setupAiWithInPlay();
+        for (int i = myAi.getInPlay().size(); i > 0; i--) {
+            myAi.handToGrave(i,false);
+        }
+        Human myHuman = setupHumanWithInPlay();
+        assert(!(myAi.fieldCheck(false)));
+    }
+
+    @Test
+    public void AiHeroAttack_Correct() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myHuman.getHero().setShields(5);
+        for (int i = myHuman.getInPlay().size(); i > 0; i--) {
+            myHuman.handToGrave(i, false);
+        }
+        myAi.prepAI(myHuman, currentRound );
+        myAi.AIheroAttack(false);
+        assert(myHuman.getHero().getShields() == 4);
+    }
+
+    @Test
+    public void AiHeroAttack_Incorrect_CardHasAttacked() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myHuman.getHero().setShields(5);
+        myHuman.getHero().setHealth(20);
+        myAi.prepAI(myHuman, currentRound);
+        for (int i = 0; i < myAi.getInPlay().size(); i++) {
+            ((MonsterCard) myAi.getInPlay().getCard(i)).attack(myHuman);
+        }
+        myAi.AIheroAttack(false);
+        assert (myHuman.getHero().getHealth() == 20);
+    }
+
+    @Test
+    public void AiHeroAttack_Incorrect_OpponentHasCards() {
+
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myHuman.getHero().setShields(5);
+        myAi.prepAI(myHuman, currentRound);
+        myAi.AIheroAttack(false);
+        assert(myHuman.getHero().getShields() == 5);
+
+    }
+
+    @Test
+    public void AISummon_Correct() {
+        int lowestManaCost = 0;
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai myAi = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myAi.getHand().addCard(new MonsterCard(i + "", "", i, DemoScreen, 0, 0, false));
+        }
+        myAi.AIsummon(false);
+        for (int i = 0; i < myAi.getInPlay().size(); i++) {
+            if (lowestManaCost <= myAi.getInPlay().getCard(i).getCost()) {
+                lowestManaCost = myAi.getInPlay().getCard(i).getCost();
+            }
+        }
+        assert(lowestManaCost == 1);
+    }
+
+    @Test
+    public void AISummon_Incorrect() {
+        int lowestManaCost = 0;
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai myAi = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myAi.getHand().addCard(new MonsterCard(i + "", "", i, DemoScreen, 0, 0, false));
+        }
+        myAi.AIsummon(false);
+        for (int i = 0; i < myAi.getInPlay().size(); i++) {
+            if (lowestManaCost <= myAi.getInPlay().getCard(i).getCost()) {
+                lowestManaCost = myAi.getInPlay().getCard(i).getCost();
+            }
+        }
+        assertFalse(lowestManaCost > 1);
+    }
+
+    @Test
+    public void AIAttack_Correct_isStrongestAttacked() {
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai myAi = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myAi.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, 0, i, false));
+        }
+
+        CardStack deck2 = new CardStack(StackType.DECK);
+        Human myHuman = new Human(deck2, new Knight(0,0,DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myHuman.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, i, 0, false));
+        }
+
+        myAi.prepAI(myHuman, currentRound);
+        myAi.AIattack(false);
+        assert (((MonsterCard)myHuman.getInPlay().getCard(5)).getHealth() == 4);
+
+    }
+
+    @Test
+    public void AIAttack_Correct_doesWeakestAttack() {
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai myAi = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myAi.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, 3, i, false));
+        }
+
+        CardStack deck2 = new CardStack(StackType.DECK);
+        Human myHuman = new Human(deck2, new Knight(0,0,DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myHuman.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, i, 0, false));
+        }
+
+        myAi.prepAI(myHuman, currentRound);
+        myAi.AIattack(false);
+        assert ( ( (MonsterCard) myAi.getInPlay().getCard(1)).getHasAttacked() );
+    }
+
+    @Test
+    public void AIAttack_Incorrect_isStrongestAttacked() {
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai myAi = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myAi.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, 0, i, false));
+        }
+
+        CardStack deck2 = new CardStack(StackType.DECK);
+        Human myHuman = new Human(deck2, new Knight(0,0,DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myHuman.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, i, 0, false));
+        }
+
+        myAi.prepAI(myHuman, currentRound);
+        myAi.AIattack(false);
+        assert(((MonsterCard)myHuman.getInPlay().getCard(5)).getHealth() != 4);
+    }
+
+    @Test
+    public void AIAttack_Incorrect_doesWeakestAttack() {
+        CardStack deck = new CardStack(StackType.DECK);
+        Ai myAi = new Ai(deck, new Wizard(0, 0, DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myAi.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, 3, i, false));
+        }
+
+        CardStack deck2 = new CardStack(StackType.DECK);
+        Human myHuman = new Human(deck2, new Knight(0,0,DemoScreen, false));
+        for(int i = 1; i < 6; i++) {
+            myHuman.getHand().addCard(new MonsterCard(i + "", "", 0, DemoScreen, i, 0, false));
+        }
+
+        myAi.prepAI(myHuman, currentRound);
+        myAi.AIattack(false);
+        assert( !( ( (MonsterCard) myAi.getInPlay().getCard(1)).getHasAttacked() ) );
+    }
+
+    @Test
+    public void prepAI_Opponent_Correct() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myAi.prepAI(myHuman, currentRound);
+        assert(myAi.getOpponent() == myHuman);
+    }
+
+    @Test
+    public void prepAI_Opponent_Incorrect() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myAi.prepAI(myHuman, currentRound);
+        Human myHuman2 = setupHumanWithInPlay();
+        assertFalse(myAi.getOpponent() == myHuman2);
+    }
+
+    @Test
+    public void prepAI_CurrentRound_Correct() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myAi.prepAI(myHuman, currentRound);
+        assert (myAi.getCurrentRound() == currentRound);
+    }
+
+    @Test
+    public void prepAI_CurrentRound_Incorrect() {
+        Ai myAi = setupAiWithInPlay();
+        Human myHuman = setupHumanWithInPlay();
+        myAi.prepAI(myHuman, currentRound);
+        assertFalse(myAi.getCurrentRound() == currentRound2);
+    }
+
+
+}
+
+
+======================================
+
+
+
+
+
+
+package uk.ac.qub.eeecs.gage;
+
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
+import uk.ac.qub.eeecs.gage.engine.io.FileIO;
+import uk.ac.qub.eeecs.gage.util.BoundingBox;
+import uk.ac.qub.eeecs.gage.util.Vector2;
+import uk.ac.qub.eeecs.game.objects.FootballGame;
+import uk.ac.qub.eeecs.game.objects.Card;
+import uk.ac.qub.eeecs.game.screens.HelpScreen;
+import uk.ac.qub.eeecs.game.ui.CardScroller;
+
+import static junit.framework.Assert.assertEquals;
+
+
+/**
+ * CardScroller Tests
+ * Created by Eimhin
+ */
+
+
+@RunWith(AndroidJUnit4.class)
+public class CardScrollerTest {
+
+    private Context appContext;
+
+    private FootballGame game;
+
+    private HelpScreen gameScreen;
+
+    private CardScroller scroller;
+
+    private Random rand;
+
+    List<TouchEvent> touchEvents = new ArrayList<TouchEvent>();
+
+    private TouchEvent touchEventDown;
+    private TouchEvent touchEventFlingLeft;
+    private TouchEvent touchEventFlingRight;
+    private TouchEvent touchEventUp;
+
+    @Before
+    public void setup() {
+        appContext = InstrumentationRegistry.getTargetContext();
+
+        game = new FootballGame();
+
+        FileIO fileIO = new FileIO(appContext);
+        game.mFileIO = fileIO;
+        game.mAssetManager = new AssetStore(fileIO);
+
+        gameScreen = new HelpScreen(game);
+
+        scroller = new CardScroller(0, 0, 500, 200, gameScreen);
+
+        rand = new Random();
+
+        // Instantiate touch events
+        touchEventDown = getTouchEventDown();
+        touchEventFlingLeft = getTouchEventFling(false);
+        touchEventFlingRight = getTouchEventFling(true);
+        touchEventUp = getTouchEventUp();
+    }
+
+    private TouchEvent getTouchEventDown() {
+        TouchEvent touch = new TouchEvent();
+        touch.x = scroller.getBound().x;
+        touch.y = scroller.getBound().y;
+        touch.type = TouchEvent.TOUCH_DOWN;
+        return touch;
+    }
+
+    // False = Left | True = Right
+    private TouchEvent getTouchEventFling(boolean direction) {
+        TouchEvent touch = new TouchEvent();
+        if(direction) {
+            touch.x = scroller.getBound().x + 10;
+            touch.y = scroller.getBound().y + 10;
+            touch.dx = 10;
+            touch.dy = 10;
+        } else {
+            touch.x = scroller.getBound().x - 10;
+            touch.y = scroller.getBound().y - 10;
+            touch.dx = -10;
+            touch.dy = -10;
+        }
+
+        touch.type = TouchEvent.TOUCH_FLING;
+        return touch;
+    }
+
+    private TouchEvent getTouchEventUp() {
+        TouchEvent touch = new TouchEvent();
+        touch.x = scroller.getBound().x;
+        touch.y = scroller.getBound().y;
+        touch.type = TouchEvent.TOUCH_UP;
+        return touch;
+    }
+
+    // False = Left | True = Right
+    private void performSwipe(boolean direction) {
+        ArrayList<TouchEvent> touchList = new ArrayList<TouchEvent>();
+        scroller.setUseSimulatedTouchEvents(true);
+
+        touchList.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchList);
+        scroller.update(new ElapsedTime());
+        touchList.clear();
+
+        if(direction) touchList.add(touchEventFlingRight);
+        else touchList.add(touchEventFlingLeft);
+
+        scroller.setSimulatedTouchEvents(touchList);
+        scroller.update(new ElapsedTime());
+        touchList.clear();
+
+        touchList.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchList);
+        scroller.update(new ElapsedTime());
+        touchList.clear();
+    }
+
+    public void addTestData() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"2", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"3", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"4", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"5", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"6", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"7", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"8", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"9", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"10", 100));
+        scroller.addScrollerItem(new Card(gameScreen,"11", 100));
+    }
+
+
+    @Test
+    public void testConstructor_CheckPosition() {
+        boolean result = scroller.position.x == 0 && scroller.position.y == 0;
+        assertEquals(true, result);
+    }
+
+    @Test
+    public void testConstructor_CheckWidth() {
+        boolean result = scroller.getBound().getWidth() == 500;
+        assertEquals(true, result);
+    }
+
+    @Test
+    public void testConstructor_CheckHeight() {
+        boolean result = scroller.getBound().getHeight() == 200;
+        assertEquals(true, result);
+    }
+
+    @Test
+    public void test_Constructor_InvalidData_CheckPosition() {
+        float x = 0, y = 0, width = -98.23f, height = -11;
+        scroller = new CardScroller(x, y, width, height, gameScreen);
+
+        boolean result = scroller.position.x == 0 && scroller.position.y == 0;
+        assertEquals(true, result);
+    }
+
+    @Test
+    public void test_Constructor_InvalidData_CheckWidth() {
+        float x = 0, y = 0, width = -98.23f, height = -11;
+        scroller = new CardScroller(x, y, width, height, gameScreen);
+
+        boolean result = scroller.getBound().getWidth() == 98.23f;
+        assertEquals(true, result);
+    }
+
+    @Test
+    public void test_Constructor_InvalidData_CheckHeight() {
+        float x = 0, y = 0, width = -98.23f, height = -11;
+        scroller = new CardScroller(x, y, width, height, gameScreen);
+
+        boolean result = scroller.getBound().getHeight() == 11;
+        assertEquals(true, result);
+    }
+
+    @Test
+    public void test_addScrollerItem_OneItem_CheckItemCount() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        assertEquals(scroller.getItemCount(), 1);
+    }
+
+    @Test
+    public void test_addScrollerItem_OneItem_CheckCurrentItemIndex() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        assertEquals(scroller.getCurrentItemIndex(), 0);
+    }
+
+    @Test
+    public void test_addScrollerItem_TwoItems_CheckItemCount() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "2", 100));
+        assertEquals(scroller.getItemCount(), 2);
+    }
+
+    @Test
+    public void test_addScrollerItem_TwoItems_CheckCurrentItemIndex() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "2", 100));
+        assertEquals(scroller.getCurrentItemIndex(), 0);
+    }
+
+    @Test
+    public void test_setBackground() {
+        game.getAssetManager().loadAndAddBitmap("HCS-test_setBackground", "img/his-background.png");
+        scroller.setBackground(game.getAssetManager().getBitmap("HCS-test_setBackground"));
+    }
+
+    @Test
+    public void test_setSelectMode() {
+        boolean originalValue = scroller.getSelectMode();
+        scroller.setSelectMode(true);
+        assertEquals(scroller.getSelectMode(), !originalValue);
+    }
+
+    @Test
+    public void test_addTestData() {
+        addTestData();
+        assertEquals(scroller.getItemCount(), 11);
+    }
+
+    /**
+     * Tests in single mode (default)
+     */
+
+    @Test
+    public void test_swipeLeft_1Item() {
+        // Nothing happens
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        performSwipe(false);
+
+        assertEquals(0, scroller.getCurrentItemIndex());
+        assertEquals(-1, scroller.getNextItemIndex());
+    }
+
+    @Test
+    public void test_swipeRight_1Item() {
+        // Nothing happens
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        performSwipe(true);
+
+        assertEquals(0, scroller.getCurrentItemIndex());
+        assertEquals(-1, scroller.getNextItemIndex());
+    }
+
+    @Test
+    public void test_swipeLeft_2Items() {
+        // Scroller moves to left from item 0 to item 1
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        performSwipe(false);
+
+        assertEquals(1, scroller.getCurrentItemIndex());
+    }
+
+    @Test
+    public void test_swipeLeftTwice_2Items() {
+        // Scroller moves to left from item 0 to item 1 and cycles back to item 0
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        performSwipe(false);
+        performSwipe(false);
+
+        assertEquals(0, scroller.getCurrentItemIndex());
+    }
+
+    @Test
+    public void test_swipeRight_2Items() {
+        // Scroller moves to left from item 0 to item 1
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        performSwipe(true);
+
+        assertEquals(1, scroller.getCurrentItemIndex());
+    }
+
+    @Test
+    public void test_swipeRightTwice_2Items() {
+        // Scroller moves to left from item 0 to item 1 and cycles back to item 0
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        performSwipe(true);
+        performSwipe(true);
+
+        assertEquals(0, scroller.getCurrentItemIndex());
+    }
+
+    @Test
+    public void test_dragItemToSelectDestination_SelectModeDisabled() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+        scroller.setSelectMode(false);
+        float x = rand.nextInt(), y = rand.nextInt(), width = rand.nextFloat() + 2, height = rand.nextFloat() + 2;
+        BoundingBox selectedDestination = new BoundingBox(x, y, width / 2.0f, height / 2.0f);
+        scroller.addSelectDestination(selectedDestination);
+        scroller.setUseSimulatedTouchEvents(true);
+
+        // TouchDown on card
+        touchEvents.clear();
+        TouchEvent touchEvent = new TouchEvent();
+        touchEvent.type = TouchEvent.TOUCH_DOWN;
+        touchEvent.x = scroller.getScrollerItems().get(0).position.x;
+        touchEvent.y = scroller.getScrollerItems().get(0).position.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        scroller.setTouchDownTime(System.nanoTime() - 300000001);
+
+        touchEvents.clear();
+        touchEvent.type = TouchEvent.TOUCH_DRAGGED;
+        touchEvent.x = selectedDestination.x;
+        touchEvent.y = selectedDestination.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        // TouchUp on card
+        touchEvents.clear();
+        touchEvent.type = TouchEvent.TOUCH_UP;
+        touchEvent.x = scroller.getScrollerItems().get(0).position.x;
+        touchEvent.y = scroller.getScrollerItems().get(0).position.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        assertEquals(null, scroller.getRemovedCard());
+    }
+
+    @Test
+    public void test_dragItemToSelectDestination_SelectModeEnabled() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+        scroller.setSelectMode(true);
+        float x = rand.nextInt(), y = rand.nextInt(), width = rand.nextFloat(), height = rand.nextFloat();
+        BoundingBox selectedDestination = new BoundingBox(1000, 1000, 50, 50);
+        scroller.addSelectDestination(selectedDestination);
+        scroller.setUseSimulatedTouchEvents(true);
+
+        String selectedCardString = scroller.getScrollerItems().get(0).toString();
+
+        // TouchDown on card
+        touchEvents.clear();
+        TouchEvent touchEvent = new TouchEvent();
+        touchEvent.type = TouchEvent.TOUCH_DOWN;
+        touchEvent.x = scroller.getScrollerItems().get(0).position.x;
+        touchEvent.y = scroller.getScrollerItems().get(0).position.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        scroller.setTouchDownTime(System.nanoTime() - 300000001);
+
+        touchEvents.clear();
+        touchEvent.type = TouchEvent.TOUCH_DRAGGED;
+        touchEvent.x = selectedDestination.x;
+        touchEvent.y = selectedDestination.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        // TouchUp on card
+        touchEvents.clear();
+        touchEvent.type = TouchEvent.TOUCH_UP;
+        touchEvent.x = scroller.getScrollerItems().get(0).position.x;
+        touchEvent.y = scroller.getScrollerItems().get(0).position.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        Card removedCard = scroller.getRemovedCard();
+        if(removedCard == null) {
+            removedCard = new Card(gameScreen, "2", 100);
+        }
+
+        assertEquals(false, scroller.isAnimating());
+        assertEquals(selectedCardString, removedCard.toString());
+    }
+
+    @Test
+    public void test_dragItemToNonSelectDestination_SelectModeEnabled() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+        scroller.setSelectMode(true);
+        float x = rand.nextInt(), y = rand.nextInt(), width = rand.nextFloat() + 2, height = rand.nextFloat() + 2;
+        BoundingBox selectedDestination = new BoundingBox(x, y, width / 2.0f, height / 2.0f);
+        scroller.addSelectDestination(selectedDestination);
+        scroller.setUseSimulatedTouchEvents(true);
+
+        // TouchDown on card
+        touchEvents.clear();
+        TouchEvent touchEvent = new TouchEvent();
+        touchEvent.type = TouchEvent.TOUCH_DOWN;
+        touchEvent.x = scroller.getScrollerItems().get(0).position.x;
+        touchEvent.y = scroller.getScrollerItems().get(0).position.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        scroller.setTouchDownTime(System.nanoTime() - 300000001);
+
+        touchEvents.clear();
+        touchEvent.type = TouchEvent.TOUCH_DRAGGED;
+        touchEvent.x = 500f;
+        touchEvent.y = 500f;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        // TouchUp on card
+        touchEvents.clear();
+        touchEvent.type = TouchEvent.TOUCH_UP;
+        touchEvent.x = scroller.getScrollerItems().get(0).position.x;
+        touchEvent.y = scroller.getScrollerItems().get(0).position.y;
+        touchEvents.add(touchEvent);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        assertEquals(false, scroller.isAnimating());
+        assertEquals(null, scroller.getRemovedCard());
+    }
+
+
+    /**
+     * Multi Item Tests
+    **/
+
+    @Test
+    public void test_setMultiMode_0ItemsInScroller() {
+        scroller.setMultiMode(true, 100);
+        assertEquals(scroller.getMultiMode(), true);
+    }
+
+    @Test
+    public void test_setMultiMode_True_1ItemInScroller() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 100);
+        assertEquals(scroller.getMultiMode(), true);
+    }
+
+    @Test
+    public void test_calculateMultiItemsDisplayed_MultipleItemsInScroller() {
+        addTestData();
+        // calculateMultiItemsDisplayed() is triggered by setMultiMode()
+        scroller.setMultiMode(true, 100);
+        assertEquals(scroller.getMaxDisplayedItems(),3);
+    }
+
+    @Test
+    public void test_setMultiMode_True_False_1ItemInScroller_CheckPosition() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 100);
+        scroller.setMultiMode(false, 100);
+        assertEquals(scroller.getScrollerItems().get(0).position.x, scroller.position.x);
+        assertEquals(scroller.getScrollerItems().get(0).position.y, scroller.position.y);
+    }
+
+    @Test
+    public void test_setMultiMode_True_False_MultipleItemsInScroller_CheckPosition() {
+        addTestData();
+        scroller.setMultiMode(true, 100);
+        scroller.setMultiMode(false, 100);
+        assertEquals(scroller.getScrollerItems().get(0).position.x, scroller.position.x);
+        assertEquals(scroller.getScrollerItems().get(0).position.y, scroller.position.y);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_1ItemInScroller() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals(scroller.getNextItemIndex(), -1);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionTrue_CheckNextItemIndex() {
+        addTestData();
+        scroller.setScrollDirection(true);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals(scroller.getNextItemIndex(), 9);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionTrue_CheckPosition_Item9() {
+        addTestData();
+        scroller.setScrollDirection(true);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals((scroller.getScrollerItems().get(9).position.x == -661.0f) && (scroller.getScrollerItems().get(9).position.y == 0.0), true);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionTrue_CheckPosition_Item10() {
+        addTestData();
+        scroller.setScrollDirection(true);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals((scroller.getScrollerItems().get(10).position.x == -501.0f) && (scroller.getScrollerItems().get(10).position.y == 0.0), true);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionFalse_CheckNextItemIndex() {
+        addTestData();
+        scroller.setScrollDirection(false);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals(scroller.getNextItemIndex(), 3);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionFalse_CheckPosition_Item3() {
+        addTestData();
+        scroller.setScrollDirection(false);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals((scroller.getScrollerItems().get(3).position.x == 339f) && (scroller.getScrollerItems().get(3).position.y == 0.0), true);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionFalse_CheckPosition_Item4() {
+        addTestData();
+        scroller.setScrollDirection(false);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals((scroller.getScrollerItems().get(4).position.x == 499f) && (scroller.getScrollerItems().get(4).position.y == 0.0), true);
+    }
+
+    @Test
+    public void test_calculateNextMultiVectors_MultipleItemsInScroller_ScrollDirectionFalse_CheckPosition_Item5() {
+        addTestData();
+        scroller.setScrollDirection(false);
+        scroller.setMultiMode(true, 100);
+        scroller.calculateNextMultiVectors();
+        assertEquals(scroller.getNextItemIndex(), 3);
+        assertEquals((scroller.getScrollerItems().get(5).position.x == 659f) && (scroller.getScrollerItems().get(5).position.y == 0.0), true);
+    }
+
+    @Test
+    public void test_addScrollerItem_NullCard() {
+        scroller.addScrollerItem(null);
+        assertEquals(scroller.getScrollerItems().size(), 0);
+    }
+
+    @Test
+    public void test_addSelectDestination_ValidBoundingBox() {
+        scroller.addSelectDestination(new BoundingBox(0,0,1,1));
+        assertEquals(scroller.getSelectDestinations().size(), 1);
+    }
+
+    @Test
+    public void test_addSelectDestination_InvalidBoundingBox() {
+        scroller.addSelectDestination(null);
+        assertEquals(scroller.getSelectDestinations().size(), 0);
+    }
+
+    @Test
+    public void test_clearScroller_MultipleItems() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "2", 100));
+        scroller.clearScroller();
+        assertEquals(scroller.getScrollerItems().size(), 0);
+    }
+
+    @Test
+    public void test_clearScroller_NoItems() {
+        scroller.clearScroller();
+        assertEquals(scroller.getScrollerItems().size(), 0);
+    }
+
+    @Test
+    public void test_isAnimating_NoAnimations() {
+        assertEquals(scroller.isAnimating(), false);
+    }
+
+    @Test
+    public void test_adjustPosition_ScrollPositionChanged() {
+        Vector2 originalPosition = scroller.position;
+        scroller.adjustPosition(10,10);
+        originalPosition.add(10,10);
+        assertEquals(scroller.position, originalPosition);
+    }
+
+    @Test
+    public void test_adjustPosition_CardPositionsChanged() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "2", 100));
+
+        Vector2[] originalPositions = new Vector2[scroller.getScrollerItems().size()];
+        for (int i = 0; i < scroller.getScrollerItems().size(); i++) {
+            originalPositions[i] = scroller.getScrollerItems().get(i).position;
+        }
+
+        scroller.adjustPosition(10,10);
+
+        boolean valuesCorrect = true;
+        for (int i = 0; i < scroller.getScrollerItems().size(); i++) {
+            originalPositions[i].add(10, 10);
+            if(originalPositions[i] != scroller.getScrollerItems().get(i).position)
+                valuesCorrect = false;
+        }
+
+        assertEquals(valuesCorrect, true);
+    }
+
+    @Test
+    public void test_checkIfTouchInArea_InArea() {
+        float x = rand.nextFloat(), y = rand.nextFloat(), width = (rand.nextFloat() + 1) % 25, height = (rand.nextFloat() + 1) % 25;
+        Vector2 touchLocation = new Vector2(x, y);
+        BoundingBox selectDestination = new BoundingBox(x, y, width / 2.0f, height / 2.0f);
+
+        assertEquals(true, scroller.checkIfTouchInArea(touchLocation, selectDestination));
+    }
+
+    @Test
+    public void test_checkIfTouchInArea_OutsideArea() {
+        float x = rand.nextFloat(), y = rand.nextFloat(), width = (rand.nextFloat() + 1) % 25, height = (rand.nextFloat() + 1) % 25;
+        Vector2 touchLocation = new Vector2(x + width, y + height);
+        BoundingBox selectDestination = new BoundingBox(x, y, width / 2.0f, height / 2.0f);
+
+        assertEquals(false, scroller.checkIfTouchInArea(touchLocation, selectDestination));
+    }
+
+    @Test
+    public void test_checkFor1PageIcon() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        scroller.setUseSimulatedTouchEvents(true);
+        scroller.setSimulatedTouchEvents(touchEvents);
+
+        scroller.setMultiMode(true, 100);
+
+        scroller.update(new ElapsedTime());
+
+        assertEquals(1, scroller.getPageIconPositions().size());
+    }
+
+    @Test
+    public void test_checkFor2PageIcons() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        scroller.setUseSimulatedTouchEvents(true);
+        scroller.setSimulatedTouchEvents(touchEvents);
+
+        scroller.setMultiMode(true, 80);
+
+        scroller.update(new ElapsedTime());
+
+        assertEquals(2, scroller.getPageIconPositions().size());
+    }
+
+    @Test
+    public void test_checkForCorrectCurrentIndex_1Page() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        scroller.setUseSimulatedTouchEvents(true);
+        scroller.setSimulatedTouchEvents(touchEvents);
+
+        scroller.setMultiMode(true, 100);
+
+        scroller.update(new ElapsedTime());
+
+        assertEquals(0, scroller.getCurrentPageIndex());
+    }
+
+    @Test
+    public void test_checkForCorrectCurrentIndex_2Pages() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+
+        scroller.setUseSimulatedTouchEvents(true);
+        scroller.setSimulatedTouchEvents(touchEvents);
+
+        scroller.setMultiMode(true, 80);
+
+        scroller.update(new ElapsedTime());
+
+        assertEquals(0, scroller.getCurrentPageIndex());
+    }
+
+    @Test
+    public void test_checkChangeToNextPageOnSwipeRight() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+
+        // Create a fake input event and touch event array
+        scroller.setUseSimulatedTouchEvents(true);
+
+        touchEvents.clear();
+        touchEvents.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventFlingRight);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        assertEquals(1, scroller.getCurrentPageIndex());
+    }
+
+    @Test
+    public void test_checkChangeToNextPageOnSwipeLeft() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+
+        // Create a fake input event and touch event array
+        scroller.setUseSimulatedTouchEvents(true);
+
+        touchEvents.clear();
+        touchEvents.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventFlingLeft);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        assertEquals(1, scroller.getCurrentPageIndex());
+    }
+
+    @Test
+    public void test_checkChangeToNextPageOnSwipeRightTwice() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+
+        // Create a fake input event and touch event array
+        scroller.setUseSimulatedTouchEvents(true);
+
+        // First swipe
+        touchEvents.clear();
+        touchEvents.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventFlingRight);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        // Second swipe
+        touchEvents.clear();
+        touchEvents.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventFlingRight);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        assertEquals(0, scroller.getCurrentPageIndex());
+    }
+
+    @Test
+    public void test_checkChangeToNextPageOnSwipeLeftTwice() {
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.addScrollerItem(new Card(gameScreen, "1", 100));
+        scroller.setMultiMode(true, 80);
+
+        // Create a fake input event and touch event array
+        scroller.setUseSimulatedTouchEvents(true);
+
+        // First swipe
+        touchEvents.clear();
+        touchEvents.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventFlingLeft);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        // Second swipe
+        touchEvents.clear();
+        touchEvents.add(touchEventDown);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventFlingLeft);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        touchEvents.clear();
+        touchEvents.add(touchEventUp);
+        scroller.setSimulatedTouchEvents(touchEvents);
+        scroller.update(new ElapsedTime());
+
+        assertEquals(0, scroller.getCurrentPageIndex());
+    }
+
+    @Test
+    public void test_setPageIconUnselectedColour() {
+        int colour = rand.nextInt();
+        scroller.setPageIconUnselectedColour(colour);
+
+        assertEquals(colour, scroller.getPageIconUnselectedColour());
+    }
+
+    @Test
+    public void test_setPageIconSelectedColour() {
+        int colour = rand.nextInt();
+        scroller.setPageIconSelectedColour(colour);
+
+        assertEquals(colour, scroller.getPageIconSelectedColour());
+    }
+
+    @Test
+    public void test_setPageIconShadowColour() {
+        int colour = rand.nextInt();
+        scroller.setPageIconShadowColour(colour);
+
+        assertEquals(colour, scroller.getPageIconShadowColour());
+    }
+
+    @Test
+    public void test_setPageIconRelativePercentageYPos() {
+        float percentage = Math.abs((rand.nextInt() % 20) / 10.0f);
+        scroller.setPageIconRelativePercentageYPos(percentage);
+
+        assertEquals(percentage, scroller.getPageIconRelativePercentageYPos());
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+==================
+
+
+
+
+
+
+package uk.ac.qub.eeecs.game.GameObjects.CardClasses;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.test.InstrumentationRegistry;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import uk.ac.qub.eeecs.gage.engine.AssetStore;
+import uk.ac.qub.eeecs.gage.engine.ScreenManager;
+import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
+import uk.ac.qub.eeecs.gage.engine.io.FileIO;
+import uk.ac.qub.eeecs.gage.util.Vector2;
+import uk.ac.qub.eeecs.game.DemoGame;
+import uk.ac.qub.eeecs.game.GameObjects.GameStore;
+import uk.ac.qub.eeecs.game.GameScreens.CardDemoScreen;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class GameCardTest {
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // ALL METHODS TESTED
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Context appContext;
+    DemoGame game;
+    CardDemoScreen cardDemoScreen;
+
+    @Before
+    public void setUp() throws Exception {
+        appContext = InstrumentationRegistry.getTargetContext();
+        game = new DemoGame();
+        game.setScreenSize(1920,1080);
+        FileIO fileIO = new FileIO(appContext);
+        game.setFileIO(fileIO);
+        game.setAssetStore(new AssetStore(fileIO));
+        game.loadAssets(game.getAssetStore());
+        game.setGameStore(new GameStore());
+        cardDemoScreen = new CardDemoScreen(game);
+        game.setScreenManager(new ScreenManager());
+        game.getScreenManager().addScreen(cardDemoScreen);
+    }
+
+    @Test
+    public void testConstructor(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        assertFalse(testCard.isSelected());
+        assertFalse(testCard.isDropped());
+        assertTrue(testCard.getFlipTimer() == -1);
+    }
+
+    @Test
+    public void test_startFlipAnimation_volume_valid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        game.setVolume(0.5f);
+        testCard.startFlipAnimation();
+        assertTrue(testCard.getFlipSound().getmVolume() == 0.5f);
+    }
+
+    @Test
+    public void test_startFlipAnimation_volume_invalid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        game.setVolume(0.5f);
+        testCard.startFlipAnimation();
+        assertFalse(testCard.getFlipSound().getmVolume() == 0);
+    }
+
+    @Test
+    public void test_startFlipAnimation_timer_valid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.startFlipAnimation();
+        assertTrue(testCard.getFlipTimer() == testCard.FLIP_TIME);
+    }
+
+    @Test
+    public void test_startFlipAnimation_timer_invalid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.startFlipAnimation();
+        assertFalse(testCard.getFlipTimer() == -1);
+    }
+
+    @Test
+    public void test_flip_frontFacing_valid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        assertFalse(testCard.getFrontFacing());
+        testCard.flip();
+        assertTrue(testCard.getFrontFacing() == true);
+    }
+
+    @Test
+    public void test_flip_frontFacing_invalid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        assertFalse(testCard.getFrontFacing());
+        testCard.flip();
+        assertFalse(testCard.getFrontFacing() == false);
+    }
+
+    @Test
+    public void test_flip_bitmap_valid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        Bitmap back = game.getAssetStore().getBitmap("CardBack");
+        Bitmap front = game.getAssetStore().getBitmap(testCard.getCardTypeBitmap());
+        assertTrue(testCard.getBitmap() == back);
+        testCard.flip();
+        assertTrue(testCard.getBitmap() == front);
+    }
+
+    @Test
+    public void test_flip_bitmap_invalid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        Bitmap back = game.getAssetStore().getBitmap("CardBack");
+        Bitmap front = game.getAssetStore().getBitmap(testCard.getCardTypeBitmap());
+        assertTrue(testCard.getBitmap() == back);
+        testCard.flip();
+        assertFalse(testCard.getBitmap() == back);
+    }
+
+    @Test
+    public void test_flipAnimation_timerEquals0_width(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setFlipTimer(0);
+        testCard.flipAnimation();
+        assertTrue(testCard.getBound().getWidth() == testCard.getStartWidth());
+    }
+
+    @Test
+    public void test_flipAnimation_timerFirstHalf_width(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setFlipTimer(15);
+        testCard.flipAnimation();
+        assertTrue(testCard.getBound().getWidth() == testCard.getStartWidth()/2);
+    }
+
+    @Test
+    public void test_flipAnimation_timerEqualsHalf_width(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setFlipTimer(10);
+        testCard.flipAnimation();
+        assertTrue(testCard.getFrontFacing() == true);
+    }
+
+    @Test
+    public void test_flipAnimation_timerSecondHalf_width(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setFlipTimer(5);
+        testCard.flipAnimation();
+        assertTrue(testCard.getBound().getWidth() == testCard.getStartWidth()/2);
+    }
+
+    @Test
+    public void test_flipAnimation_decrementTimer(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setFlipTimer(20);
+        testCard.flipAnimation();
+        assertTrue(testCard.getFlipTimer() == 19);
+    }
+
+    @Test
+    public void test_flipAnimation_textSizes(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.getBound().setWidth(100);
+        testCard.flipAnimation();
+        assertTrue(testCard.getDescTextPaint().getTextScaleX() == 100/testCard.getStartWidth());
+        assertTrue(testCard.getStatsTextPaint().getTextScaleX() == 100/testCard.getStartWidth());
+        assertTrue(testCard.getTitleTextPaint().getTextScaleX() == 100/testCard.getStartWidth());
+    }
+
+    @Test
+    public void test_processCardTouchEvents_touchDown_selected_valid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setPosition(new Vector2(0,0));
+        TouchEvent t = new TouchEvent();
+        t.type = TouchEvent.TOUCH_DOWN;
+        t.x = 0; t.y = 0;
+        List<TouchEvent> list = new ArrayList<>();
+        list.add(t);
+        testCard.processCardTouchEvents(list);
+        assertTrue(testCard.isSelected());
+    }
+
+    @Test
+    public void test_processCardTouchEvents_touchDown_selected_invalid(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setPosition(new Vector2(300,300));
+        TouchEvent t = new TouchEvent();
+        t.type = TouchEvent.TOUCH_DOWN;
+        t.x = 0; t.y = 0;
+        List<TouchEvent> list = new ArrayList<>();
+        list.add(t);
+        testCard.processCardTouchEvents(list);
+        assertFalse(testCard.isSelected());
+    }
+
+    @Test
+    public void test_processCardTouchEvents_touchDown_touchOffset(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setPosition(new Vector2(100,100));
+        TouchEvent t = new TouchEvent();
+        t.type = TouchEvent.TOUCH_DOWN;
+        t.x = 150; t.y = 150;
+        List<TouchEvent> list = new ArrayList<>();
+        list.add(t);
+        testCard.processCardTouchEvents(list);
+        assertTrue(testCard.getTouchOffsetX() == 50);
+        assertTrue(testCard.getTouchOffsetY() == 50);
+    }
+
+    @Test
+    public void test_processCardTouchEvents_touchDragged_position(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setPosition(new Vector2(100,100));
+        //simulate a previous TOUCH_DOWN event
+        testCard.setTouchOffsetX(25);
+        testCard.setTouchOffsetY(50);
+        testCard.setSelected(true);
+        //actual test
+        TouchEvent t = new TouchEvent();
+        t.type = TouchEvent.TOUCH_DRAGGED;
+        t.x = 150; t.y = 150;
+        List<TouchEvent> list = new ArrayList<>();
+        list.add(t);
+        testCard.processCardTouchEvents(list);
+        assertTrue(testCard.position.x == 125);
+        assertTrue(testCard.position.y == 100);
+    }
+
+    @Test
+    public void test_processCardTouchEvents_touchUp_selected(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setPosition(new Vector2(0,0));
+        testCard.setSelected(true);
+
+        TouchEvent t = new TouchEvent();
+        t.type = TouchEvent.TOUCH_UP;
+        t.x = 0; t.y = 0;
+        List<TouchEvent> list = new ArrayList<>();
+        list.add(t);
+
+        testCard.processCardTouchEvents(list);
+        assertFalse(testCard.isSelected());
+    }
+
+    @Test
+    public void test_processCardTouchEvents_touchUp_dropped(){
+        GameCard testCard = new GameCard(1,cardDemoScreen);
+        testCard.setPosition(new Vector2(0,0));
+        assertFalse(testCard.isDropped());
+
+        TouchEvent t = new TouchEvent();
+        t.type = TouchEvent.TOUCH_UP;
+        t.x = 0; t.y = 0;
+        List<TouchEvent> list = new ArrayList<>();
+        list.add(t);
+
+        testCard.processCardTouchEvents(list);
+        assertTrue(testCard.isDropped());
+    }
+
+}
+
+
+
+
+
+=================
+
+
+
+
+
+
+
