@@ -6,8 +6,6 @@ import uk.ac.qub.eeecs.gage.engine.particle.ParticleSystemManager;
 import uk.ac.qub.eeecs.gage.util.MathsHelper;
 import uk.ac.qub.eeecs.gage.util.SteeringBehaviours;
 import uk.ac.qub.eeecs.gage.util.Vector2;
-import uk.ac.qub.eeecs.gage.util.RandomGenerator;
-import java.util.Random;
 
 /**
  * AI controlled spaceship that will seek towards the player.
@@ -26,8 +24,8 @@ public class Seeker extends SpaceEntity {
     /**
      * Default size for the Seeker
      */
-    static Random rand = new Random();
-    static float radius = rand.nextInt(30) + 10;
+    private static final float DEFAULT_RADIUS = 20;
+
     /**
      * Distance at which the spaceship should avoid other game objects
      */
@@ -63,23 +61,22 @@ public class Seeker extends SpaceEntity {
      * @param gameScreen    Gamescreen to which AI belongs
      */
     public Seeker(float startX, float startY, SpaceshipDemoScreen gameScreen) {
-        super(startX, startY, radius*2.0f,radius*2.0f, null, gameScreen);
+        super(startX, startY, DEFAULT_RADIUS*2.0f, DEFAULT_RADIUS*2.0f, null, gameScreen);
 
-        radius = rand.nextInt(30) + 10;
         // Define movement variables for the seeker
-        maxAcceleration = 30.0f;
-        maxVelocity = 50.0f;
-        maxAngularVelocity = 200.0f;
-        maxAngularAcceleration = 500.0f;
+        maxAcceleration = 100.0f;
+        maxVelocity = 150.0f;
+        maxAngularVelocity = 150.0f;
+        maxAngularAcceleration = 175.0f;
 
-        mRadius = 10.0f;
+        mRadius = DEFAULT_RADIUS;
         mMass = 10.0f;
 
         // Define the appearance of the seeker
-        mBitmap = gameScreen.getGame().getAssetManager().getBitmap("Spaceship2");
+        mBitmap = gameScreen.getGame().getAssetManager().getBitmap("Spaceship1");
 
         // Create an offset for the movement emitter based on the size of the spaceship
-        movementEmitterOffset = new Vector2(-radius, 0.0f);
+        movementEmitterOffset = new Vector2(-DEFAULT_RADIUS, 0.0f);
         movementEmitterLocation = new Vector2(position);
         movementEmitterLocation.add(movementEmitterOffset);
 

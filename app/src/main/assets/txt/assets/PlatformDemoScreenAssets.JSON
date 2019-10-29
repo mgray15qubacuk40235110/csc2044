@@ -12,16 +12,6 @@
     },
     {
       "type": "Bitmap",
-      "name": "Platform2",
-      "file": "img/Platform2.png"
-    },
-    {
-      "type": "Bitmap",
-      "name": "Platform3",
-      "file": "img/Platform3.png"
-    },
-    {
-      "type": "Bitmap",
       "name": "RightArrow",
       "file": "img/RightArrow.png"
     },
