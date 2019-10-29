@@ -45,6 +45,8 @@ public class OverlapTest {
     private PlatformDemoScreen platformDemoScreen;
     @Mock
     private Platform platform;
+    @Mock
+    private Log log;
 
     @Before
     public void setUp() {
@@ -58,20 +60,47 @@ public class OverlapTest {
     @Test
     public void overlap_Platform_Method_Test() {
         ArrayList<Platform> mPlatforms = new ArrayList<>();
-        int numPlatforms = 2, platformOffset = 200;
         float platformWidth = 70, platformHeight = 70, platformX = platformHeight, platformY = platformHeight;
 
-        Platform one = new Platform(platformX, platformY, platformWidth, platformHeight, "platform", platformDemoScreen);
+        Platform one = new Platform(platformX * 2 + 1, platformY * 2 + 1, platformWidth, platformHeight, "platform", platformDemoScreen);
         mPlatforms.add(one);
 
         Platform two = new Platform(platformX + 1, platformY + 1, platformWidth, platformHeight, "platform", platformDemoScreen);
         mPlatforms.add(two);
 
-        assertFalse(platformDemoScreen.overlap(mPlatforms, new Platform(platformX, platformY , platformWidth, platformHeight, "platform", platformDemoScreen)));
+        Platform testPlatform = new Platform(platformX, platformY , platformWidth, platformHeight, "platform", platformDemoScreen);
+
+        assertTrue(overlap(mPlatforms, testPlatform));
     }
 
     @Test
     public void Test_Test() {
     assertTrue(1 == 1);
+    }
+
+    public boolean overlap(ArrayList<Platform> mPlatforms, Platform plat) {
+
+        if (mPlatforms.size() == 0 || mPlatforms == null) {
+            return false;
+        }
+        for (int i = 0; i < mPlatforms.size(); i++) {
+
+            System.out.println("mPlatform " + i + ": " + mPlatforms.get(i).get_x());
+            System.out.println("New platform: " + plat.get_x());
+
+            if (plat.get_x() >= mPlatforms.get(i).get_x() && plat.get_x() <= (mPlatforms.get(i).get_x() + mPlatforms.get(i).getWidth())
+                    || (plat.get_x() + plat.getWidth()) >= mPlatforms.get(i).get_x() && (plat.get_x() + plat.getWidth()) <= (mPlatforms.get(i).get_x() + mPlatforms.get(i).getWidth()))
+            {
+                if (plat.get_y() >= mPlatforms.get(i).get_y() && plat.get_y() <= (mPlatforms.get(i).get_y() + mPlatforms.get(i).getHeight())
+                        || (plat.get_y() + plat.getHeight()) >= mPlatforms.get(i).get_y() && (plat.get_y() + plat.getHeight()) <= (mPlatforms.get(i).get_y() + mPlatforms.get(i).getHeight())) {
+                    System.out.println("New platform overlaps with existing mPlatform " + i);
+                    System.out.println();
+                    return true;
+                }
+            }
+            System.out.println("New platform DOES NOT overlap with existing mPlatform " + i);
+            System.out.println();
+        }
+        return false;
     }
 }
