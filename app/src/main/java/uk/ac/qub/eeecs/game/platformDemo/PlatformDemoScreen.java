@@ -127,7 +127,7 @@ public class PlatformDemoScreen extends GameScreen {
             if(random.nextFloat() > 0.33f) {
                 platformY = (random.nextFloat() * (LEVEL_HEIGHT - platformHeight - 70));
             }
-            if (platformY < groundTileHeight + (groundTileHeight / 2)) {
+            if (platformY < groundTileHeight + (groundTileHeight / 2) + 10) {
                 platformY = 70;
             }
             if (platformChoice == 1) {
@@ -144,7 +144,7 @@ public class PlatformDemoScreen extends GameScreen {
                             "Platform2", this);
                     if (overlap(mPlatforms, newPlat)) {}
                     else {
-                        mPlatforms.add(newPlat);
+                       mPlatforms.add(newPlat);
                     }
                 } else {
                     newPlat =  new Platform( platformX, platformY, platformWidth * 2, platformHeight,
@@ -204,10 +204,15 @@ public class PlatformDemoScreen extends GameScreen {
         else if (mPlatformLayerViewport.getRight() > LEVEL_WIDTH)
             mPlatformLayerViewport.x -= (mPlatformLayerViewport.getRight() - LEVEL_WIDTH);
 
-        if (mPlatformLayerViewport.getBottom() < 0)
-            mPlatformLayerViewport.y -= mPlatformLayerViewport.getBottom();
-        else if (mPlatformLayerViewport.getTop() > LEVEL_HEIGHT)
-            mPlatformLayerViewport.y -= (mPlatformLayerViewport.getTop() - LEVEL_HEIGHT);
+        //if (mPlatformLayerViewport.getBottom() < 0)
+            //mPlatformLayerViewport.y -= mPlatformLayerViewport.getBottom();
+        //else if (mPlatformLayerViewport.getTop() > LEVEL_HEIGHT)
+            //mPlatformLayerViewport.y -= (mPlatformLayerViewport.getTop() - LEVEL_HEIGHT);
+
+        //Viewport Focus
+        mPlatformLayerViewport.halfWidth = 240 + Math.abs(mPlayer.velocity.x * 0.15f);
+        mPlatformLayerViewport.halfHeight = 160 + Math.abs(mPlayer.velocity.x * 0.15f);
+        mPlatformLayerViewport.y = mPlatformLayerViewport.halfHeight;
     }
 
     /**
