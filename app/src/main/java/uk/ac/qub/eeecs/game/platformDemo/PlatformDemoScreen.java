@@ -13,6 +13,7 @@ import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.gage.world.LayerViewport;
+import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 
 /**
  * A simple platform-style demo that generates a number of platforms and
@@ -175,6 +176,8 @@ public class PlatformDemoScreen extends GameScreen {
     @Override
     public void update(ElapsedTime elapsedTime) {
 
+        playBackgroundMusic();
+
         // Update the touch buttons checking for player input
         for (PushButton control : mControls)
             control.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -214,6 +217,15 @@ public class PlatformDemoScreen extends GameScreen {
         mPlatformLayerViewport.halfHeight = 160 + Math.abs(mPlayer.velocity.x * 0.15f);
         mPlatformLayerViewport.y = mPlatformLayerViewport.halfHeight;
     }
+
+    private void playBackgroundMusic() {
+        AudioManager audioManager = getGame().getAudioManager();
+
+        if(!audioManager.isMusicPlaying())
+            audioManager.playMusic(
+                    getGame().getAssetManager().getMusic("PlatformerBackgroundMusic"));
+    }
+
 
     /**
      * Draw the platform demo screen
