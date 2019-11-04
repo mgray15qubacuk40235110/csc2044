@@ -49,6 +49,11 @@
       "type": "Bitmap",
       "name": "UpArrowSelected",
       "file": "img/UpArrowSelected.png"
+    },
+    {
+      "type": "Music",
+      "name": "PlatformerBackgroundMusic",
+      "file": "sound/Baby_Shark.mp3"
     }
   ]
 }
