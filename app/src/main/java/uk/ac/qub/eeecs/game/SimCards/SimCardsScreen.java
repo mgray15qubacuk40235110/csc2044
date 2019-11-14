@@ -2,10 +2,14 @@ package uk.ac.qub.eeecs.game.SimCards;
 
 import android.graphics.Color;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.engine.input.Input;
+import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.gage.world.LayerViewport;
@@ -29,6 +33,10 @@ public class SimCardsScreen extends GameScreen {
     // Define a card to be displayed
     private Card card;
 
+    //Buttons
+    private PushButton endTurn;
+    private List<PushButton> mControls;
+
     /**
      * Width and height of the level
      */
@@ -49,6 +57,15 @@ public class SimCardsScreen extends GameScreen {
 
         // Load the various images used by the cards
         mGame.getAssetManager().loadAssets("txt/assets/CardDemoScreenAssets.JSON");
+
+        // Determine the layer size to correctly position the touch buttons
+        float layerWidth = mDefaultLayerViewport.halfWidth * 2.0f;
+
+        //Creating buttons
+        mControls = new ArrayList<>();
+        endTurn = new PushButton(layerWidth - 35.0f, 25.0f, 50.0f, 30.0f,
+                "EndTurn", "EndTurnPressed", this);
+        mControls.add(endTurn);
 
         // Create the card background
         mCardBackground = new GameObject(480 / 2.0f,
@@ -75,7 +92,7 @@ public class SimCardsScreen extends GameScreen {
         Input input = mGame.getInput();
 
         // Update the card
-        card.angularVelocity = 40.0f;
+        card.angularVelocity = 5f;
 
         card.update(elapsedTime);
     }
@@ -97,6 +114,10 @@ public class SimCardsScreen extends GameScreen {
         // Draw the card
         card.draw(elapsedTime, graphics2D,
                 mDefaultLayerViewport, mDefaultScreenViewport);
-    }
 
+        for (PushButton control : mControls)
+            control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+    }
 }
+
+

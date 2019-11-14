@@ -64,6 +64,16 @@
       "type": "Bitmap",
       "name": "0",
       "file": "img/0.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "EndTurn",
+      "file": "img/EndTurn.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "EndTurnPressed",
+      "file": "img/EndTurnPressed.png"
     }
     ]
 }
