@@ -57,6 +57,11 @@
     },
     {
       "type": "Bitmap",
+      "name": "SimCardBackground",
+      "file": "img/SimCardBackground.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "0",
       "file": "img/0.png"
     }
