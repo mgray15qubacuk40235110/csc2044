@@ -1,5 +1,6 @@
 package uk.ac.qub.eeecs.game.spaceDemo;
 
+import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.util.SteeringBehaviours;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.particle.Emitter;
@@ -9,6 +10,8 @@ import uk.ac.qub.eeecs.gage.util.MathsHelper;
 import uk.ac.qub.eeecs.gage.util.Vector2;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.gage.world.Sprite;
+import uk.ac.qub.eeecs.gage.world.GameObject;
+import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 
 /**
  * Player controlled spaceship
@@ -42,6 +45,11 @@ public class PlayerSpaceship extends SpaceEntity {
     private Vector2 mMovementEmitterOffsetLeft;
     private Vector2 mMovementEmitterOffsetRight;
     private Vector2 mMovementEmitterLocation;
+
+    //Boolean value to determine if startup sound has played.
+    private boolean StartSoundPlayed = false;
+    //Boolean value to determine if stop sound has played.
+    private boolean stopSoundPlayed = false;
 
 
     // /////////////////////////////////////////////////////////////////////////
@@ -103,13 +111,31 @@ public class PlayerSpaceship extends SpaceEntity {
      * @param elapsedTime        Elapsed time information
      * @param movementThumbstick Movement thumbstick control
      */
-    public void update(ElapsedTime elapsedTime, ThumbStick movementThumbstick) {
+    public void update(ElapsedTime elapsedTime, ThumbStick movementThumbstick, GameScreen game) {
+
 
         //  Consider movement requests
         if (movementThumbstick.isTouched()) {
             // Apply an input acceleration
             acceleration.x = movementThumbstick.getXMagnitude() * maxAcceleration;
             acceleration.y = movementThumbstick.getYMagnitude() * maxAcceleration;
+            stopSoundPlayed = false;
+            if (!StartSoundPlayed){
+
+                startSound(game);
+                StartSoundPlayed = true;
+
+            }
+        }
+
+        if (!movementThumbstick.isTouched()) {
+            StartSoundPlayed = false;
+            if (!stopSoundPlayed){
+
+                stopSound(game);
+                stopSoundPlayed = true;
+
+            }
         }
 
         // Ensure that the ships points in the direction of movement
@@ -139,4 +165,20 @@ public class PlayerSpaceship extends SpaceEntity {
         mMovementEmitterRight.getEmitterSettings().minParticleDensity = (int) velocity.length();
         mMovementEmitterRight.getEmitterSettings().maxParticleDensity = (int) (1.2f * velocity.length());
     }
-}
+
+
+
+    public void startSound(GameScreen game){
+        AudioManager audioManager = game.getGame().getAudioManager();
+        audioManager.play(
+                game.getGame().getAssetManager().getSound("StartUpSound"));
+        }
+    public void stopSound(GameScreen game){
+        AudioManager audioManager = game.getGame().getAudioManager();
+        audioManager.play(
+                game.getGame().getAssetManager().getSound("StopSound"));
+    }
+
+
+    }
+

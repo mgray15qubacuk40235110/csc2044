@@ -39,6 +39,16 @@
       "type": "Music",
       "name": "SpaceBackgroundMusic",
       "file": "sound/OneDance.mp3"
+    },
+    {
+      "type": "Sound",
+      "name": "StartUpSound",
+      "file": "sound/plop.mp3"
+    },
+    {
+      "type": "Sound",
+      "name": "StopSound",
+      "file": "sound/duck.mp3"
     }
   ]
 }
