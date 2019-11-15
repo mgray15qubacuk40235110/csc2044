@@ -251,7 +251,7 @@ public class SpaceshipDemoScreen extends GameScreen {
     public void update(ElapsedTime elapsedTime) {
 
         // Ensure background music is playing
-        playBackgroundMusic();
+     //   playBackgroundMusic();
 
         // Consider any user provided input
         mMovementThumbStick.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -283,7 +283,7 @@ public class SpaceshipDemoScreen extends GameScreen {
      */
     private void updateSpaceGameObjects(ElapsedTime elapsedTime) {
         // Update the player spaceship
-        mPlayerSpaceship.update(elapsedTime, mMovementThumbStick);
+        mPlayerSpaceship.update(elapsedTime, mMovementThumbStick, this);
 
         // Ensure the player cannot leave the confines of the world
         BoundingBox playerBound = mPlayerSpaceship.getBound();
