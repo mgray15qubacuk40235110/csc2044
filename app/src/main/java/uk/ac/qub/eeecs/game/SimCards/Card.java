@@ -28,8 +28,8 @@ public class Card extends Sprite {
     // /////////////////////////////////////////////////////////////////////////
 
     // Define the default card width and height
-    private static final int DEFAULT_CARD_WIDTH = 180;
-    private static final int DEFAULT_CARD_HEIGHT = 260;
+    private static final int DEFAULT_CARD_WIDTH = 140;
+    private static final int DEFAULT_CARD_HEIGHT = 202;
 
     // Define the common card base
     private Bitmap mCardBase;
@@ -120,6 +120,10 @@ public class Card extends Sprite {
         drawBitmap(mCardDigits[mHealth], mHealthOffset, mHealthScale,
                 graphics2D, layerViewport, screenViewport);
     }
+
+    public float getLeft() {return (position.x - (DEFAULT_CARD_WIDTH / 2));}
+    public float getBottom() {return (position.y - (DEFAULT_CARD_HEIGHT / 2));}
+
 
     private BoundingBox bound = new BoundingBox();
 
