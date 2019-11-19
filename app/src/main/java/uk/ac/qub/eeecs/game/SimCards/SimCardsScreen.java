@@ -10,6 +10,7 @@ import android.os.Build;
 import android.view.Display;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.qub.eeecs.gage.Game;
@@ -54,10 +55,19 @@ public class SimCardsScreen extends GameScreen {
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
     private boolean[] rearFacing = new boolean[cards.length];
+    TouchEvent lastTouchEvent;
+    int lastTouchEventType;
+
 
     //Enabling text output
     private Paint textPaint = new Paint();
-
+    /**
+     * A history of touch events will be maintained - this is held
+     * within a list that will be trimmed to ensure it doesn't exceed
+     * the history maximum length.
+     */
+    private static final int TOUCH_EVENT_HISTORY_SIZE = 30;
+    private List<String> mTouchEventsInfo = new LinkedList<>();
 
     /**
      * Width and height of the level
@@ -136,6 +146,30 @@ public class SimCardsScreen extends GameScreen {
         for (PushButton control : mControls)
             control.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
 
+        // Get any touch events that have occurred since the last update
+        List<TouchEvent> touchEvents = input.getTouchEvents();
+        if (touchEvents.size() > 0) {
+            lastTouchEvent = touchEvents.get(touchEvents.size() - 1);
+            lastTouchEventType = lastTouchEvent.type;
+            // Store the touch event information
+            for (TouchEvent touchEvent : touchEvents) {
+                // Collection information on the touch event
+                String touchEventInfo = touchEventTypeToString(touchEvent.type) +
+                        String.format(" [%.0f,%.0f,ID=%d]",
+                                touchEvent.x, touchEvent.y, touchEvent.pointer);
+
+                // Additional information is available if the touch event is of
+                // type TOUCH_SCROLL or TOUCH_FLING - in both cases the touchEvent.dx
+                // and touchEvent.dy values specify how much movement (scroll or
+                // fling) is associated with the touch event. For reasons for brevity
+                // these values are no displayed din this demo.
+
+                // Add the information to the history
+                mTouchEventsInfo.add(touchEventInfo);
+                if (mTouchEventsInfo.size() > TOUCH_EVENT_HISTORY_SIZE)
+                    mTouchEventsInfo.remove(0);
+            }
+        }
 
         if (mCards.size() > 0) {
             for (int i = 0; i < mCards.size(); i++) {
@@ -146,10 +180,14 @@ public class SimCardsScreen extends GameScreen {
                     mTouchLocation[1] = (mDefaultLayerViewport.halfHeight * 2.0f) - input.getTouchY(0);
                     if ((mTouchLocation[0] >= currentCard.getLeft()) & (mTouchLocation[0] <= (currentCard.getLeft() + currentCard.getWidth()))) {
                         if ((mTouchLocation[1] >= currentCard.getBottom()) & (mTouchLocation[1] <= (currentCard.getBottom() + currentCard.getHeight()))) {
-                            dragging[i] = true;
-                            for (int i2 = 0; i2 < mCards.size(); i2++) {
-                                if (i2 != i && dragging[i2]) {
-                                    dragging[i] = false;
+                            if (touchEvents.size() > 0) {
+                                if (lastTouchEventType == 2 || lastTouchEventType == 6) {
+                                    dragging[i] = true;
+                                    for (int i2 = 0; i2 < mCards.size(); i2++) {
+                                        if (i2 != i && dragging[i2]) {
+                                            dragging[i] = false;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -162,11 +200,10 @@ public class SimCardsScreen extends GameScreen {
                     currentCard.position.y = mTouchLocation[1];
                 }
 
-
-                List<TouchEvent> touchEvents = input.getTouchEvents();
+                //List<TouchEvent> touchEvents = input.getTouchEvents();
                 if (touchEvents.size() > 0) {
-                    TouchEvent lastTouchEvent = touchEvents.get(touchEvents.size() - 1);
-                    int lastTouchEventType = lastTouchEvent.type;
+                    lastTouchEvent = touchEvents.get(touchEvents.size() - 1);
+                    lastTouchEventType = lastTouchEvent.type;
                     if (lastTouchEventType == 1) {
                         dragging[i] = false;
                         currentCard.position.x = currentCard.getSpawnX();
@@ -191,6 +228,29 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    private String touchEventTypeToString(int type) {
+        switch (type) {
+            case 0:
+                return "TOUCH_DOWN";
+            case 1:
+                return "TOUCH_UP";
+            case 2:
+                return "TOUCH_DRAGGED";
+            case 3:
+                return "TOUCH_SHOW_PRESS";
+            case 4:
+                return "TOUCH_LONG_PRESS";
+            case 5:
+                return "TOUCH_SINGLE_TAP";
+            case 6:
+                return "TOUCH_SCROLL";
+            case 7:
+                return "TOUCH_FLING";
+            default:
+                return "ERROR: Unknown Touch Event Type";
+        }
+    }
+
     /**
      * Draw the card demo screen
      *
@@ -208,7 +268,7 @@ public class SimCardsScreen extends GameScreen {
         int screenHeight = graphics2D.getSurfaceHeight();
 
         // Display a message to the user
-        textPaint.setColor(Color.RED);
+        textPaint.setColor(Color.YELLOW);
         textPaint.setTextSize(screenHeight / 16.0f);
         textPaint.setTextAlign(Paint.Align.LEFT);
         textPaint.setTypeface(Typeface.MONOSPACE);
@@ -224,19 +284,13 @@ public class SimCardsScreen extends GameScreen {
         if (mCards.size() > 0) {
             for (int i = 0; i < mCards.size(); i++) {
                 currentCard = mCards.get(i);
-                currentCard.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+                if (!rearFacing[i]) {
+                    currentCard.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+                } else {
+                    currentCard.backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+                }
             }
         }
-
-        /**
-         * if (mCards.size() > 0) {
-         *      for (Card card : mCards) {
-         *          if (rearFacing[i] {
-         *              card.drawback()
-         *          else {
-         *               card.draw()
-         * **/
-
 
         // Draw the controls last of all
         for (PushButton control : mControls)
@@ -250,6 +304,14 @@ public class SimCardsScreen extends GameScreen {
         } else {
             graphics2D.drawText("Pointer Id Not detected.",
                     10.0f, 30.0f, textPaint);
+        }
+
+        // Draw the touch event history
+        int lineNumber = 1;
+        textPaint.setTextAlign(Paint.Align.RIGHT);
+        for (int eventIdx = 0; eventIdx < mTouchEventsInfo.size(); eventIdx++) {
+            graphics2D.drawText(mTouchEventsInfo.get(eventIdx),
+                    screenWidth, lineHeight * lineNumber++, textPaint);
         }
 
     }
