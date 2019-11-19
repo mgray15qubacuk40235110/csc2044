@@ -58,6 +58,10 @@ public class Card extends Sprite {
     private int mAttack;
     private int mHealth;
 
+    //Record where card is first defined
+    private float spawnX;
+    private float spawnY;
+
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
@@ -87,11 +91,17 @@ public class Card extends Sprite {
         // Set default attack and health values
         mAttack = 1;
         mHealth = 2;
+
+        spawnX = x;
+        spawnY = y;
     }
 
     // /////////////////////////////////////////////////////////////////////////
     // Methods
     // /////////////////////////////////////////////////////////////////////////
+
+    public float getSpawnX() {return spawnX;}
+    public float getSpawnY() {return spawnY;}
 
     /**
      * Draw the game platform
