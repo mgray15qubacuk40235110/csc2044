@@ -53,6 +53,7 @@ public class SimCardsScreen extends GameScreen {
     private boolean mTouchIdExists;
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
+    private boolean[] rearFacing = new boolean[cards.length];
 
     //Enabling text output
     private Paint textPaint = new Paint();
@@ -221,10 +222,20 @@ public class SimCardsScreen extends GameScreen {
         // Draw the cards
 
         if (mCards.size() > 0) {
-            for (Card card : mCards) {
-                card.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            for (int i = 0; i < mCards.size(); i++) {
+                currentCard = mCards.get(i);
+                currentCard.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             }
         }
+
+        /**
+         * if (mCards.size() > 0) {
+         *      for (Card card : mCards) {
+         *          if (rearFacing[i] {
+         *              card.drawback()
+         *          else {
+         *               card.draw()
+         * **/
 
 
         // Draw the controls last of all
