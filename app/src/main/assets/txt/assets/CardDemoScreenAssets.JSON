@@ -7,6 +7,11 @@
     },
     {
       "type": "Bitmap",
+      "name": "backOfCard",
+      "file": "img/CardBackground1.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "CardPortrait",
       "file": "img/CardPortrait.png"
     },

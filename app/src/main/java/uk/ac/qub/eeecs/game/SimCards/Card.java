@@ -13,6 +13,8 @@ import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.gage.world.LayerViewport;
 import uk.ac.qub.eeecs.gage.world.ScreenViewport;
 import uk.ac.qub.eeecs.gage.world.Sprite;
+import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
+import java.util.List;
 
 /**
  * Card class that can be drawn using a number of overlapping images.
@@ -37,6 +39,9 @@ public class Card extends Sprite {
 
     // Define the card portrait image
     private Bitmap mCardPortrait;
+
+    //Define the back of card image
+    private Bitmap mCardBack;
 
     // Define the card digit images
     private Bitmap[] mCardDigits = new Bitmap[10];
@@ -84,6 +89,9 @@ public class Card extends Sprite {
         // Store the card portrait image
         mCardPortrait = assetManager.getBitmap("CardPortrait");
 
+        //Store back of card image
+        mCardBack = assetManager.getBitmap("backOfCard");
+
         // Store each of the damage/health digits
         for(int digit = 0; digit <= 9; digit++)
             mCardDigits[digit] = assetManager.getBitmap(String.valueOf(digit));
@@ -111,6 +119,7 @@ public class Card extends Sprite {
      * @param layerViewport  Game layer viewport
      * @param screenViewport Screen viewport
      */
+
     @Override
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D,
                      LayerViewport layerViewport, ScreenViewport screenViewport) {
@@ -130,6 +139,13 @@ public class Card extends Sprite {
         // Draw the attack value
         drawBitmap(mCardDigits[mHealth], mHealthOffset, mHealthScale,
                 graphics2D, layerViewport, screenViewport);
+    }
+
+    public void backDraw(ElapsedTime elapsedTime, IGraphics2D graphics2D,
+                         LayerViewport layerViewport, ScreenViewport screenViewport) {
+
+        mBitmap = mCardBack;
+        super.draw(elapsedTime, graphics2D, layerViewport, screenViewport);
     }
 
     public float getLeft() {return (position.x - (DEFAULT_CARD_WIDTH / 2));}
@@ -191,4 +207,27 @@ public class Card extends Sprite {
             graphics2D.drawBitmap(bitmap, drawMatrix, null);
         }
     }
+
+    /**
+    private void flipCard(Card card){
+        frontFacing = !frontFacing;
+        if (frontFacing) {
+            card.draw();
+        }
+        else {
+            card.draw();
+        }
+
+    }
+    **/
+
+    public boolean isTapped(List<TouchEvent> touchEvents) {
+        for (TouchEvent t : touchEvents) {
+            if (t.type == TouchEvent.TOUCH_SINGLE_TAP && bound.contains(t.x, t.y)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
