@@ -1,5 +1,6 @@
 package uk.ac.qub.eeecs.game.SimCards;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
@@ -28,8 +29,8 @@ public class Card extends Sprite {
     // /////////////////////////////////////////////////////////////////////////
 
     // Define the default card width and height
-    private static final int DEFAULT_CARD_WIDTH = 140;
-    private static final int DEFAULT_CARD_HEIGHT = 202;
+    private static final int DEFAULT_CARD_HEIGHT = Resources.getSystem().getDisplayMetrics().heightPixels / 4;
+    private static final int DEFAULT_CARD_WIDTH = (int) (0.69230769 * DEFAULT_CARD_HEIGHT);
 
     // Define the common card base
     private Bitmap mCardBase;
