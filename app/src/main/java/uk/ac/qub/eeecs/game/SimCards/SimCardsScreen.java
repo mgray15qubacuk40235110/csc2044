@@ -119,7 +119,7 @@ public class SimCardsScreen extends GameScreen {
 
         // Create cards
         mCards = new ArrayList<>();
-        cardOffset = 10;
+        cardOffset = 20;
         for (int i = 0; i < cards.length; i++) {
             cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 120), this);
             cardOffset = cardOffset + (int) cards[i].getWidth() + 20;
@@ -152,25 +152,6 @@ public class SimCardsScreen extends GameScreen {
         if (touchEvents.size() > 0) {
             lastTouchEvent = touchEvents.get(touchEvents.size() - 1);
             lastTouchEventType = lastTouchEvent.type;
-            // Store the touch event information
-            for (TouchEvent touchEvent : touchEvents) {
-                // Collection information on the touch event
-                String touchEventInfo = touchEventTypeToString(touchEvent.type) +
-                        String.format(" [%.0f,%.0f,ID=%d]",
-                                touchEvent.x, touchEvent.y, touchEvent.pointer);
-
-                // Additional information is available if the touch event is of
-                // type TOUCH_SCROLL or TOUCH_FLING - in both cases the touchEvent.dx
-                // and touchEvent.dy values specify how much movement (scroll or
-                // fling) is associated with the touch event. For reasons for brevity
-                // these values are no displayed din this demo.
-
-                // Add the information to the history
-                mTouchEventsInfo.add(touchEventInfo);
-                if (mTouchEventsInfo.size() > TOUCH_EVENT_HISTORY_SIZE)
-                    mTouchEventsInfo.remove(0);
-            }
-
         }
 
         if (mCards.size() > 0) {
@@ -183,18 +164,11 @@ public class SimCardsScreen extends GameScreen {
                     if ((mTouchLocation[0] >= currentCard.getLeft()) & (mTouchLocation[0] <= (currentCard.getLeft() + currentCard.getWidth()))) {
                         if ((mTouchLocation[1] >= currentCard.getBottom()) & (mTouchLocation[1] <= (currentCard.getBottom() + currentCard.getHeight()))) {
                             if (touchEvents.size() > 0) {
-                                if (lastTouchEventType == 0 && !dragging[i]) {
-                                    flipCard = true;
-                                }
                                 if (lastTouchEventType == 2 || lastTouchEventType == 6) {
-                                    if (dragging[i] != true) {
-                                        flipCard = true;
-                                    }
                                     dragging[i] = true;
                                     for (int i2 = 0; i2 < mCards.size(); i2++) {
                                         if (i2 != i && dragging[i2]) {
                                             dragging[i] = false;
-                                            flipCard = false;
                                         }
                                     }
                                 }
@@ -205,8 +179,7 @@ public class SimCardsScreen extends GameScreen {
                     for (TouchEvent indexTouchEvent : touchEvents) {
                         if (indexTouchEvent.type == 5) {
                             if ((indexTouchEvent.x >= currentCard.getLeft()) & (indexTouchEvent.x <= (currentCard.getLeft() + currentCard.getWidth()))) {
-                                float ytouch = (mDefaultLayerViewport.halfHeight * 2.0f) - input.getTouchY(0);
-                                if ((ytouch >= currentCard.getBottom()) & (ytouch <= (currentCard.getBottom() + currentCard.getHeight()))) {
+                                if ((((mDefaultLayerViewport.halfHeight * 2.0f) - indexTouchEvent.y) >= currentCard.getBottom()) & (((mDefaultLayerViewport.halfHeight * 2.0f) - indexTouchEvent.y) <= (currentCard.getBottom() + currentCard.getHeight()))) {
                                     flipCard = true;
                                 }
                             }
@@ -250,29 +223,6 @@ public class SimCardsScreen extends GameScreen {
         }
 
 
-    }
-
-    private String touchEventTypeToString(int type) {
-        switch (type) {
-            case 0:
-                return "TOUCH_DOWN";
-            case 1:
-                return "TOUCH_UP";
-            case 2:
-                return "TOUCH_DRAGGED";
-            case 3:
-                return "TOUCH_SHOW_PRESS";
-            case 4:
-                return "TOUCH_LONG_PRESS";
-            case 5:
-                return "TOUCH_SINGLE_TAP";
-            case 6:
-                return "TOUCH_SCROLL";
-            case 7:
-                return "TOUCH_FLING";
-            default:
-                return "ERROR: Unknown Touch Event Type";
-        }
     }
 
     /**
