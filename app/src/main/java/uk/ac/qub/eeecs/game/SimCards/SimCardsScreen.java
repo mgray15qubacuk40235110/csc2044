@@ -170,6 +170,7 @@ public class SimCardsScreen extends GameScreen {
                 if (mTouchEventsInfo.size() > TOUCH_EVENT_HISTORY_SIZE)
                     mTouchEventsInfo.remove(0);
             }
+
         }
 
         if (mCards.size() > 0) {
@@ -200,7 +201,17 @@ public class SimCardsScreen extends GameScreen {
                             }
                         }
                     }
-
+                } else {
+                    for (TouchEvent indexTouchEvent : touchEvents) {
+                        if (indexTouchEvent.type == 5) {
+                            if ((indexTouchEvent.x >= currentCard.getLeft()) & (indexTouchEvent.x <= (currentCard.getLeft() + currentCard.getWidth()))) {
+                                float ytouch = (mDefaultLayerViewport.halfHeight * 2.0f) - input.getTouchY(0);
+                                if ((ytouch >= currentCard.getBottom()) & (ytouch <= (currentCard.getBottom() + currentCard.getHeight()))) {
+                                    flipCard = true;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 if (flipCard) {
