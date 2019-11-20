@@ -55,6 +55,7 @@ public class SimCardsScreen extends GameScreen {
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
     private boolean[] rearFacing = new boolean[cards.length];
+    private boolean flipCard;
     TouchEvent lastTouchEvent;
     int lastTouchEventType;
 
@@ -181,11 +182,18 @@ public class SimCardsScreen extends GameScreen {
                     if ((mTouchLocation[0] >= currentCard.getLeft()) & (mTouchLocation[0] <= (currentCard.getLeft() + currentCard.getWidth()))) {
                         if ((mTouchLocation[1] >= currentCard.getBottom()) & (mTouchLocation[1] <= (currentCard.getBottom() + currentCard.getHeight()))) {
                             if (touchEvents.size() > 0) {
+                                if (lastTouchEventType == 0 && !dragging[i]) {
+                                    flipCard = true;
+                                }
                                 if (lastTouchEventType == 2 || lastTouchEventType == 6) {
+                                    if (dragging[i] != true) {
+                                        flipCard = true;
+                                    }
                                     dragging[i] = true;
                                     for (int i2 = 0; i2 < mCards.size(); i2++) {
                                         if (i2 != i && dragging[i2]) {
                                             dragging[i] = false;
+                                            flipCard = false;
                                         }
                                     }
                                 }
@@ -195,7 +203,12 @@ public class SimCardsScreen extends GameScreen {
 
                 }
 
+                if (flipCard) {
+                    rearFacing[i] = !rearFacing[i];
+                    flipCard = false;
+                }
                 if (dragging[i] == true) {
+                    flipCard = false;
                     currentCard.position.x = mTouchLocation[0];
                     currentCard.position.y = mTouchLocation[1];
                 }
