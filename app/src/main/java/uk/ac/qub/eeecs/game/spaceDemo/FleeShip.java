@@ -106,7 +106,6 @@ public class FleeShip extends SpaceEntity {
                 ((SpaceshipDemoScreen) mGameScreen).getPlayerSpaceship().position,
                 acceleration);
 
-
         // Try to avoid a collision with the player ship
         SteeringBehaviours.separate(this,
                 ((SpaceshipDemoScreen) mGameScreen).getPlayerSpaceship(),

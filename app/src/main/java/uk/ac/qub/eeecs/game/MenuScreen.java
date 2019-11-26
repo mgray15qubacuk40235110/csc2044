@@ -11,6 +11,7 @@ import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
+import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.game.SimCards.SimCardsScreen;
 import uk.ac.qub.eeecs.game.miscDemos.DemoMenuScreen;
@@ -36,6 +37,10 @@ public class MenuScreen extends GameScreen {
     private PushButton mCardDemoButton;
     private PushButton mDemosButton;
 
+    // Background //
+
+    protected GameObject menuBackground;
+
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
@@ -52,10 +57,13 @@ public class MenuScreen extends GameScreen {
         AssetManager assetManager = mGame.getAssetManager();
         assetManager.loadAndAddBitmap("SpaceDemoIcon", "img/SpaceDemoIcon.png");
         assetManager.loadAndAddBitmap("SpaceDemoIconSelected", "img/SpaceDemoIconSelected.png");
+
         assetManager.loadAndAddBitmap("CardDemoIcon", "img/CardDemoIcon.png");
         assetManager.loadAndAddBitmap("CardDemoIconSelected", "img/CardDemoIconSelected.png");
+
         assetManager.loadAndAddBitmap("PlatformDemoIcon", "img/PlatformDemoIcon.png");
         assetManager.loadAndAddBitmap("PlatformDemoIconSelected", "img/PlatformDemoIconSelected.png");
+
         assetManager.loadAndAddBitmap("DemosIcon", "img/DemosIcon.png");
         assetManager.loadAndAddBitmap("DemosIconSelected", "img/DemosIconSelected.png");
 
@@ -80,6 +88,8 @@ public class MenuScreen extends GameScreen {
                 spacingX * 4.50f, spacingY * 1.5f, spacingX, spacingY,
                 "DemosIcon", "DemosIconSelected", this);
         mDemosButton.setPlaySounds(true, true);
+
+        setupCardGameObjects();
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -117,6 +127,14 @@ public class MenuScreen extends GameScreen {
         }
     }
 
+    private void setupCardGameObjects() {
+
+        menuBackground = new GameObject(800,
+                500, 800, 500, getGame()
+                .getAssetManager().getBitmap("kittens"), this);
+
+    }
+
     /**
      * Draw the menu screen
      *
@@ -128,6 +146,9 @@ public class MenuScreen extends GameScreen {
 
         // Clear the screen and draw the buttons
         graphics2D.clear(Color.WHITE);
+
+        menuBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport,
+                mDefaultScreenViewport);
 
         mSpaceshipDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mPlatformDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
