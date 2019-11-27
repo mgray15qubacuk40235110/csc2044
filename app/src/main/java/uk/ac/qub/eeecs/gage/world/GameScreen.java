@@ -133,4 +133,8 @@ public abstract class GameScreen {
      */
     public void dispose() {
     }
+
+    public class PerformanceScreen {
+    }
+
 }
