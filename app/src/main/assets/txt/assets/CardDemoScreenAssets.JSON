@@ -17,6 +17,11 @@
     },
     {
       "type": "Bitmap",
+      "name": "backOfCardPhone",
+      "file": "img/phoneBackground.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "1",
       "file": "img/1.png"
     },

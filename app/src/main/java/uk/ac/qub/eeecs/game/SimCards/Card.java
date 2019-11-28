@@ -78,6 +78,7 @@ public class Card extends Sprite {
      * @param y          Centre x location of the platform
      * @param gameScreen Gamescreen to which this platform belongs
      */
+
     public Card(float x, float y, GameScreen gameScreen) {
         super(x, y, DEFAULT_CARD_WIDTH, DEFAULT_CARD_HEIGHT, null, gameScreen);
 
@@ -104,6 +105,31 @@ public class Card extends Sprite {
         spawnY = y;
     }
 
+    public Card(float x, float y, int width, int height, GameScreen gameScreen) {
+        super(x, y, width, height, null, gameScreen);
+
+        AssetManager assetManager = gameScreen.getGame().getAssetManager();
+
+        // Store the common card base image
+        mCardBase = assetManager.getBitmap("CardBackground");
+
+        // Store the card portrait image
+        mCardPortrait = assetManager.getBitmap("CardPortrait");
+
+        //Store back of card image
+        mCardBack = assetManager.getBitmap("backOfCard");
+
+        // Store each of the damage/health digits
+        for(int digit = 0; digit <= 9; digit++)
+            mCardDigits[digit] = assetManager.getBitmap(String.valueOf(digit));
+
+        // Set default attack and health values
+        mAttack = 1;
+        mHealth = 2;
+
+        spawnX = x;
+        spawnY = y;
+    }
     // /////////////////////////////////////////////////////////////////////////
     // Methods
     // /////////////////////////////////////////////////////////////////////////

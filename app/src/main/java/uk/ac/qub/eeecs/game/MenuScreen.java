@@ -100,8 +100,8 @@ public class MenuScreen extends GameScreen {
                 spacingX * 4.70f, spacingY * 2.5f, spacingX, spacingY,
                 "OptionsIcon", "OptionsIconSelected", this);
         mOptionsButton.setPlaySounds(true, true);
-        mOptionsButton.setHeight(55);
-        mOptionsButton.setWidth(55);
+        mOptionsButton.setHeight(50);
+        mOptionsButton.setWidth(50);
     }
 
 
