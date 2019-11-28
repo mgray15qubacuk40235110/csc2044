@@ -7,13 +7,13 @@
     },
     {
       "type": "Bitmap",
-      "name": "CardBackground2",
-      "file": "img/kittens.jpg"
+      "name": "CardPortrait",
+      "file": "img/CardPortrait.png"
     },
     {
       "type": "Bitmap",
-      "name": "CardPortrait",
-      "file": "img/CardPortrait.png"
+      "name": "backOfCard",
+      "file": "img/CardBackground1.png"
     },
     {
       "type": "Bitmap",
@@ -22,8 +22,23 @@
     },
     {
       "type": "Bitmap",
+      "name": "SimCardBackground",
+      "file": "img/SimCardBackground.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "2",
       "file": "img/2.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "EndTurn",
+      "file": "img/EndTurn.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "EndTurnPressed",
+      "file": "img/EndTurnPressed.png"
     },
     {
       "type": "Bitmap",

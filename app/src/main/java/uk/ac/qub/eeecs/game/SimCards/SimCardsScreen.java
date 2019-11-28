@@ -70,10 +70,6 @@ public class SimCardsScreen extends GameScreen {
     private static final int TOUCH_EVENT_HISTORY_SIZE = 30;
     private List<String> mTouchEventsInfo = new LinkedList<>();
 
-    /**
-     * Width and height of the level
-     */
-
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////

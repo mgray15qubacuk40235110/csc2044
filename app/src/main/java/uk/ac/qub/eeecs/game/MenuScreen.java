@@ -12,6 +12,7 @@ import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
+import uk.ac.qub.eeecs.game.Performace.PerformanceScreen;
 import uk.ac.qub.eeecs.game.SimCards.SimCardsScreen;
 import uk.ac.qub.eeecs.game.miscDemos.DemoMenuScreen;
 import uk.ac.qub.eeecs.game.platformDemo.PlatformDemoScreen;
@@ -35,6 +36,7 @@ public class MenuScreen extends GameScreen {
     private PushButton mPlatformDemoButton;
     private PushButton mCardDemoButton;
     private PushButton mDemosButton;
+    private PushButton mPerformanceScreenButton;
 
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -58,6 +60,9 @@ public class MenuScreen extends GameScreen {
         assetManager.loadAndAddBitmap("PlatformDemoIconSelected", "img/PlatformDemoIconSelected.png");
         assetManager.loadAndAddBitmap("DemosIcon", "img/DemosIcon.png");
         assetManager.loadAndAddBitmap("DemosIconSelected", "img/DemosIconSelected.png");
+        assetManager.loadAndAddBitmap("PerformanceIcon", "img/PerformanceIcon.PNG");
+        assetManager.loadAndAddBitmap("PerformanceIconSelected", "img/PerformanceIcon.PNG");
+
 
         // Define the spacing that will be used to position the buttons
         int spacingX = (int)mDefaultLayerViewport.getWidth() / 5;
@@ -80,7 +85,14 @@ public class MenuScreen extends GameScreen {
                 spacingX * 4.50f, spacingY * 1.5f, spacingX, spacingY,
                 "DemosIcon", "DemosIconSelected", this);
         mDemosButton.setPlaySounds(true, true);
+        mPerformanceScreenButton = new PushButton(
+                spacingX * 4.75f, spacingY * 2.5f, spacingX, spacingY,
+                "PerformanceIcon", "PerformanceIcon", this);
+        mPerformanceScreenButton.setPlaySounds(true, true);
+        mPerformanceScreenButton.setHeight(50);
+        mPerformanceScreenButton.setWidth(50);
     }
+
 
     // /////////////////////////////////////////////////////////////////////////
     // Methods
@@ -105,6 +117,7 @@ public class MenuScreen extends GameScreen {
             mCardDemoButton.update(elapsedTime);
             mPlatformDemoButton.update(elapsedTime);
             mDemosButton.update(elapsedTime);
+            mPerformanceScreenButton.update(elapsedTime);
 
             if (mSpaceshipDemoButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new SpaceshipDemoScreen(mGame));
@@ -114,6 +127,8 @@ public class MenuScreen extends GameScreen {
                 mGame.getScreenManager().addScreen(new PlatformDemoScreen(mGame));
             else if (mDemosButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new DemoMenuScreen(mGame));
+            else if (mPerformanceScreenButton.isPushTriggered())
+                mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.Performace.PerformanceScreen(mGame));
         }
     }
 
@@ -133,5 +148,6 @@ public class MenuScreen extends GameScreen {
         mPlatformDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mDemosButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mCardDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        mPerformanceScreenButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
     }
 }
