@@ -4,6 +4,11 @@
       "type": "Bitmap",
       "name": "RetroBG",
       "file": "img/RetroBG.gif"
+    },
+    {
+      "type": "Music",
+      "name": "Resonance",
+      "file": "sound/Resonance.mp3"
     }
-    ]
+  ]
 }

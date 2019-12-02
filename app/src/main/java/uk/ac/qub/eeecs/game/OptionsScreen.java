@@ -5,6 +5,7 @@ import java.util.List;
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
@@ -35,9 +36,11 @@ public class OptionsScreen extends GameScreen {
      * Define the buttons for playing the 'games'
      */
 
-    private PushButton mSpaceshipDemoButton;
     private PushButton optionButton;
     private PushButton returnToMenu;
+    private PushButton musicToggle;
+    private PushButton pauseMusic;
+
 
     // Background //
 
@@ -60,11 +63,14 @@ public class OptionsScreen extends GameScreen {
 
         AssetManager assetManager = mGame.getAssetManager();
 
-        assetManager.loadAndAddBitmap("SpaceDemoIcon", "img/SpaceDemoIcon.png");
-        assetManager.loadAndAddBitmap("SpaceDemoIconSelected", "img/SpaceDemoIconSelected.png");
+        assetManager.loadAndAddBitmap("BackArrow", "img/BackArrow.png");
+        assetManager.loadAndAddBitmap("BackArrowSelected", "img/BackArrowSelected.png");
 
-        assetManager.loadAndAddBitmap("return", "img/return.png");
-        assetManager.loadAndAddBitmap("returnSelected", "img/returnSelected.png");
+        assetManager.loadAndAddBitmap("PlayButton", "img/PlayButton.png");
+        assetManager.loadAndAddBitmap("PlayButton", "img/PlayButton.png");
+
+        assetManager.loadAndAddBitmap("PauseButton", "img/PauseButton.png");
+        assetManager.loadAndAddBitmap("PauseButton", "img/PauseButton.png");
 
 
         // Define the spacing that will be used to position the buttons
@@ -73,16 +79,20 @@ public class OptionsScreen extends GameScreen {
 
         // Create the trigger buttons
 
-        mSpaceshipDemoButton = new PushButton(
-                spacingX * 0.56f, spacingY * 1.5f, spacingX, spacingY,
-                "SpaceDemoIcon", "SpaceDemoIconSelected",this);
-        mSpaceshipDemoButton.setPlaySounds(true, true);
-        mSpaceshipDemoButton.setHeight(100);
-        mSpaceshipDemoButton.setWidth(100);
+        musicToggle = new PushButton(
+                spacingX * 2.70f, spacingY * 2.80f, 25, 25,
+                "PlayButton", "PlayButton",this );
+        musicToggle.setPlaySounds(true, true);
+
+        pauseMusic = new PushButton(
+                spacingX * 3.20f, spacingY * 2.80f, 25, 25,
+                "PauseButton", "PauseButton",this );
+        pauseMusic.setPlaySounds(true, true);
 
         returnToMenu = new PushButton(
-                spacingX * 5.50f, spacingY * 0.75f, spacingX, spacingY,
-                "return", "returnSelected",this );
+                mDefaultLayerViewport.getWidth() * 0.95f, mDefaultLayerViewport.getHeight() * 0.10f,
+                mDefaultLayerViewport.getWidth() * 0.075f, mDefaultLayerViewport.getHeight() * 0.10f,
+                "BackArrow", "BackArrowSelected", this);
         returnToMenu.setPlaySounds(true, true);
 
         setupCardGameObjects();
@@ -107,15 +117,22 @@ public class OptionsScreen extends GameScreen {
         if (touchEvents.size() > 0) {
 
             // Update each button and transition if needed
-            mSpaceshipDemoButton.update(elapsedTime);
             returnToMenu.update(elapsedTime);
+            musicToggle.update(elapsedTime);
+            pauseMusic.update(elapsedTime);
 
-            if (mSpaceshipDemoButton.isPushTriggered())
-                mGame.getScreenManager().addScreen(new SpaceshipDemoScreen(mGame));
+            AudioManager audioManager = getGame().getAudioManager();
 
-            else if (returnToMenu.isPushTriggered())
+            mGame.getAssetManager().loadAssets("txt/assets/OptionsScreenAssets.JSON");
+
+            if (returnToMenu.isPushTriggered())
                 mGame.getScreenManager().addScreen(new MenuScreen(mGame));
-
+            else if (musicToggle.isPushTriggered())
+                    audioManager.playMusic(getGame().getAssetManager().getMusic("Resonance"));
+            else if (pauseMusic.isPushTriggered())
+                if (audioManager.isMusicPlaying()) {
+                    audioManager.pauseMusic();
+            }
         }
     }
 
@@ -127,7 +144,6 @@ public class OptionsScreen extends GameScreen {
         mOptionsBackground = new GameObject(230,
                 160, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
                 .getAssetManager().getBitmap("RetroBG"), this);
-
     }
 
     /**
@@ -142,12 +158,10 @@ public class OptionsScreen extends GameScreen {
         // Clear the screen and draw the buttons
 //        graphics2D.clear((Color.WHITE));
 
-        mOptionsBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport,
-                mDefaultScreenViewport);
-
-        mSpaceshipDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-
+        mOptionsBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         returnToMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        musicToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        pauseMusic.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
     }
 }
