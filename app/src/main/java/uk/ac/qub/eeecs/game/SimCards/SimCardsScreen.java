@@ -25,6 +25,7 @@ import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 
 
+
 /**
  * Starter class for Card game stories
  *
@@ -44,7 +45,8 @@ public class SimCardsScreen extends GameScreen {
     private Card currentCard;
     private Card[] cards = new Card[5];
     private List<Card> mCards;
-    int cardOffset;
+    private int cardOffset;
+    private boolean[] flippingBack = new boolean[cards.length];
 
     //Buttons
     private PushButton endTurn;
@@ -55,9 +57,10 @@ public class SimCardsScreen extends GameScreen {
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
     private boolean[] rearFacing = new boolean[cards.length];
-    private boolean flipCard;
+    private boolean[] flipCard = new boolean[cards.length];
     TouchEvent lastTouchEvent;
     int lastTouchEventType;
+
 
 
     //Enabling text output
@@ -69,6 +72,10 @@ public class SimCardsScreen extends GameScreen {
      */
     private static final int TOUCH_EVENT_HISTORY_SIZE = 30;
     private List<String> mTouchEventsInfo = new LinkedList<>();
+
+    /**
+     * Width and height of the level
+     */
 
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -185,6 +192,7 @@ public class SimCardsScreen extends GameScreen {
 
 
         // Draw the cards
+
         if (mCards.size() > 0) {
             for (int i = 0; i < mCards.size(); i++) {
                 currentCard = mCards.get(i);
@@ -225,7 +233,7 @@ public class SimCardsScreen extends GameScreen {
         for (int i = 0; i < mCards.size(); i++) {
             currentCard = mCards.get(i);
             mTouchIdExists = input.existsTouch(0);
-            if (mTouchIdExists) {
+            if (mTouchIdExists && flipCard[i] == false) {
                 mTouchLocation[0] = input.getTouchX(0);
                 mTouchLocation[1] = (mDefaultLayerViewport.halfHeight * 2.0f) - input.getTouchY(0);
                 if ((mTouchLocation[0] >= currentCard.getLeft()) & (mTouchLocation[0] <= (currentCard.getLeft() + currentCard.getWidth()))) {
@@ -234,7 +242,7 @@ public class SimCardsScreen extends GameScreen {
                             if (lastTouchEventType == 2 || lastTouchEventType == 6) {
                                 dragging[i] = true;
                                 for (int i2 = 0; i2 < mCards.size(); i2++) {
-                                    if (i2 != i && dragging[i2]) {
+                                    if (i2 != i && (dragging[i2] || flipCard[i2])) {
                                         dragging[i] = false;
                                     }
                                 }
@@ -242,24 +250,41 @@ public class SimCardsScreen extends GameScreen {
                         }
                     }
                 }
-            } else {
+            } else if (flipCard[i] == false){
                 for (TouchEvent indexTouchEvent : touchEvents) {
                     if (indexTouchEvent.type == 5) {
                         if ((indexTouchEvent.x >= currentCard.getLeft()) & (indexTouchEvent.x <= (currentCard.getLeft() + currentCard.getWidth()))) {
                             if ((((mDefaultLayerViewport.halfHeight * 2.0f) - indexTouchEvent.y) >= currentCard.getBottom()) & (((mDefaultLayerViewport.halfHeight * 2.0f) - indexTouchEvent.y) <= (currentCard.getBottom() + currentCard.getHeight()))) {
-                                flipCard = true;
+                                flipCard[i] = true;
                             }
                         }
                     }
                 }
             }
 
-            if (flipCard) {
-                rearFacing[i] = !rearFacing[i];
-                flipCard = false;
+            if (flipCard[i]) {
+
+                if (flippingBack[i] == false) {
+                    shrinkCard();
+                }
+
+                if (currentCard.getWidth() < 90.0f) {
+                    rearFacing[i] = !rearFacing[i];
+                    flippingBack[i] = !flippingBack[i];
+                }
+
+                if (flippingBack[i] == true) {
+                    growCard();
+                }
+
+                if (currentCard.getWidth() == currentCard.getDefaultCardWidth()) {
+                    flippingBack[i] = false;
+                    flipCard[i] = false;
+                }
             }
+
             if (dragging[i] == true) {
-                flipCard = false;
+                //flipCard[i] = false;
                 currentCard.position.x = mTouchLocation[0];
                 currentCard.position.y = mTouchLocation[1];
             }
@@ -286,6 +311,25 @@ public class SimCardsScreen extends GameScreen {
             else if (playerBound.getTop() > (mDefaultLayerViewport.halfHeight * 2.0f))
                 currentCard.position.y -= (playerBound.getTop() - (mDefaultLayerViewport.halfHeight * 2.0f));
         }
+    }
+
+    public void shrinkCard(){
+
+        if (currentCard.getWidth() > currentCard.getDefaultCardWidth() * 0.2){
+            currentCard.setWidth((currentCard.getWidth() / 1500) * 1000);
+        }
+
+    }
+
+    public void growCard(){
+
+        if (currentCard.getWidth() < currentCard.getDefaultCardWidth()) {
+            currentCard.setWidth((currentCard.getWidth() / 1000) * 1500);
+        }
+        if (currentCard.getWidth() > currentCard.getDefaultCardWidth()) {
+            currentCard.setWidth(currentCard.getDefaultCardWidth());
+        }
+
     }
 
 }

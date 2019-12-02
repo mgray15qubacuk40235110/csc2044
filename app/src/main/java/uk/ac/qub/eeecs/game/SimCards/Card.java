@@ -34,6 +34,9 @@ public class Card extends Sprite {
     private static final int DEFAULT_CARD_HEIGHT = (int) (Resources.getSystem().getDisplayMetrics().heightPixels / 3.5);
     private static final int DEFAULT_CARD_WIDTH = (int) (0.69230769 * DEFAULT_CARD_HEIGHT);
 
+    private int card_height;
+    private int card_width;
+
     // Define the common card base
     private Bitmap mCardBase;
 
@@ -234,26 +237,11 @@ public class Card extends Sprite {
         }
     }
 
-    /**
-    private void flipCard(Card card){
-        frontFacing = !frontFacing;
-        if (frontFacing) {
-            card.draw();
-        }
-        else {
-            card.draw();
-        }
-
-    }
-    **/
-
-    public boolean isTapped(List<TouchEvent> touchEvents) {
-        for (TouchEvent t : touchEvents) {
-            if (t.type == TouchEvent.TOUCH_SINGLE_TAP && bound.contains(t.x, t.y)) {
-                return true;
-            }
-        }
-        return false;
+    public int getDefaultCardWidth(){
+        return this.DEFAULT_CARD_WIDTH;
     }
 
 }
+
+
+
