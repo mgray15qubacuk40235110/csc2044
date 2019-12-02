@@ -251,7 +251,7 @@ public class SpaceshipDemoScreen extends GameScreen {
     public void update(ElapsedTime elapsedTime) {
 
         // Ensure background music is playing
-     //   playBackgroundMusic();
+        playBackgroundMusic();
 
         // Consider any user provided input
         mMovementThumbStick.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
