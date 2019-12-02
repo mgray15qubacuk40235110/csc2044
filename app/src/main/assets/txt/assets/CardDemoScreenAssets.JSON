@@ -32,6 +32,16 @@
     },
     {
       "type": "Bitmap",
+      "name": "SimCardBackground2",
+      "file": "img/SimCardBackground_2.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "SimCardBackground3",
+      "file": "img/SimCardBackground_3.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "2",
       "file": "img/2.png"
     },
