@@ -84,6 +84,11 @@
       "type": "Bitmap",
       "name": "0",
       "file": "img/0.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "RetroBG",
+      "file": "img/RetroBG.gif"
     }
     ]
 }

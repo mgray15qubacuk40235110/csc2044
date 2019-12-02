@@ -63,7 +63,8 @@ public class MenuScreen extends GameScreen {
         assetManager.loadAndAddBitmap("DemosIconSelected", "img/DemosIcon.png");
         assetManager.loadAndAddBitmap("PerformanceIcon", "img/PerformanceIcon.PNG");
         assetManager.loadAndAddBitmap("PerformanceIconSelected", "img/PerformanceIcon.PNG");
-        assetManager.loadAndAddBitmap("OptionsIcon", "img/optionsIcon.png");
+
+        assetManager.loadAndAddBitmap("optionsIcon", "img/optionsIcon.png");
         assetManager.loadAndAddBitmap("OptionsIconSelected", "img/optionsIcon.png");
 
 
@@ -98,7 +99,7 @@ public class MenuScreen extends GameScreen {
 
         mOptionsButton = new PushButton(
                 spacingX * 4.70f, spacingY * 2.5f, spacingX, spacingY,
-                "OptionsIcon", "OptionsIconSelected", this);
+                "optionsIcon", "OptionsIconSelected", this);
         mOptionsButton.setPlaySounds(true, true);
         mOptionsButton.setHeight(50);
         mOptionsButton.setWidth(50);
@@ -141,6 +142,8 @@ public class MenuScreen extends GameScreen {
                 mGame.getScreenManager().addScreen(new DemoMenuScreen(mGame));
             else if (mPerformanceScreenButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.Performace.PerformanceScreen(mGame));
+            else if (mOptionsButton.isPushTriggered())
+                mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.OptionsScreen(mGame));
         }
     }
 
