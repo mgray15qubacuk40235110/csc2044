@@ -59,7 +59,7 @@ public class SplashScreen extends GameScreen {
         super("SplashScreen", game);
 
         // Background
-        assetManager.loadAndAddBitmap("splash", "img/splash.png");
+        assetManager.loadAndAddBitmap("splash", "img/splashv5.png");
 
         float height = game.getScreenHeight();
         float width = game.getScreenWidth();
