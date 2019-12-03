@@ -1,0 +1,29 @@
+{
+  "assets": [
+    {
+      "type": "Bitmap",
+      "name": "RetroBG",
+      "file": "img/RetroBG.gif"
+    },
+    {
+      "type": "Music",
+      "name": "Resonance",
+      "file": "sound/Resonance.mp3"
+    },
+    {
+      "type": "Music",
+      "name": "Wow",
+      "file": "sound/Wow.mp3"
+    },
+    {
+      "type": "Bitmap",
+      "name": "BackArrow",
+      "file": "img/BackArrow.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "BackArrowSelected",
+      "file": "img/BackArrowSelected.png"
+    }
+  ]
+}

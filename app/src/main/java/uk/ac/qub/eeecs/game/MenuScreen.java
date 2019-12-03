@@ -13,6 +13,7 @@ import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
+import uk.ac.qub.eeecs.game.Credits.CreditsScreen;
 import uk.ac.qub.eeecs.game.Performace.PerformanceScreen;
 import uk.ac.qub.eeecs.game.SimCards.SimCardsScreen;
 import uk.ac.qub.eeecs.game.miscDemos.DemoMenuScreen;
@@ -39,7 +40,7 @@ public class MenuScreen extends GameScreen {
     private PushButton mDemosButton;
     private PushButton mPerformanceScreenButton;
     private PushButton mOptionsButton;
-
+    private PushButton mCreditsButton;
 
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -65,10 +66,9 @@ public class MenuScreen extends GameScreen {
         assetManager.loadAndAddBitmap("DemosIconSelected", "img/DemosIcon.png");
         assetManager.loadAndAddBitmap("PerformanceIcon", "img/PerformanceIcon.PNG");
         assetManager.loadAndAddBitmap("PerformanceIconSelected", "img/PerformanceIcon.PNG");
-
         assetManager.loadAndAddBitmap("optionsIcon", "img/optionsIcon.png");
         assetManager.loadAndAddBitmap("OptionsIconSelected", "img/optionsIcon.png");
-
+        assetManager.loadAndAddBitmap("credits", "img/credits.png");
 
 
         // Define the spacing that will be used to position the buttons
@@ -77,19 +77,19 @@ public class MenuScreen extends GameScreen {
 
         // Create the trigger buttons
         mSpaceshipDemoButton = new PushButton(
-                spacingX * 0.50f, spacingY * 1.5f, spacingX, spacingY,
+                spacingX * 0.50f, spacingY * 1.3f, spacingX, spacingY,
                 "SpaceDemoIcon", "SpaceDemoIconSelected",this);
         mSpaceshipDemoButton.setPlaySounds(true, true);
         mPlatformDemoButton = new PushButton(
-                spacingX * 1.83f, spacingY * 1.5f, spacingX, spacingY,
+                spacingX * 1.83f, spacingY * 1.3f, spacingX, spacingY,
                 "PlatformDemoIcon", "PlatformDemoIconSelected", this);
         mPlatformDemoButton.setPlaySounds(true, true);
         mCardDemoButton = new PushButton(
-                spacingX * 3.17f, spacingY * 1.5f, spacingX, spacingY,
+                spacingX * 3.17f, spacingY * 1.3f, spacingX, spacingY,
                 "CardDemoIcon", "CardDemoIconSelected", this);
         mCardDemoButton.setPlaySounds(true, true);
         mDemosButton = new PushButton(
-                spacingX * 4.50f, spacingY * 1.5f, spacingX, spacingY,
+                spacingX * 4.50f, spacingY * 1.3f, spacingX, spacingY,
                 "DemosIcon", "DemosIconSelected", this);
         mDemosButton.setPlaySounds(true, true);
 
@@ -107,7 +107,12 @@ public class MenuScreen extends GameScreen {
         mOptionsButton.setHeight(50);
         mOptionsButton.setWidth(50);
 
-
+        mCreditsButton = new PushButton (
+                spacingX * 3.40f, spacingY * 2.5f, spacingX, spacingY,
+                "credits", "credits", this);
+        mCreditsButton.setPlaySounds(true, true);
+        mCreditsButton.setHeight(50);
+        mCreditsButton.setWidth(50);
     }
 
 
@@ -136,8 +141,7 @@ public class MenuScreen extends GameScreen {
             mDemosButton.update(elapsedTime);
             mPerformanceScreenButton.update(elapsedTime);
             mOptionsButton.update(elapsedTime);
-
-
+            mCreditsButton.update(elapsedTime);
 
             if (mSpaceshipDemoButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new SpaceshipDemoScreen(mGame));
@@ -149,9 +153,10 @@ public class MenuScreen extends GameScreen {
                 mGame.getScreenManager().addScreen(new DemoMenuScreen(mGame));
             else if (mPerformanceScreenButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.Performace.PerformanceScreen(mGame));
+            else if (mCreditsButton.isPushTriggered())
+                mGame.getScreenManager().addScreen(new CreditsScreen(mGame));
             else if (mOptionsButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.OptionsScreen(mGame));
-
         }
     }
 
@@ -173,6 +178,6 @@ public class MenuScreen extends GameScreen {
         mCardDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mPerformanceScreenButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mOptionsButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-
+        mCreditsButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
     }
 }
