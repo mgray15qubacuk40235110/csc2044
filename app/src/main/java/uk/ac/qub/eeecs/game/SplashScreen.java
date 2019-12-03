@@ -31,7 +31,7 @@ public class SplashScreen extends GameScreen {
     private final static int GAMEOBJECT_DENSITY = 10;
     private GameObject[] mGameObjects = new GameObject[GAMEOBJECT_DENSITY];
     private Sprite[] mSprites = new Sprite[GAMEOBJECT_DENSITY];
-    int[] mColourChoices = new int[]{Color.RED, Color.MAGENTA, Color.WHITE, Color.YELLOW};
+    int[] mColourChoices = new int[]{Color.BLUE, Color.RED, Color.WHITE, Color.YELLOW};
 
     private final static float GRAVITY = -300.0f;
     private final static float DAMPENING = 0.5f;
@@ -42,7 +42,7 @@ public class SplashScreen extends GameScreen {
     private Paint textPaint = new Paint();
 
     private PushButton mSplashScreenButton;
-    private int framesRemaining = 160;
+    private int framesRemaining = 115;
 
     // Define the back button to return to the demo menu
     private PushButton mBackButton;
@@ -59,7 +59,7 @@ public class SplashScreen extends GameScreen {
         super("SplashScreen", game);
 
         // Background
-        assetManager.loadAndAddBitmap("splashv5", "img/splashv5.png");
+        assetManager.loadAndAddBitmap("splash", "img/splash.png");
 
         float height = game.getScreenHeight();
         float width = game.getScreenWidth();
@@ -68,7 +68,7 @@ public class SplashScreen extends GameScreen {
         assetManager.loadAndAddBitmap("card1", "img/CardBackground.png");
         assetManager.loadAndAddBitmap("card2", "img/CardBackground1.png");
 
-        mSplashScreenButton = new PushButton(60, 60, width, height, "splashv5", this);
+        mSplashScreenButton = new PushButton(60, 60, width, height, "splash", this);
         createGameObjectAndSprites();
     }
 
