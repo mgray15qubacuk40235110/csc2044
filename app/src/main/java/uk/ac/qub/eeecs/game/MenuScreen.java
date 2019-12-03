@@ -7,6 +7,7 @@ import java.util.List;
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
@@ -39,6 +40,7 @@ public class MenuScreen extends GameScreen {
     private PushButton mPerformanceScreenButton;
     private PushButton mOptionsButton;
 
+
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
@@ -66,6 +68,7 @@ public class MenuScreen extends GameScreen {
 
         assetManager.loadAndAddBitmap("optionsIcon", "img/optionsIcon.png");
         assetManager.loadAndAddBitmap("OptionsIconSelected", "img/optionsIcon.png");
+
 
 
         // Define the spacing that will be used to position the buttons
@@ -103,6 +106,8 @@ public class MenuScreen extends GameScreen {
         mOptionsButton.setPlaySounds(true, true);
         mOptionsButton.setHeight(50);
         mOptionsButton.setWidth(50);
+
+
     }
 
 
@@ -132,6 +137,8 @@ public class MenuScreen extends GameScreen {
             mPerformanceScreenButton.update(elapsedTime);
             mOptionsButton.update(elapsedTime);
 
+
+
             if (mSpaceshipDemoButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new SpaceshipDemoScreen(mGame));
             else if (mCardDemoButton.isPushTriggered())
@@ -144,6 +151,7 @@ public class MenuScreen extends GameScreen {
                 mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.Performace.PerformanceScreen(mGame));
             else if (mOptionsButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new uk.ac.qub.eeecs.game.OptionsScreen(mGame));
+
         }
     }
 
@@ -165,5 +173,6 @@ public class MenuScreen extends GameScreen {
         mCardDemoButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mPerformanceScreenButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mOptionsButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+
     }
 }

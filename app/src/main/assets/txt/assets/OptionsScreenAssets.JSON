@@ -9,6 +9,11 @@
       "type": "Music",
       "name": "Resonance",
       "file": "sound/Resonance.mp3"
+    },
+    {
+      "type": "Music",
+      "name": "Wow",
+      "file": "sound/Wow.mp3"
     }
   ]
 }

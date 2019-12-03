@@ -100,7 +100,7 @@ public class OptionsScreen extends GameScreen {
 
         colourToggle = new PushButton(
                 spacingX * 0.50f, spacingY * 1.5f, 80, 80,
-                "Circle", "Circle",this );
+                "Circle", "Circle",this);
         colourToggle.setPlaySounds(true, true);
 
         setupCardGameObjects();
@@ -134,15 +134,12 @@ public class OptionsScreen extends GameScreen {
 
             mGame.getAssetManager().loadAssets("txt/assets/OptionsScreenAssets.JSON");
 
-
             if (returnToMenu.isPushTriggered())
                 mGame.getScreenManager().addScreen(new MenuScreen(mGame));
-
             else if (colourToggle.isPushTriggered())
                     colourToggleOn = !colourToggleOn;
-
             else if (musicToggle.isPushTriggered())
-                    audioManager.playMusic(getGame().getAssetManager().getMusic("Resonance"));
+                    audioManager.playMusic(getGame().getAssetManager().getMusic("Wow"));
             else if (pauseMusic.isPushTriggered())
                 if (audioManager.isMusicPlaying()) {
                     audioManager.pauseMusic();
@@ -155,12 +152,11 @@ public class OptionsScreen extends GameScreen {
         mGame.getAssetManager().loadAssets("txt/assets/OptionsScreenAssets.JSON");
 
         // Background
+
 //        mOptionsBackground = new GameObject(230,
 //                160, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
 //                .getAssetManager().getBitmap(""), this);
-
     }
-
     /**
      * Draw the menu screen
      *
