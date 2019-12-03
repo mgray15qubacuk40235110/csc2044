@@ -44,7 +44,9 @@ public class SimCardsScreen extends GameScreen {
     // Define a card to be displayed
     private Card currentCard;
     private Card[] cards = new Card[5];
+    private Card[] AIcards = new Card[5];
     private List<Card> mCards;
+    private List<Card> mAICards;
     private int cardOffset;
     private boolean[] flippingBack = new boolean[cards.length];
 
@@ -118,7 +120,7 @@ public class SimCardsScreen extends GameScreen {
         // Create the card background
         mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
                 mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
-                .getAssetManager().getBitmap("SimCardBackground"), this);
+                .getAssetManager().getBitmap("SimCardBackground3"), this);
 
         // Create cards
         mCards = new ArrayList<>();
@@ -127,6 +129,15 @@ public class SimCardsScreen extends GameScreen {
             cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 120), this);
             cardOffset = cardOffset + (int) cards[i].getWidth() + 20;
             mCards.add(cards[i]);
+        }
+
+        // Create AI Cards
+        mAICards = new ArrayList<>();
+        cardOffset = -20;
+        for (int i = 0; i < AIcards.length; i++) {
+            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 160), this);
+            cardOffset = cardOffset - (int) AIcards[i].getWidth() - 20;
+            mAICards.add(AIcards[i]);
         }
 
     }
@@ -201,6 +212,12 @@ public class SimCardsScreen extends GameScreen {
                 } else {
                     currentCard.backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
                 }
+            }
+        }
+
+        if (mAICards.size() > 0) {
+            for (int i = 0; i < mAICards.size(); i++) {
+                mAICards.get(i).backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             }
         }
 

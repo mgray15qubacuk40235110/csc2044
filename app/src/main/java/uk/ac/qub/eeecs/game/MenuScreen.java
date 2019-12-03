@@ -135,7 +135,7 @@ public class MenuScreen extends GameScreen {
             if (mSpaceshipDemoButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new SpaceshipDemoScreen(mGame));
             else if (mCardDemoButton.isPushTriggered())
-                mGame.getScreenManager().addScreen(new SimCardsScreen(mGame));
+                mGame.getScreenManager().addScreen(new SplashScreen(mGame));
             else if (mPlatformDemoButton.isPushTriggered())
                 mGame.getScreenManager().addScreen(new PlatformDemoScreen(mGame));
             else if (mDemosButton.isPushTriggered())
