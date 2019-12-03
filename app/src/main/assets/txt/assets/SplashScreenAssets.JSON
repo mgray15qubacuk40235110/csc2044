@@ -1,0 +1,26 @@
+{
+  "assets": [
+
+    {
+      "type": "Bitmap",
+      "name": "BackArrow",
+      "file": "img/BackArrow.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "splashv5",
+      "file": "img/splashv5.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "card1",
+      "file": "img/CardBackground.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "BackArrowSelected",
+      "file": "img/BackArrowSelected.png"
+    }
+
+  ]
+}
