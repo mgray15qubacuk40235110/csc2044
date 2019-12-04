@@ -23,7 +23,7 @@ import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
-
+import uk.ac.qub.eeecs.game.SplashScreen;
 
 
 /**
@@ -40,6 +40,7 @@ public class SimCardsScreen extends GameScreen {
 
     //Define the background of phones
     private GameObject mCardBackground;
+    private GameObject mPauseMenu;
 
     // Define a card to be displayed
     private Card currentCard;
@@ -52,9 +53,14 @@ public class SimCardsScreen extends GameScreen {
 
     //Buttons
     private PushButton endTurn;
+    private PushButton pause;
     private List<PushButton> mControls;
+    private boolean gamePaused = false;
+    private PushButton pausedContinue;
+    private PushButton pausedQuit;
 
     //Touch Input
+    private int unpauseCounter = 0;
     private boolean mTouchIdExists;
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
@@ -115,12 +121,24 @@ public class SimCardsScreen extends GameScreen {
         mControls = new ArrayList<>();
         endTurn = new PushButton(layerWidth - 170.0f, 90.0f, 300.0f, 90.0f,
                 "EndTurn", "EndTurnPressed", this);
+        pause = new PushButton(70.0f, getScreenHeight() - 60.0f, 70.0f, 70.0f,
+                "pauseButton", "pauseButton", this);
         mControls.add(endTurn);
+        mControls.add(pause);
+        pausedContinue = new PushButton(mDefaultLayerViewport. halfWidth - 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
+                "PausedContinueButton", "PausedContinueButton", this);
+        pausedQuit = new PushButton(mDefaultLayerViewport. halfWidth + 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
+                "PausedQuitButton", "PausedQuitButton", this);
 
         // Create the card background
         mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
                 mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
                 .getAssetManager().getBitmap("SimCardBackground3"), this);
+
+        //Create pause menu
+        mPauseMenu = new GameObject(mDefaultLayerViewport.halfWidth,
+                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 1.5f, mDefaultLayerViewport.halfHeight * 1.5f, getGame()
+                .getAssetManager().getBitmap("PauseMenu"), this);
 
         // Create cards
         mCards = new ArrayList<>();
@@ -161,6 +179,21 @@ public class SimCardsScreen extends GameScreen {
         for (PushButton control : mControls)
             control.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
 
+        if (gamePaused) {
+            pausedContinue.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
+            pausedQuit.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
+        }
+
+        if (pause.isPushTriggered()) {
+            gamePaused = true;
+        } else if (pausedContinue.isPushTriggered()) {
+            gamePaused = false;
+            unpauseCounter = 5;
+        } else if (pausedQuit.isPushTriggered()) {
+            mGame.getScreenManager().removeScreen(this);
+            mGame.getScreenManager().removeScreen("SplashScreen");
+        }
+
         // Get any touch events that have occurred since the last update
         List<TouchEvent> touchEvents = input.getTouchEvents();
         if (touchEvents.size() > 0) {
@@ -168,10 +201,13 @@ public class SimCardsScreen extends GameScreen {
             lastTouchEventType = lastTouchEvent.type;
         }
 
-        if (mCards.size() > 0) {
-            checkTouchActions(mCards, touchEvents, input);
+        if (unpauseCounter > 0) {
+            unpauseCounter = unpauseCounter - 1;
         }
 
+        if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
+            checkTouchActions(mCards, touchEvents, input);
+        }
     }
 
     /**
@@ -184,26 +220,12 @@ public class SimCardsScreen extends GameScreen {
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
         graphics2D.clear(Color.WHITE);
 
-        mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport,
-                mDefaultScreenViewport);
+        mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
         int screenWidth = graphics2D.getSurfaceWidth();
         int screenHeight = graphics2D.getSurfaceHeight();
 
-        // Display a message to the user
-        textPaint.setColor(Color.YELLOW);
-        textPaint.setTextSize(screenHeight / 16.0f);
-        textPaint.setTextAlign(Paint.Align.LEFT);
-        textPaint.setTypeface(Typeface.MONOSPACE);
-
-        // Set font values for drawing the touch information
-        float lineHeight = screenHeight / 30.0f;
-        textPaint.setTextAlign(Paint.Align.LEFT);
-        textPaint.setTextSize(lineHeight);
-
-
         // Draw the cards
-
         if (mCards.size() > 0) {
             for (int i = 0; i < mCards.size(); i++) {
                 currentCard = mCards.get(i);
@@ -215,6 +237,7 @@ public class SimCardsScreen extends GameScreen {
             }
         }
 
+        //Draw the AI Cards
         if (mAICards.size() > 0) {
             for (int i = 0; i < mAICards.size(); i++) {
                 mAICards.get(i).backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -225,22 +248,14 @@ public class SimCardsScreen extends GameScreen {
         for (PushButton control : mControls)
             control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
-
-        if (mTouchIdExists) {
-            graphics2D.drawText("Pointer Id Detected [" +
-                            String.format("%.2f, %.2f]", mTouchLocation[0], mTouchLocation[1]),
-                    10.0f, 30.0f, textPaint);
-        } else {
-            graphics2D.drawText("Pointer Id Not detected.",
-                    10.0f, 30.0f, textPaint);
-        }
-
-        // Draw the touch event history
-        int lineNumber = 1;
-        textPaint.setTextAlign(Paint.Align.RIGHT);
-        for (int eventIdx = 0; eventIdx < mTouchEventsInfo.size(); eventIdx++) {
-            graphics2D.drawText(mTouchEventsInfo.get(eventIdx),
-                    screenWidth, lineHeight * lineNumber++, textPaint);
+        if (gamePaused) {
+            mPauseMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            textPaint.setColor(Color.WHITE);
+            textPaint.setTextSize(screenHeight / 12.0f);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+            graphics2D.drawText("PAUSE MENU", screenWidth / 2, screenHeight / 4.0f, textPaint);
+            pausedContinue.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         }
 
     }

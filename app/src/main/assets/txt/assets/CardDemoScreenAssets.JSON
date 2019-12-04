@@ -97,6 +97,26 @@
     },
     {
       "type": "Bitmap",
+      "name": "pauseButton",
+      "file": "img/PauseButton.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "PauseMenu",
+      "file": "img/PauseMenu.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "PausedContinueButton",
+      "file": "img/pausedContinueButton.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "PausedQuitButton",
+      "file": "img/pausedQuitButton.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "RetroBG",
       "file": "img/RetroBG.gif"
     }

@@ -12,8 +12,18 @@
     },
     {
       "type": "Music",
+      "name": "CreditsTheme",
+      "file": "sound/FriendsSong.mp3"
+    },
+    {
+      "type": "Music",
       "name": "Wow",
       "file": "sound/Wow.mp3"
+    },
+    {
+      "type": "Bitmap",
+      "name": "Squad",
+      "file": "img/Squad.jpg"
     },
     {
       "type": "Bitmap",
