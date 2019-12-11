@@ -41,7 +41,7 @@ public class PerformanceScreen extends GameScreen {
     private Rect rectangle;
     private PushButton mupFrames;
     private PushButton mdownFrames;
-    private int numberOfRectangles = 100;
+    private int numberOfRectangles = 1;
     private int numCalls;
     private Paint paint = new Paint();
 
@@ -89,13 +89,13 @@ public class PerformanceScreen extends GameScreen {
 
         if (mupFrames.isPushTriggered())
         {
-            numberOfRectangles+=500;
+            numberOfRectangles+=1;
         }
         else if (mdownFrames.isPushTriggered())
         {
-            if(numberOfRectangles > 500)
+            if(numberOfRectangles > 1)
             {
-                numberOfRectangles -= 500;
+                numberOfRectangles -= 1;
             }
         }
     }
@@ -109,15 +109,26 @@ public class PerformanceScreen extends GameScreen {
         paint.setTextAlign(Paint.Align.LEFT);
         numCalls++;
 
-        graphics2D.drawText("Num = " + numCalls, 50.0f, 50.0f, paint);
-        graphics2D.drawText("Num of rectangles = " + numberOfRectangles, 50.0f, 150.0f, paint);
+        graphics2D.drawText("Num = " + numCalls, 50.0f, 100.0f, paint);
+        graphics2D.drawText("Num of rectangles = " + numberOfRectangles, 50.0f, 200.0f, paint);
 
         mupFrames.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mdownFrames.draw(elapsedTime, graphics2D , mDefaultLayerViewport, mDefaultScreenViewport);
 
-        for (int i=0; i < numberOfRectangles; i++)
-        {
+            paint.setColor(Color.BLUE);
+            Random r = new Random();
+            int left = r.nextInt(3000);
+            Random r2 = new Random();
+            int top = r2.nextInt(3000);
+            int right = left;
+            int bottom = right;
+            while ((left < 20)||(left > (graphics2D.getSurfaceHeight()/2)) ) {
+                left = r.nextInt(3000);
+            }
+            while (top < 20||(top > (graphics2D.getSurfaceHeight()/2))) {
+                top = r2.nextInt(3000);
+            }
+            graphics2D.drawRect(left,top+400,right,bottom,paint);
 
-        }
     }
 }
