@@ -42,6 +42,7 @@ public class OptionsScreen extends GameScreen {
     private PushButton musicToggle;
     private PushButton pauseMusic;
     private PushButton colourToggle;
+    private PushButton controlsMenu;
 
     private boolean colourToggleOn;
 
@@ -55,7 +56,7 @@ public class OptionsScreen extends GameScreen {
      * @param game Game to which this screen belongs
      */
     public OptionsScreen(Game game) {
-        super("MenuScreen", game);
+        super("OptionsScreen", game);
 
         // Load in the bitmaps used on the main menu screen
 
@@ -74,6 +75,9 @@ public class OptionsScreen extends GameScreen {
 
         assetManager.loadAndAddBitmap("Circle", "img/Circle.png");
         assetManager.loadAndAddBitmap("Circle", "img/Circle.png");
+
+        assetManager.loadAndAddBitmap("controls", "img/controls.png");
+        assetManager.loadAndAddBitmap("controls", "img/controls.png");
 
 
         // Define the spacing that will be used to position the buttons
@@ -103,6 +107,12 @@ public class OptionsScreen extends GameScreen {
                 "Circle", "Circle",this);
         colourToggle.setPlaySounds(true, true);
 
+        controlsMenu = new PushButton(
+                spacingX * 2.10f, spacingY * 1.5f, 160, 80,
+                "controls", "controls",this);
+        controlsMenu.setPlaySounds(true, true);
+
+
         setupCardGameObjects();
     }
 
@@ -129,6 +139,7 @@ public class OptionsScreen extends GameScreen {
             musicToggle.update(elapsedTime);
             pauseMusic.update(elapsedTime);
             colourToggle.update(elapsedTime);
+            controlsMenu.update(elapsedTime);
 
             AudioManager audioManager = getGame().getAudioManager();
 
@@ -136,6 +147,8 @@ public class OptionsScreen extends GameScreen {
 
             if (returnToMenu.isPushTriggered())
                 mGame.getScreenManager().addScreen(new MenuScreen(mGame));
+            else if (controlsMenu.isPushTriggered())
+                mGame.getScreenManager().addScreen(new ControlsMenu(mGame));
             else if (colourToggle.isPushTriggered())
                     colourToggleOn = !colourToggleOn;
             else if (musicToggle.isPushTriggered())
@@ -180,6 +193,7 @@ public class OptionsScreen extends GameScreen {
         musicToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         pauseMusic.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         colourToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        controlsMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
     }
 }
