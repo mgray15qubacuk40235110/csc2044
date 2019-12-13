@@ -16,6 +16,11 @@ import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 
+import android.graphics.Paint;
+import android.view.LayoutInflater;
+import android.widget.Button;
+import android.widget.PopupWindow;
+
 /**
  * An exceedingly basic menu screen with a couple of touch buttons
  *
@@ -26,6 +31,11 @@ public class ControlsMenu extends GameScreen {
     // /////////////////////////////////////////////////////////////////////////
     // Properties
     // /////////////////////////////////////////////////////////////////////////
+
+    private Paint paint = new Paint();
+
+   // int[] mColourChoices = new int[]{Color.BLUE, Color.RED, Color.WHITE, Color.YELLOW};
+
 
     /**
      * Background
@@ -53,13 +63,10 @@ public class ControlsMenu extends GameScreen {
 
         // Load in the bitmaps used on the main menu screen
 
-        // Change these icons
-
         AssetManager assetManager = mGame.getAssetManager();
 
         assetManager.loadAndAddBitmap("BackArrow", "img/BackArrow.png");
         assetManager.loadAndAddBitmap("BackArrowSelected", "img/BackArrowSelected.png");
-
 
         // Define the spacing that will be used to position the buttons
         int spacingX = (int)mDefaultLayerViewport.getWidth() / 6;
@@ -101,7 +108,6 @@ public class ControlsMenu extends GameScreen {
 
             if (returnToMenu.isPushTriggered())
                 mGame.getScreenManager().addScreen(new OptionsScreen(mGame));
-
         }
     }
 
@@ -126,6 +132,33 @@ public class ControlsMenu extends GameScreen {
 
         mOptionsBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         returnToMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+
+        // Textual controls
+        String colourArray[] = {"#EE00FF", "#EC01FC", "#E501F5", "#E201F2", "#E001F0", "#DE01EE", "#DB00EA", "#D801E7", "#D501E4", "#D101E0", "#CB02D9", "#C701D5", "#C401D2", "#C401D2", "#C701D5", "#CB02D9", "#D101E0", "#D501E4", "#D801E7", "#DB00EA", "#DE01EE", "#DD01EC", "#E001F0", "#E201F2", "#E501F5", "#EC01FC", "#EE00FF"};
+
+        Random i = new Random();
+        int c = i.nextInt(24 - 1) + 1;
+
+       //  graphics2D.clear(Color.parseColor(colourArray[c]));
+
+        paint.setColor(Color.parseColor(colourArray[c]));
+        paint.setTextSize(getGame().getScreenHeight() / 10);
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        graphics2D.drawText("Controls Menu - Sim Cards", 930.0f, 100.0f, paint);
+
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(getGame().getScreenHeight() / 25);
+        graphics2D.drawText("The Aim: ", 300.0f, 200.0f, paint);
+        graphics2D.drawText("Users are given a deck of randomly generated 'Sim Cards'", 765.0f, 350.0f, paint);
+        graphics2D.drawText("and must fight against an AI player, which also has a deck", 765.0f, 400.0f, paint);
+        graphics2D.drawText("of randomly generated cards.", 495.0f, 450.0f, paint);
+        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
+        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
+        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
+        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
+
+
 
     }
 }
