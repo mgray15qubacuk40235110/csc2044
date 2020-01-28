@@ -21,6 +21,8 @@ import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
+import uk.ac.qub.eeecs.gage.util.SteeringBehaviours;
+import uk.ac.qub.eeecs.gage.util.Vector2;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.game.SplashScreen;
@@ -46,10 +48,14 @@ public class SimCardsScreen extends GameScreen {
     private Card currentCard;
     private Card[] cards = new Card[5];
     private Card[] AIcards = new Card[5];
+    private Card[] deckCards = new Card[4];
+    private Card testCard;
     private List<Card> mCards;
     private List<Card> mAICards;
+    private List<Card> mDeckCards;
     private int cardOffset;
     private boolean[] flippingBack = new boolean[cards.length];
+    private boolean cardsDealt = false;
 
     //Buttons
     private PushButton endTurn;
@@ -144,7 +150,7 @@ public class SimCardsScreen extends GameScreen {
         mCards = new ArrayList<>();
         cardOffset = 20;
         for (int i = 0; i < cards.length; i++) {
-            cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 120), this);
+            cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 140), this);
             cardOffset = cardOffset + (int) cards[i].getWidth() + 20;
             mCards.add(cards[i]);
         }
@@ -153,11 +159,21 @@ public class SimCardsScreen extends GameScreen {
         mAICards = new ArrayList<>();
         cardOffset = -20;
         for (int i = 0; i < AIcards.length; i++) {
-            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 160), this);
+            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 140), this);
             cardOffset = cardOffset - (int) AIcards[i].getWidth() - 20;
             mAICards.add(AIcards[i]);
         }
 
+        //Add deck
+        mDeckCards = new ArrayList<>();
+        cardOffset = 0;
+        for (int i = 0; i < 3; i++) {
+            deckCards[i] = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 + cardOffset), this);
+            mDeckCards.add(deckCards[i]);
+            cardOffset = cardOffset - 10;
+        }
+
+        testCard = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30), this);
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -208,6 +224,9 @@ public class SimCardsScreen extends GameScreen {
         if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
             checkTouchActions(mCards, touchEvents, input);
         }
+        if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
+            testCard.update(elapsedTime, 1);
+        }
     }
 
     /**
@@ -244,6 +263,15 @@ public class SimCardsScreen extends GameScreen {
             }
         }
 
+        //Draw the Deck
+        if (mDeckCards.size() > 0) {
+            for (int i = 0; i < 3; i++) {
+                mDeckCards.get(i).backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            }
+        }
+
+        testCard.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+
         // Draw the controls last of all
         for (PushButton control : mControls)
             control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -258,6 +286,16 @@ public class SimCardsScreen extends GameScreen {
             pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         }
 
+    }
+
+    public Vector2 getDealLocation(int i) {
+       if (i < 5) {
+           return mCards.get(i).position;
+       } else if (i > 4 && i < 10) {
+           return mAICards.get(i - 5).position;
+       } else {
+           return mCards.get(0).position;
+       }
     }
 
     public void checkTouchActions(List<Card> mCards, List<TouchEvent> touchEvents, Input input) {
