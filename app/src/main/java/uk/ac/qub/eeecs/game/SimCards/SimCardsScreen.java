@@ -44,6 +44,10 @@ public class SimCardsScreen extends GameScreen {
     private GameObject mCardBackground;
     private GameObject mPauseMenu;
 
+    public Card getCurrentCard() {
+        return currentCard;
+    }
+
     // Define a card to be displayed
     private Card currentCard;
     private Card[] cards = new Card[5];
@@ -70,6 +74,11 @@ public class SimCardsScreen extends GameScreen {
     private boolean mTouchIdExists;
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
+
+    public boolean[] getRearFacing() {
+        return rearFacing;
+    }
+
     private boolean[] rearFacing = new boolean[cards.length];
     private boolean[] flipCard = new boolean[cards.length];
     TouchEvent lastTouchEvent;
@@ -401,7 +410,6 @@ public class SimCardsScreen extends GameScreen {
         }
 
     }
-
 }
 
 
