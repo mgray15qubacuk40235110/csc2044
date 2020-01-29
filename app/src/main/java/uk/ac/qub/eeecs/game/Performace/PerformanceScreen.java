@@ -39,8 +39,23 @@ public class PerformanceScreen extends GameScreen {
     private Random random;
     private Bitmap image;
     private Rect rectangle;
+
+    public PushButton getMupFrames() {
+        return mupFrames;
+    }
+
     private PushButton mupFrames;
+
+    public PushButton getMdownFrames() {
+        return mdownFrames;
+    }
+
     private PushButton mdownFrames;
+
+    public int getNumberOfRectangles() {
+        return numberOfRectangles;
+    }
+
     private int numberOfRectangles = 1;
     private int numCalls;
     private Paint paint = new Paint();
