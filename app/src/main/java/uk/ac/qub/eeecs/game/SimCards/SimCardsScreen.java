@@ -182,7 +182,11 @@ public class SimCardsScreen extends GameScreen {
             cardOffset = cardOffset - 10;
         }
 
-        testCard = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30), this);
+        for (int i = 0; i <5; i++) {
+            mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
+            mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
+        }
+
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -230,12 +234,24 @@ public class SimCardsScreen extends GameScreen {
             unpauseCounter = unpauseCounter - 1;
         }
 
-        if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
+
+        if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0 && cardsDealt == false) {
+            for (int i = 0; i < 5; i++) {
+                mCards.get(i).update(elapsedTime, i);
+            }
+            for (int i = 5; i < 10; i++) {
+                mAICards.get(i - 5).update(elapsedTime, i);
+            }
+        }
+
+        if (mCards.get(0).position.x == mDefaultScreenViewport.left + 110 && mCards.get(0).position.y == mDefaultScreenViewport.top + 140) {
+            cardsDealt = true;
+        }
+
+        if (cardsDealt == true && mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
             checkTouchActions(mCards, touchEvents, input);
         }
-        if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
-            testCard.update(elapsedTime, 1);
-        }
+
     }
 
     /**
@@ -278,8 +294,6 @@ public class SimCardsScreen extends GameScreen {
                 mDeckCards.get(i).backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             }
         }
-
-        testCard.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
         // Draw the controls last of all
         for (PushButton control : mControls)
