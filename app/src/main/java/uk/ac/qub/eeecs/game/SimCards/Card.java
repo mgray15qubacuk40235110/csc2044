@@ -92,8 +92,8 @@ public class Card extends Sprite {
     public Card(float x, float y, GameScreen gameScreen) {
         super(x, y, DEFAULT_CARD_WIDTH, DEFAULT_CARD_HEIGHT, null, gameScreen);
 
-        maxAcceleration = 100.0f;
-        maxVelocity = 500.0f;
+        maxAcceleration = 200.0f;
+        maxVelocity = 700.0f;
         maxAngularVelocity = 200.0f;
         maxAngularAcceleration = 500.0f;
 
@@ -123,8 +123,8 @@ public class Card extends Sprite {
     public Card(float x, float y, int width, int height, GameScreen gameScreen) {
         super(x, y, width, height, null, gameScreen);
 
-        maxAcceleration = 100.0f;
-        maxVelocity = 500.0f;
+        maxAcceleration = 200.0f;
+        maxVelocity = 700.0f;
         maxAngularVelocity = 200.0f;
         maxAngularAcceleration = 500.0f;
 
@@ -275,7 +275,7 @@ public class Card extends Sprite {
 
 
         // Seek towards the deal position
-        if ((Math.abs(this.position.x - targposition.x) >= 10) || (Math.abs(this.position.y - targposition.y) >= 10)) {
+        if ((Math.abs(this.position.x - targposition.x) >= 20) || (Math.abs(this.position.y - targposition.y) >= 20)) {
             SteeringBehaviours.seek(this, targposition, acceleration);
         } else {
             this.velocity.set(Vector2.Zero);
