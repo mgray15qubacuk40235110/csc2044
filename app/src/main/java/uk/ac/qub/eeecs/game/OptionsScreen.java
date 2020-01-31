@@ -15,7 +15,7 @@ import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
-import uk.ac.qub.eeecs.game.spaceDemo.SpaceshipDemoScreen;
+
 
 /**
  * An exceedingly basic menu screen with a couple of touch buttons
@@ -31,6 +31,11 @@ public class OptionsScreen extends GameScreen {
     /**
      * Background
      */
+
+    // Unit Test //
+
+    String isPlaying = "The music is playing";
+    String isNotPlaying = "The music is not playing";
 
     private GameObject mOptionsBackground;
 
@@ -131,6 +136,8 @@ public class OptionsScreen extends GameScreen {
         // Process any touch events occurring since the update
         Input input = mGame.getInput();
 
+        boolean musicPlaying = false;
+
         List<TouchEvent> touchEvents = input.getTouchEvents();
         if (touchEvents.size() > 0) {
 
@@ -196,4 +203,5 @@ public class OptionsScreen extends GameScreen {
         controlsMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
     }
+
 }

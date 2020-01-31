@@ -116,7 +116,6 @@ public class ControlsMenu extends GameScreen {
         mGame.getAssetManager().loadAssets("txt/assets/OptionsScreenAssets.JSON");
 
         // Background
-
         mOptionsBackground = new GameObject(230,
                 160, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
                 .getAssetManager().getBitmap("RetroBG"), this);
@@ -134,7 +133,10 @@ public class ControlsMenu extends GameScreen {
         returnToMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
         // Textual controls
-        String colourArray[] = {"#EE00FF", "#EC01FC", "#E501F5", "#E201F2", "#E001F0", "#DE01EE", "#DB00EA", "#D801E7", "#D501E4", "#D101E0", "#CB02D9", "#C701D5", "#C401D2", "#C401D2", "#C701D5", "#CB02D9", "#D101E0", "#D501E4", "#D801E7", "#DB00EA", "#DE01EE", "#DD01EC", "#E001F0", "#E201F2", "#E501F5", "#EC01FC", "#EE00FF"};
+        String colourArray[] = {"#EE00FF", "#EC01FC", "#E501F5", "#E201F2", "#E001F0", "#DE01EE", "#DB00EA",
+                "#D801E7", "#D501E4", "#D101E0", "#CB02D9", "#C701D5", "#C401D2", "#C401D2", "#C701D5",
+                "#CB02D9", "#D101E0", "#D501E4", "#D801E7", "#DB00EA", "#DE01EE", "#DD01EC", "#E001F0",
+                "#E201F2", "#E501F5", "#EC01FC", "#EE00FF"};
 
         Random i = new Random();
         int c = i.nextInt(24 - 1) + 1;
@@ -150,13 +152,13 @@ public class ControlsMenu extends GameScreen {
         paint.setColor(Color.WHITE);
         paint.setTextSize(getGame().getScreenHeight() / 25);
         graphics2D.drawText("The Aim: ", 300.0f, 200.0f, paint);
-        graphics2D.drawText("Users are given a deck of randomly generated 'Sim Cards'", 765.0f, 350.0f, paint);
-        graphics2D.drawText("and must fight against an AI player, which also has a deck", 765.0f, 400.0f, paint);
-        graphics2D.drawText("of randomly generated cards.", 495.0f, 450.0f, paint);
-        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
-        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
-        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
-        graphics2D.drawText("Batman'", 765.0f, 500.0f, paint);
+        graphics2D.drawText("• Users are given a deck of randomly generated 'Sim Cards'", 765.0f, 300.0f, paint);
+        graphics2D.drawText("and must fight against an AI player, which also has a deck", 765.0f, 350.0f, paint);
+        graphics2D.drawText("of randomly generated cards.", 495.0f, 400.0f, paint);
+        graphics2D.drawText("• This line will be used to explain instructions further", 705.0f, 500.0f, paint);
+        graphics2D.drawText("• This line will also be used to explain instructions further", 750.0f, 600.0f, paint);
+        graphics2D.drawText("• This line will ALSO be used to explain instructions further", 765.0f, 700.0f, paint);
+        graphics2D.drawText("            • This line will probably not be used to explain instructions further", 765.0f, 800.0f, paint);
 
 
 
