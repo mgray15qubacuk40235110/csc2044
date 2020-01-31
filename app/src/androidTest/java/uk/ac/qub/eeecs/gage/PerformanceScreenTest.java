@@ -3,6 +3,7 @@ package uk.ac.qub.eeecs.gage;
 import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
@@ -28,7 +29,7 @@ public class PerformanceScreenTest {
         assetManager = game.getAssetManager();
     }
 
-
+@Test
     public void checkNumRectangles()
 {
     gameScreen = new PerformanceScreen(game);
