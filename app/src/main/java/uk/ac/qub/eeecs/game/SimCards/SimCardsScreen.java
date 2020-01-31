@@ -21,6 +21,8 @@ import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
+import uk.ac.qub.eeecs.gage.util.SteeringBehaviours;
+import uk.ac.qub.eeecs.gage.util.Vector2;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.game.SplashScreen;
@@ -42,14 +44,22 @@ public class SimCardsScreen extends GameScreen {
     private GameObject mCardBackground;
     private GameObject mPauseMenu;
 
+    public Card getCurrentCard() {
+        return currentCard;
+    }
+
     // Define a card to be displayed
     private Card currentCard;
     private Card[] cards = new Card[5];
     private Card[] AIcards = new Card[5];
+    private Card[] deckCards = new Card[4];
+    private Card testCard;
     private List<Card> mCards;
     private List<Card> mAICards;
+    private List<Card> mDeckCards;
     private int cardOffset;
     private boolean[] flippingBack = new boolean[cards.length];
+    private boolean cardsDealt = false;
 
     //Buttons
     private PushButton endTurn;
@@ -64,6 +74,11 @@ public class SimCardsScreen extends GameScreen {
     private boolean mTouchIdExists;
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
+
+    public boolean[] getRearFacing() {
+        return rearFacing;
+    }
+
     private boolean[] rearFacing = new boolean[cards.length];
     private boolean[] flipCard = new boolean[cards.length];
     TouchEvent lastTouchEvent;
@@ -144,7 +159,7 @@ public class SimCardsScreen extends GameScreen {
         mCards = new ArrayList<>();
         cardOffset = 20;
         for (int i = 0; i < cards.length; i++) {
-            cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 120), this);
+            cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 140), this);
             cardOffset = cardOffset + (int) cards[i].getWidth() + 20;
             mCards.add(cards[i]);
         }
@@ -153,9 +168,24 @@ public class SimCardsScreen extends GameScreen {
         mAICards = new ArrayList<>();
         cardOffset = -20;
         for (int i = 0; i < AIcards.length; i++) {
-            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 160), this);
+            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 140), this);
             cardOffset = cardOffset - (int) AIcards[i].getWidth() - 20;
             mAICards.add(AIcards[i]);
+        }
+
+        //Add deck
+        mDeckCards = new ArrayList<>();
+        cardOffset = 0;
+        for (int i = 0; i < 3; i++) {
+            deckCards[i] = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 + cardOffset), this);
+            mDeckCards.add(deckCards[i]);
+            cardOffset = cardOffset - 10;
+        }
+
+        //Moving all cards to deck location for dealing animation
+        for (int i = 0; i <5; i++) {
+            mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
+            mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
         }
 
     }
@@ -176,23 +206,13 @@ public class SimCardsScreen extends GameScreen {
 
         Input input = mGame.getInput();
 
-        for (PushButton control : mControls)
+        //Checking all push buttons for an update(click)
+        for (PushButton control : mControls) {
             control.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
-
-        if (gamePaused) {
-            pausedContinue.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
-            pausedQuit.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
         }
 
-        if (pause.isPushTriggered()) {
-            gamePaused = true;
-        } else if (pausedContinue.isPushTriggered()) {
-            gamePaused = false;
-            unpauseCounter = 5;
-        } else if (pausedQuit.isPushTriggered()) {
-            mGame.getScreenManager().removeScreen(this);
-            mGame.getScreenManager().removeScreen("SplashScreen");
-        }
+        //Checking if game is paused or unpaused
+        managePause(elapsedTime);
 
         // Get any touch events that have occurred since the last update
         List<TouchEvent> touchEvents = input.getTouchEvents();
@@ -201,13 +221,16 @@ public class SimCardsScreen extends GameScreen {
             lastTouchEventType = lastTouchEvent.type;
         }
 
-        if (unpauseCounter > 0) {
-            unpauseCounter = unpauseCounter - 1;
+        //Dealing cards if not yet dealt
+        if (!cardsDealt && mAICards.size() > 0 && !gamePaused && unpauseCounter == 0) {
+            dealCards(elapsedTime);
         }
 
-        if (mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
+        //Once cards have been dealt the user can now interact with cards
+        if (cardsDealt && mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
             checkTouchActions(mCards, touchEvents, input);
         }
+
     }
 
     /**
@@ -218,18 +241,19 @@ public class SimCardsScreen extends GameScreen {
      */
     @Override
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
+
         graphics2D.clear(Color.WHITE);
-
-        mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-
         int screenWidth = graphics2D.getSurfaceWidth();
         int screenHeight = graphics2D.getSurfaceHeight();
+
+        //Draw the background
+        mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
         // Draw the cards
         if (mCards.size() > 0) {
             for (int i = 0; i < mCards.size(); i++) {
                 currentCard = mCards.get(i);
-                if (!rearFacing[i]) {
+                if (!rearFacing[i] && cardsDealt) {
                     currentCard.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
                 } else {
                     currentCard.backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -244,18 +268,20 @@ public class SimCardsScreen extends GameScreen {
             }
         }
 
+        //Draw the Deck
+        if (mDeckCards.size() > 0) {
+            for (int i = 0; i < 3; i++) {
+                mDeckCards.get(i).backDraw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            }
+        }
+
         // Draw the controls last of all
         for (PushButton control : mControls)
             control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
+        //If the game is paused draw the pause menu
         if (gamePaused) {
-            mPauseMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-            textPaint.setColor(Color.WHITE);
-            textPaint.setTextSize(screenHeight / 12.0f);
-            textPaint.setTextAlign(Paint.Align.CENTER);
-            graphics2D.drawText("PAUSE MENU", screenWidth / 2, screenHeight / 4.0f, textPaint);
-            pausedContinue.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-            pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            drawPause(elapsedTime, graphics2D, screenHeight, screenWidth);
         }
 
     }
@@ -265,7 +291,7 @@ public class SimCardsScreen extends GameScreen {
         for (int i = 0; i < mCards.size(); i++) {
             currentCard = mCards.get(i);
             mTouchIdExists = input.existsTouch(0);
-            if (mTouchIdExists && flipCard[i] == false) {
+            if (mTouchIdExists && !flipCard[i]) {
                 mTouchLocation[0] = input.getTouchX(0);
                 mTouchLocation[1] = (mDefaultLayerViewport.halfHeight * 2.0f) - input.getTouchY(0);
                 if ((mTouchLocation[0] >= currentCard.getLeft()) & (mTouchLocation[0] <= (currentCard.getLeft() + currentCard.getWidth()))) {
@@ -282,7 +308,7 @@ public class SimCardsScreen extends GameScreen {
                         }
                     }
                 }
-            } else if (flipCard[i] == false){
+            } else if (!flipCard[i]){
                 for (TouchEvent indexTouchEvent : touchEvents) {
                     if (indexTouchEvent.type == 5) {
                         if ((indexTouchEvent.x >= currentCard.getLeft()) & (indexTouchEvent.x <= (currentCard.getLeft() + currentCard.getWidth()))) {
@@ -296,7 +322,7 @@ public class SimCardsScreen extends GameScreen {
 
             if (flipCard[i]) {
 
-                if (flippingBack[i] == false) {
+                if (!flippingBack[i]) {
                     shrinkCard();
                 }
 
@@ -305,7 +331,7 @@ public class SimCardsScreen extends GameScreen {
                     flippingBack[i] = !flippingBack[i];
                 }
 
-                if (flippingBack[i] == true) {
+                if (flippingBack[i]) {
                     growCard();
                 }
 
@@ -315,8 +341,7 @@ public class SimCardsScreen extends GameScreen {
                 }
             }
 
-            if (dragging[i] == true) {
-                //flipCard[i] = false;
+            if (dragging[i]) {
                 currentCard.position.x = mTouchLocation[0];
                 currentCard.position.y = mTouchLocation[1];
             }
@@ -364,6 +389,56 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    public void dealCards(ElapsedTime elapsedTime) {
+
+            //Deal the users cards
+            for (int i = 0; i < 5; i++) {
+                mCards.get(i).update(elapsedTime, i);
+            }
+
+            //Deal the AI cards once the users cards are dealt
+            if (mCards.get(0).position.x == mCards.get(0).getSpawnX() && mCards.get(0).position.y == mCards.get(0).getSpawnY()) {
+                for (int i = 5; i < 10; i++) {
+                    mAICards.get(i - 5).update(elapsedTime, i);
+                }
+            }
+
+            //Once both sets of cards are dealt this method is no longer needed
+            if (mAICards.get(4).position.x == mAICards.get(4).getSpawnX() && mAICards.get(4).position.y == mAICards.get(4).getSpawnY()) {
+                cardsDealt = true;
+            }
+    }
+
+    public void managePause(ElapsedTime elapsedTime) {
+        if (gamePaused) {
+            pausedContinue.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
+            pausedQuit.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
+        }
+
+        if (pause.isPushTriggered()) {
+            gamePaused = true;
+        } else if (pausedContinue.isPushTriggered()) {
+            gamePaused = false;
+            unpauseCounter = 5;
+        } else if (pausedQuit.isPushTriggered()) {
+            mGame.getScreenManager().removeScreen(this);
+            mGame.getScreenManager().removeScreen("SplashScreen");
+        }
+
+        if (unpauseCounter > 0) {
+            unpauseCounter = unpauseCounter - 1;
+        }
+    }
+
+    public void drawPause(ElapsedTime elapsedTime, IGraphics2D graphics2D, int screenHeight, int screenWidth) {
+        mPauseMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(screenHeight / 12.0f);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        graphics2D.drawText("PAUSE MENU", screenWidth / 2, screenHeight / 4.0f, textPaint);
+        pausedContinue.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+    }
 }
 
 

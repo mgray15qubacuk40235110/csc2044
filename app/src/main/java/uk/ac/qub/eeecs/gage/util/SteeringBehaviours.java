@@ -28,7 +28,6 @@ public class SteeringBehaviours {
                 && targetPosition.y == seekingSprite.position.y) {
             acceleration.set(Vector2.Zero);
         } else {
-
             // Determine the seeking direction
             acceleration.set(targetPosition.x - seekingSprite.position.x,
                     targetPosition.y - seekingSprite.position.y);

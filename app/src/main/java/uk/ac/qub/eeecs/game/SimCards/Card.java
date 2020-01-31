@@ -8,12 +8,16 @@ import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
 import uk.ac.qub.eeecs.gage.util.GraphicsHelper;
+import uk.ac.qub.eeecs.gage.util.MathsHelper;
+import uk.ac.qub.eeecs.gage.util.SteeringBehaviours;
 import uk.ac.qub.eeecs.gage.util.Vector2;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.gage.world.LayerViewport;
 import uk.ac.qub.eeecs.gage.world.ScreenViewport;
 import uk.ac.qub.eeecs.gage.world.Sprite;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
+import uk.ac.qub.eeecs.game.spaceDemo.SpaceshipDemoScreen;
+
 import java.util.List;
 
 /**
@@ -70,6 +74,9 @@ public class Card extends Sprite {
     private float spawnX;
     private float spawnY;
 
+    //Where the card must go
+    private Vector2 mDealPosition;
+
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
@@ -84,6 +91,11 @@ public class Card extends Sprite {
 
     public Card(float x, float y, GameScreen gameScreen) {
         super(x, y, DEFAULT_CARD_WIDTH, DEFAULT_CARD_HEIGHT, null, gameScreen);
+
+        maxAcceleration = 200.0f;
+        maxVelocity = 700.0f;
+        maxAngularVelocity = 200.0f;
+        maxAngularAcceleration = 500.0f;
 
         AssetManager assetManager = gameScreen.getGame().getAssetManager();
 
@@ -110,6 +122,11 @@ public class Card extends Sprite {
 
     public Card(float x, float y, int width, int height, GameScreen gameScreen) {
         super(x, y, width, height, null, gameScreen);
+
+        maxAcceleration = 200.0f;
+        maxVelocity = 700.0f;
+        maxAngularVelocity = 200.0f;
+        maxAngularAcceleration = 500.0f;
 
         AssetManager assetManager = gameScreen.getGame().getAssetManager();
 
@@ -235,6 +252,39 @@ public class Card extends Sprite {
             // Draw the bitmap
             graphics2D.drawBitmap(bitmap, drawMatrix, null);
         }
+    }
+
+    /**
+     * Update the AI Spaceship
+     *
+     * @param elapsedTime Elapsed time information
+     */
+
+    public void update(ElapsedTime elapsedTime, int cardPosition) {
+
+        Vector2 targposition;
+
+        if (cardPosition < 5) {
+            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().left + 90 + 20 + ((20 + DEFAULT_CARD_WIDTH) * (cardPosition)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().top + 140 );
+        } else if (cardPosition < 10) {
+            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().right - 90 - 20 - ((20 + DEFAULT_CARD_WIDTH) * (cardPosition - 5)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().bottom - 140 );
+        } else {
+            targposition = new Vector2(Vector2.Zero);
+        }
+
+
+
+        // Seek towards the deal position
+        if ((Math.abs(this.position.x - targposition.x) >= 20) || (Math.abs(this.position.y - targposition.y) >= 20)) {
+            SteeringBehaviours.seek(this, targposition, acceleration);
+        } else {
+            this.velocity.set(Vector2.Zero);
+            this.acceleration.set(Vector2.Zero);
+            this.position.set(targposition);
+        }
+
+        // Call the sprite's superclass to apply the determined accelerations
+        super.update(elapsedTime);
     }
 
     public int getDefaultCardWidth(){
