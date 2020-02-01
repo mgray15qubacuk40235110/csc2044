@@ -110,6 +110,7 @@ public class ExampleUnitTest {
         float expectedMaxAngularVelocity = 50.0f;
         float expectedMaxAngularAcceleration = 50.0f;
 
+
         // Create a new aiSpaceship turret instance
         Turret turret = new Turret(expectedXPosition, expectedYPosition, spaceshipDemoScreen);
 

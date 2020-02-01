@@ -1,5 +1,4 @@
 package uk.ac.qub.eeecs.gage;
-import android.content.Entity;
 import android.graphics.Bitmap;
 
 import org.junit.Before;
@@ -8,22 +7,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
-import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
-import uk.ac.qub.eeecs.gage.engine.ScreenManager;
 import uk.ac.qub.eeecs.gage.engine.input.Input;
-import uk.ac.qub.eeecs.gage.world.GameObject;
-import uk.ac.qub.eeecs.game.MenuScreen;
-import uk.ac.qub.eeecs.game.spaceDemo.Asteroid;
+import uk.ac.qub.eeecs.gage.engine.particle.Emitter;
 import uk.ac.qub.eeecs.game.spaceDemo.PlayerSpaceship;
-import uk.ac.qub.eeecs.game.spaceDemo.SpaceEntity;
-import uk.ac.qub.eeecs.game.spaceDemo.Turret;
 import uk.ac.qub.eeecs.game.spaceDemo.SpaceshipDemoScreen;
-
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -46,6 +35,8 @@ public class PlayerSpaceshipTest {
     private Input input; // Mock version of: 'input'
     @Mock
     private PlayerSpaceship mPlayerSpaceship;
+    @Mock
+    private Emitter emitter;
 
 
     @Before
@@ -57,22 +48,52 @@ public class PlayerSpaceshipTest {
         when(spaceshipDemoScreen.getName()).thenReturn("SpaceshipDemoScreen");
 
         // We then construct a mock version of the spaceship demo screen using what has been declared above
-
     }
 
     // This is the function which will test something related to the player spaceship
+
     @Test
     public void expectedMaxAcceleration() {
 
         // Define what we expect
         float expectedMaxAcceleration = 600.0f;
 
-        mPlayerSpaceship = new PlayerSpaceship(100, 100, spaceshipDemoScreen);
+        PlayerSpaceship spaceship1 = new PlayerSpaceship(100, 100, spaceshipDemoScreen);
 
         // Test this condition
 
-        assertTrue(mPlayerSpaceship.maxAcceleration == expectedMaxAcceleration);
-        assertEquals(mPlayerSpaceship.getBitmap(), bitmap);
+        assertTrue(spaceship1.maxAcceleration == expectedMaxAcceleration);
+        assertEquals(spaceship1.getBitmap(), bitmap);
+
     }
+
+    @Test
+    public void expectedPlayerSpaceshipProperties()
+    {
+        float ExpectedMaxAcceleration = 600.0f;
+        float ExpectedMaxVelocity = 100.0f;
+        float ExpectedMaxAngularVelocity = 1440.0f;
+        float ExpectedMaxAngularAcceleration = 1440.0f;
+        float ExpectedMaxmMass = 1000.0f;
+
+        PlayerSpaceship mPlayerSpaceship = new PlayerSpaceship(100, 100, spaceshipDemoScreen);
+
+        assertTrue(mPlayerSpaceship.maxAcceleration == ExpectedMaxAcceleration);
+        assertTrue(mPlayerSpaceship.maxVelocity == ExpectedMaxVelocity);
+        assertTrue(mPlayerSpaceship.maxAngularAcceleration == ExpectedMaxAngularVelocity);
+        assertTrue(mPlayerSpaceship.maxAngularAcceleration == ExpectedMaxAngularAcceleration);
+        assertTrue(mPlayerSpaceship.maxAcceleration == ExpectedMaxAcceleration);
+        assertTrue(mPlayerSpaceship.mMass == ExpectedMaxmMass);
+        assertEquals(mPlayerSpaceship.getBitmap(), bitmap);
+
+    }
+
+    @Test
+    public void addition_isCorrect() throws Exception {
+        // As basic as it gets!
+        assertEquals(4, 2 + 2);
+    }
+
+
 
 }
