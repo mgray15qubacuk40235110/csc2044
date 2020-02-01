@@ -60,5 +60,4 @@ public class  CardTest {
         assertTrue(testCard.getDefaultCardWidth() == (testCard.getRight() - testCard.getLeft()));
     }
 
-
 }

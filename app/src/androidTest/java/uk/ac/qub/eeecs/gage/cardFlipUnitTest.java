@@ -42,8 +42,8 @@ public class cardFlipUnitTest {
     public void setUp() {
         game = new GameTest(1280, 720);
         gameScreen = new SimCardsScreen(game);
-
         game.getAssetManager();
+
 
 
         //  context = InstrumentationRegistry.getTargetContext;
