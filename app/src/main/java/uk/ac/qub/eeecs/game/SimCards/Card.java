@@ -195,6 +195,7 @@ public class Card extends Sprite {
     }
 
     public float getLeft() {return (position.x - (DEFAULT_CARD_WIDTH / 2));}
+    public float getRight() {return (position.x + (DEFAULT_CARD_WIDTH / 2));}
     public float getBottom() {return (position.y - (DEFAULT_CARD_HEIGHT / 2));}
 
 
