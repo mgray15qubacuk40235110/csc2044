@@ -10,6 +10,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.ac.qub.eeecs.gage.engine.ScreenManager;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
 import uk.ac.qub.eeecs.game.OptionsScreen;
+import uk.ac.qub.eeecs.game.SplashScreen;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -17,9 +18,10 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ControlsScreenTest {
 
-    String optionsScreenMenu = "Menu Screen";
+public class SplashscreenTest {
+
+    String splashscreen = "Splashscreen";
     String gameScreenName = "Game Screen";
 
     @Mock
@@ -27,45 +29,47 @@ public class ControlsScreenTest {
     @Mock
     GameScreen gameScreen = Mockito.mock(GameScreen.class);
     @Mock
-    OptionsScreen optionsScreen = Mockito.mock(OptionsScreen.class);
+    SplashScreen splashScreen = Mockito.mock(SplashScreen.class);
 
     @Before
-    public void SetUpScreen() {
-        when(optionsScreen.getName()).thenReturn(optionsScreenMenu);
+    public void SetUpSplashScreen() {
+        when(splashScreen.getName()).thenReturn(splashscreen);
         when(gameScreen.getName()).thenReturn(gameScreenName);
     }
 
     @Test
-    public void addOptionsScreenTest() throws Exception {
+    public void addSplashScreenTest() throws Exception {
         ScreenManager manager = new ScreenManager(game);
-        manager.addScreen(optionsScreen);
-        assertEquals(optionsScreen, manager.getCurrentScreen());
+        manager.addScreen(splashScreen);
+        assertEquals(splashScreen, manager.getCurrentScreen());
+        System.out.println("2. Success!");
+    }
+
+    @Test
+    public void getSplashScreenTest() throws Exception {
+        ScreenManager manager = new ScreenManager(game);
+        manager.addScreen(gameScreen);
+        manager.addScreen(splashScreen);
+        assertEquals(splashScreen, manager.getCurrentScreen());
+        System.out.println("4. Success!");
+    }
+
+    @Test
+    public void removeSplashScreenIfValid () throws Exception {
+        ScreenManager manager = new ScreenManager(game);
+        manager.addScreen(splashScreen );
+        manager.addScreen(gameScreen);
+        assertTrue(manager.removeScreen(splashscreen));
         System.out.println("1. Success!");
     }
 
     @Test
-    public void getOptionsScreen() throws Exception {
+    public void removeSplashScreenIfNotValid() throws Exception {
         ScreenManager manager = new ScreenManager(game);
+        manager.addScreen(splashScreen );
         manager.addScreen(gameScreen);
-        manager.addScreen(optionsScreen);
-        assertEquals(optionsScreen, manager.getCurrentScreen());
-        System.out.println("2. Success!");
-    }
-    @Test
-    public void removeOptionsScreenIfValid() throws Exception {
-        ScreenManager manager = new ScreenManager(game);
-        manager.addScreen(optionsScreen );
-        manager.addScreen(gameScreen);
-        assertTrue(manager.removeScreen(optionsScreenMenu));
+        manager.removeScreen(splashScreen);
+        assertFalse(manager.removeScreen(splashscreen));
         System.out.println("3. Success!");
-    }
-    @Test
-    public void removeOptionsScreenIfNotValid() throws Exception {
-        ScreenManager manager = new ScreenManager(game);
-        manager.addScreen(optionsScreen );
-        manager.addScreen(gameScreen);
-        manager.removeScreen(optionsScreenMenu);
-        assertFalse(manager.removeScreen(optionsScreenMenu));
-        System.out.println("4. Success!");
     }
 }
