@@ -5,6 +5,8 @@ import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
+
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -40,6 +42,10 @@ public class SplashScreen extends GameScreen {
     private final static float JUMP_TRIGGER_DISTANCE = 5.0f;
 
     private Paint textPaint = new Paint();
+    private GameObject mCardBackground;
+    private GameObject mLogo;
+
+    private float loadingCounter = 0;
 
     private PushButton mSplashScreenButton;
     private int framesRemaining = 115;
@@ -64,12 +70,27 @@ public class SplashScreen extends GameScreen {
         float height = game.getScreenHeight();
         float width = game.getScreenWidth();
 
+        mDefaultLayerViewport.set(getScreenWidth() / 2, getScreenHeight() / 2, getScreenWidth() / 2, getScreenHeight() / 2);
+        mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
+
         assetManager.loadAndAddBitmap("arrow", "img/UpArrow.png");
         assetManager.loadAndAddBitmap("card1", "img/CardBackground.png");
         assetManager.loadAndAddBitmap("card2", "img/CardBackground1.png");
+        assetManager.loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
+        assetManager.loadAndAddBitmap("GameLogo", "img/GameLogo.png");
 
         mSplashScreenButton = new PushButton(60, 60, width, height, "splash", this);
         createGameObjectAndSprites();
+
+        // Create the card background
+        mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
+                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
+                .getAssetManager().getBitmap("Background"), this);
+
+        //Define logo
+        mLogo = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom - 270.0f,
+                mDefaultScreenViewport.right / 2.5f, mDefaultScreenViewport.bottom / 2.5f,
+                getGame().getAssetManager().getBitmap("GameLogo"), this);
     }
 
     public void update(ElapsedTime elapsedTime) {
@@ -120,10 +141,26 @@ public class SplashScreen extends GameScreen {
 
     @Override
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
+    // Clear the screen and draw the buttons
+        graphics2D.clear(Color.BLACK);
 
-        // Clear the screen and draw the buttons
+        //Draw Background + Logo
+        mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        mLogo.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
-        mSplashScreenButton.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        textPaint.setColor(Color.WHITE);
+        graphics2D.drawText("Loading...", 375.0f, 725.0f, textPaint);
+
+        textPaint.setColor(Color.BLACK);
+        graphics2D.drawRect(185.0f,785,mDefaultScreenViewport.right - 185.0f,915,textPaint);
+
+        textPaint.setColor(Color.WHITE);
+        graphics2D.drawRect(200.0f,800,mDefaultScreenViewport.right - 200.0f,900,textPaint);
+
+        textPaint.setColor(Color.BLACK);
+        graphics2D.drawRect(210.0f,810,210 + loadingCounter,890,textPaint);
+        loadingCounter = loadingCounter + 13.15f;
+
         counter(elapsedTime, graphics2D);
         //drawSprites(elapsedTime,graphics2D);
 
@@ -141,18 +178,6 @@ public class SplashScreen extends GameScreen {
         textPaint.setTextAlign(Paint.Align.CENTER);
 
         textPaint.setColor(mColour);
-        graphics2D.drawText("Game Beginning Soon",
-                mDefaultScreenViewport.centerX(),
-                mDefaultScreenViewport.centerY() + -6.0f * textSize, textPaint);
-
-        //Creation of a counter class, this means the counter can be called for any part of the game such as time limits in game card play
-        //Creation of a counter in another class removes the need for the duplication of code and is a handy user feature and removes around 50 lines of code
-
-      /*  Object game = mGame;
-        Counter counter = new Counter(mGame);
-        counter.counter(framesRemaining,graphics2D, elapsedTime); */
-
-
     }
 
     public void checkCard(ElapsedTime elapsedTime) {
@@ -243,6 +268,13 @@ public class SplashScreen extends GameScreen {
 
             }
         }
+    }
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels + 128;
+    }
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 }
 
