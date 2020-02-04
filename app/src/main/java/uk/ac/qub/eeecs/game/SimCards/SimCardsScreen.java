@@ -44,10 +44,6 @@ public class SimCardsScreen extends GameScreen {
     private GameObject mCardBackground;
     private GameObject mPauseMenu;
 
-    public Card getCurrentCard() {
-        return currentCard;
-    }
-
     // Define a card to be displayed
     private Card currentCard;
     private Card[] cards = new Card[5];
@@ -122,7 +118,6 @@ public class SimCardsScreen extends GameScreen {
     public SimCardsScreen(Game game) {
         super("CardScreen", game);
 
-        //mDefaultLayerViewport.set(mDefaultLayerViewport.x * 2, mDefaultLayerViewport.y * 2, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2);
         mDefaultLayerViewport.set(getScreenWidth() / 2, getScreenHeight() / 2, getScreenWidth() / 2, getScreenHeight() / 2);
         mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
 

@@ -61,7 +61,6 @@ public class PlayerSpaceshipTest {
         PlayerSpaceship spaceship1 = new PlayerSpaceship(100, 100, spaceshipDemoScreen);
 
         // Test this condition
-
         assertTrue(spaceship1.maxAcceleration == expectedMaxAcceleration);
         assertEquals(spaceship1.getBitmap(), bitmap);
 
@@ -93,7 +92,5 @@ public class PlayerSpaceshipTest {
         // As basic as it gets!
         assertEquals(4, 2 + 2);
     }
-
-
 
 }
