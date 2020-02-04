@@ -1,5 +1,6 @@
 package uk.ac.qub.eeecs.game;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 
 import java.util.List;
@@ -63,6 +64,9 @@ public class OptionsScreen extends GameScreen {
     public OptionsScreen(Game game) {
         super("OptionsScreen", game);
 
+        mDefaultLayerViewport.set(getScreenWidth() / 2, getScreenHeight() / 2, getScreenWidth() / 2, getScreenHeight() / 2);
+        mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
+
         // Load in the bitmaps used on the main menu screen
 
         // Change these icons
@@ -78,11 +82,11 @@ public class OptionsScreen extends GameScreen {
         assetManager.loadAndAddBitmap("PauseButton", "img/PauseButton.png");
         assetManager.loadAndAddBitmap("PauseButton", "img/PauseButton.png");
 
-        assetManager.loadAndAddBitmap("Circle", "img/Circle.png");
-        assetManager.loadAndAddBitmap("Circle", "img/Circle.png");
+        assetManager.loadAndAddBitmap("ColourToggle", "img/button_colour-toggle.png");
+        assetManager.loadAndAddBitmap("ColourToggle", "img/button_colour-toggle.png");
 
-        assetManager.loadAndAddBitmap("controls", "img/controls.png");
-        assetManager.loadAndAddBitmap("controls", "img/controls.png");
+        assetManager.loadAndAddBitmap("controls", "img/button_controls.png");
+        assetManager.loadAndAddBitmap("controls", "img/button_controls.png");
 
 
         // Define the spacing that will be used to position the buttons
@@ -92,12 +96,12 @@ public class OptionsScreen extends GameScreen {
         // Create the trigger buttons
 
         musicToggle = new PushButton(
-                spacingX * 2.70f, spacingY * 2.80f, 25, 25,
+                spacingX * 2.70f, spacingY * 2.80f, 100, 100,
                 "PlayButton", "PlayButton",this );
         musicToggle.setPlaySounds(true, true);
 
         pauseMusic = new PushButton(
-                spacingX * 3.20f, spacingY * 2.80f, 25, 25,
+                spacingX * 3.20f, spacingY * 2.80f, 100, 100,
                 "PauseButton", "PauseButton",this );
         pauseMusic.setPlaySounds(true, true);
 
@@ -108,12 +112,12 @@ public class OptionsScreen extends GameScreen {
         returnToMenu.setPlaySounds(true, true);
 
         colourToggle = new PushButton(
-                spacingX * 0.50f, spacingY * 1.5f, 80, 80,
-                "Circle", "Circle",this);
+                spacingX * 0.85f, spacingY * 1.5f, 400, 140,
+                "ColourToggle", "ColourToggle",this);
         colourToggle.setPlaySounds(true, true);
 
         controlsMenu = new PushButton(
-                spacingX * 2.10f, spacingY * 1.5f, 160, 80,
+                spacingX * 2.30f, spacingY * 1.5f, 400, 140,
                 "controls", "controls",this);
         controlsMenu.setPlaySounds(true, true);
 
@@ -173,9 +177,9 @@ public class OptionsScreen extends GameScreen {
 
         // Background
 
-//        mOptionsBackground = new GameObject(230,
-//                160, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
-//                .getAssetManager().getBitmap(""), this);
+        mOptionsBackground = new GameObject(960,
+                540, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
+                .getAssetManager().getBitmap("SimCardsMenuBackground2"), this);
     }
     /**
      * Draw the menu screen
@@ -195,13 +199,21 @@ public class OptionsScreen extends GameScreen {
            graphics2D.clear(Color.parseColor(colourArray[c]));
        }
 
-//       mOptionsBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        mOptionsBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         returnToMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         musicToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         pauseMusic.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         colourToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         controlsMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
+    }
+
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels + 128;
+    }
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
 }

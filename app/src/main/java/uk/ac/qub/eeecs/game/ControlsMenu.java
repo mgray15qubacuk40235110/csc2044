@@ -121,9 +121,6 @@ public class ControlsMenu extends GameScreen {
                 mGame.getScreenManager().addScreen(new OptionsScreen(mGame));
         }
 
-        //Scrolling text
-        xScroll += 0.5f;
-        yScroll += 0.5f;
     }
 
     private void setupCardGameObjects() {
@@ -133,7 +130,7 @@ public class ControlsMenu extends GameScreen {
         // Background
         mOptionsBackground = new GameObject(960,
                 540, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
-                .getAssetManager().getBitmap("RetroBG"), this);
+                .getAssetManager().getBitmap("SimCardsMenuBackground"), this);
     }
     /**
      * Draw the menu screen
@@ -157,6 +154,17 @@ public class ControlsMenu extends GameScreen {
         int c = i.nextInt(24 - 1) + 1;
 
        //  graphics2D.clear(Color.parseColor(colourArray[c]));
+
+        paint.setColor(Color.parseColor(colourArray[c]));
+        paint.setTextSize(getGame().getScreenHeight() / 10);
+        paint.setTextAlign(Paint.Align.CENTER);
+
+        graphics2D.drawText("Controls Menu - Sim Cards", 938.0f, 100.0f, paint);
+
+        paint.setTextSize(getGame().getScreenHeight() / 10);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setColor(Color.BLACK);
+        graphics2D.drawText("Controls Menu - Sim Cards", 934.0f, 100.0f, paint);
 
         paint.setColor(Color.parseColor(colourArray[c]));
         paint.setTextSize(getGame().getScreenHeight() / 10);

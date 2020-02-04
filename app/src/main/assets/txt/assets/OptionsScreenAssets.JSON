@@ -2,8 +2,12 @@
   "assets": [
     {
       "type": "Bitmap",
-      "name": "RetroBG",
-      "file": "img/RetroBG.gif"
+      "name": "SimCardsMenuBackground2",
+      "file": "img/SimCardsMenuBackground2.png"
+    },{
+      "type": "Bitmap",
+      "name": "SimCardsMenuBackground",
+      "file": "img/SimCardsMenuBackground.png"
     },
     {
       "type": "Music",
