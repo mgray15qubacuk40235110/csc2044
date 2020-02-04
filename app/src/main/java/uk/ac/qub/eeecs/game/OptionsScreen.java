@@ -96,12 +96,12 @@ public class OptionsScreen extends GameScreen {
         // Create the trigger buttons
 
         musicToggle = new PushButton(
-                spacingX * 2.70f, spacingY * 2.80f, 100, 100,
+                spacingX * 2.70f, spacingY * 2.80f, 140, 140,
                 "PlayButton", "PlayButton",this );
         musicToggle.setPlaySounds(true, true);
 
         pauseMusic = new PushButton(
-                spacingX * 3.20f, spacingY * 2.80f, 100, 100,
+                spacingX * 3.20f, spacingY * 2.80f, 140, 140,
                 "PauseButton", "PauseButton",this );
         pauseMusic.setPlaySounds(true, true);
 
