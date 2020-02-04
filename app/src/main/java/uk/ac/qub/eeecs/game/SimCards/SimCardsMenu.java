@@ -56,6 +56,7 @@ public class SimCardsMenu extends GameScreen {
         assetManager.loadAndAddBitmap("ViewDeckButton", "img/ViewDeck.png");
         assetManager.loadAndAddBitmap("QuitGameButton", "img/QuitGame.png");
         assetManager.loadAndAddBitmap("GameLogo", "img/GameLogo.png");
+        assetManager.loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
 
         // Define the spacing that will be used to position the buttons
         float offS = (mDefaultScreenViewport.bottom / 8) + 20.0f;
