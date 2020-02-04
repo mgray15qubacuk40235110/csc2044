@@ -126,12 +126,13 @@ public class SimCardsScreen extends GameScreen {
 
         // Load the various images used by the cards
         mGame.getAssetManager().loadAssets("txt/assets/CardDemoScreenAssets.JSON");
+        mGame.getAssetManager().loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
 
         //Creating buttons
         mControls = new ArrayList<>();
         endTurn = new PushButton(layerWidth - 170.0f, 90.0f, 300.0f, 90.0f,
                 "EndTurn", "EndTurnPressed", this);
-        pause = new PushButton(70.0f, getScreenHeight() - 60.0f, 70.0f, 70.0f,
+        pause = new PushButton(70.0f, getScreenHeight() - 60.0f, 90.0f, 90.0f,
                 "pauseButton", "pauseButton", this);
         mControls.add(endTurn);
         mControls.add(pause);
@@ -143,7 +144,7 @@ public class SimCardsScreen extends GameScreen {
         // Create the card background
         mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
                 mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
-                .getAssetManager().getBitmap("SimCardBackground3"), this);
+                .getAssetManager().getBitmap("Background"), this);
 
         //Create pause menu
         mPauseMenu = new GameObject(mDefaultLayerViewport.halfWidth,
