@@ -1,11 +1,13 @@
 package uk.ac.qub.eeecs.game;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 
 import java.util.List;
 import java.util.Random;
 
 import uk.ac.qub.eeecs.gage.Game;
+import uk.ac.qub.eeecs.gage.R;
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
@@ -18,8 +20,11 @@ import uk.ac.qub.eeecs.gage.world.GameScreen;
 
 import android.graphics.Paint;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.PopupWindow;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * An exceedingly basic menu screen with a couple of touch buttons
@@ -49,6 +54,9 @@ public class ControlsMenu extends GameScreen {
 
     private PushButton returnToMenu;
 
+    private float xScroll = 0.0f;
+    private float yScroll = 0.0f;
+
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
@@ -60,6 +68,9 @@ public class ControlsMenu extends GameScreen {
      */
     public ControlsMenu(Game game) {
         super("ControlsMenu", game);
+
+        mDefaultLayerViewport.set(getScreenWidth() / 2, getScreenHeight() / 2, getScreenWidth() / 2, getScreenHeight() / 2);
+        mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
 
         // Load in the bitmaps used on the main menu screen
 
@@ -109,6 +120,10 @@ public class ControlsMenu extends GameScreen {
             if (returnToMenu.isPushTriggered())
                 mGame.getScreenManager().addScreen(new OptionsScreen(mGame));
         }
+
+        //Scrolling text
+        xScroll += 0.5f;
+        yScroll += 0.5f;
     }
 
     private void setupCardGameObjects() {
@@ -116,8 +131,8 @@ public class ControlsMenu extends GameScreen {
         mGame.getAssetManager().loadAssets("txt/assets/OptionsScreenAssets.JSON");
 
         // Background
-        mOptionsBackground = new GameObject(230,
-                160, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
+        mOptionsBackground = new GameObject(960,
+                540, mDefaultLayerViewport.getWidth(), mDefaultLayerViewport.getHeight(), getGame()
                 .getAssetManager().getBitmap("RetroBG"), this);
     }
     /**
@@ -160,7 +175,13 @@ public class ControlsMenu extends GameScreen {
         graphics2D.drawText("• This line will ALSO be used to explain instructions further", 765.0f, 700.0f, paint);
         graphics2D.drawText("            • This line will probably not be used to explain instructions further", 765.0f, 800.0f, paint);
 
+    }
 
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels + 128;
+    }
 
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 }
