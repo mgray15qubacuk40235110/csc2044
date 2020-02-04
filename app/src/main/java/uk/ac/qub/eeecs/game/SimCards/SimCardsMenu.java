@@ -33,6 +33,7 @@ public class SimCardsMenu extends GameScreen {
 
     //Logo
     private GameObject mLogo;
+    private GameObject mBackground;
 
 
     // /////////////////////////////////////////////////////////////////////////
@@ -72,7 +73,14 @@ public class SimCardsMenu extends GameScreen {
                 mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "QuitGameButton", this);
 
         //Define logo
-        mLogo = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom - 270.0f, mDefaultScreenViewport.right / 2.5f, mDefaultScreenViewport.bottom / 2.5f, getGame().getAssetManager().getBitmap("GameLogo"), this);
+        mLogo = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom - 270.0f,
+                mDefaultScreenViewport.right / 2.5f, mDefaultScreenViewport.bottom / 2.5f,
+                getGame().getAssetManager().getBitmap("GameLogo"), this);
+
+        //Define Background
+        mBackground = new GameObject(mDefaultLayerViewport.halfWidth,
+                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
+                .getAssetManager().getBitmap("Background"), this);
     }
 
 
@@ -126,7 +134,8 @@ public class SimCardsMenu extends GameScreen {
         // Clear the screen and draw the buttons
         graphics2D.clear(Color.BLACK);
 
-        //Draw Logo
+        //Draw Background + Logo
+        mBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mLogo.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
         //Draw Buttons
