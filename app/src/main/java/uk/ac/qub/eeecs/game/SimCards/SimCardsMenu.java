@@ -114,7 +114,7 @@ public class SimCardsMenu extends GameScreen {
                 mGame.getScreenManager().addScreen(new SplashScreen(mGame));
             }
             else if (mDeckButton.isPushTriggered()) {
-                mGame.getScreenManager().removeScreen(this);
+                mGame.getScreenManager().addScreen(new DeckScreen(mGame));
             }
             else if (mQuitButton.isPushTriggered()) {
                 mGame.getScreenManager().removeScreen(this);
