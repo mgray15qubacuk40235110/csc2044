@@ -130,6 +130,7 @@ public class Card extends Sprite {
         maxAngularAcceleration = 500.0f;
 
         AssetManager assetManager = gameScreen.getGame().getAssetManager();
+        assetManager.loadAndAddBitmap("CardBackground2", "img/CardBackground2.png");
 
         // Store the common card base image
         mCardBase = assetManager.getBitmap("CardBackground2");
