@@ -2,6 +2,7 @@ package uk.ac.qub.eeecs.game;
 
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
@@ -57,6 +58,9 @@ public class SplashScreen extends GameScreen {
     AssetManager assetManager = mGame.getAssetManager();
     private GameObject Background;
 
+    // Audio Manager
+    AudioManager audioManager = getGame().getAudioManager();
+
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
@@ -91,13 +95,26 @@ public class SplashScreen extends GameScreen {
         mLogo = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom - 270.0f,
                 mDefaultScreenViewport.right / 2.5f, mDefaultScreenViewport.bottom / 2.5f,
                 getGame().getAssetManager().getBitmap("GameLogo"), this);
+
     }
+
+    // Loading Sound
+
+//    private void playBackgroundMusic() {
+//        while (framesRemaining > 0)
+//            audioManager.playMusic(
+//                    getGame().getAssetManager().getMusic("Rise"));
+//    }
 
     public void update(ElapsedTime elapsedTime) {
         checkIfTimeToMove(elapsedTime);
         checkIfButtonPushedToMove(elapsedTime);
         checkCard(elapsedTime);
+
+        // playBackgroundMusic();
     }
+
+
 
     public int getFramesRemaining() {
         return framesRemaining;
@@ -130,6 +147,7 @@ public class SplashScreen extends GameScreen {
     private void moveToMenuScreen(ElapsedTime elapsedTime) {
         //Move to the card screen after an event
 
+
         mSplashScreenButton.update(elapsedTime);
         mGame.getScreenManager().addScreen(new SimCardsScreen(mGame));
 
@@ -141,7 +159,7 @@ public class SplashScreen extends GameScreen {
 
     @Override
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
-    // Clear the screen and draw the buttons
+        // Clear the screen and draw the buttons
         graphics2D.clear(Color.BLACK);
 
         //Draw Background + Logo
@@ -152,19 +170,20 @@ public class SplashScreen extends GameScreen {
         graphics2D.drawText("Loading...", 375.0f, 725.0f, textPaint);
 
         textPaint.setColor(Color.BLACK);
-        graphics2D.drawRect(185.0f,785,mDefaultScreenViewport.right - 185.0f,915,textPaint);
+        graphics2D.drawRect(185.0f, 785, mDefaultScreenViewport.right - 185.0f, 915, textPaint);
 
         textPaint.setColor(Color.WHITE);
-        graphics2D.drawRect(200.0f,800,mDefaultScreenViewport.right - 200.0f,900,textPaint);
+        graphics2D.drawRect(200.0f, 800, mDefaultScreenViewport.right - 200.0f, 900, textPaint);
 
         textPaint.setColor(Color.BLACK);
-        graphics2D.drawRect(210.0f,810,210 + loadingCounter,890,textPaint);
+        graphics2D.drawRect(210.0f, 810, 210 + loadingCounter, 890, textPaint);
         loadingCounter = loadingCounter + 13.15f;
 
         counter(elapsedTime, graphics2D);
         //drawSprites(elapsedTime,graphics2D);
 
     }
+
     //Reduce number drawn to screen
     public void counter(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
 
@@ -218,7 +237,8 @@ public class SplashScreen extends GameScreen {
         }
 
     }
-    public void drawSprites(ElapsedTime elapsedTime, IGraphics2D graphics2D){
+
+    public void drawSprites(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
 
         // Draw each of the card sprites
         for (Sprite card : mSprites)
@@ -228,6 +248,7 @@ public class SplashScreen extends GameScreen {
         for (Sprite card1 : mSprites)
             card1.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
     }
+
     public void createGameObjectAndSprites() {
         Random random = new Random();
 
@@ -243,7 +264,7 @@ public class SplashScreen extends GameScreen {
             GameObject trigger = new GameObject(objectWidth * (idx + 0.5f), objectHeight / 2.0f, objectWidth, objectHeight, assetManager.getBitmap("card1"), this);
             mGameObjects[idx] = trigger;
 
-            //Create a random card
+            // Create a random card //
 
             for (int i = 1; i <= 10; i++) {
                 int randomNumber = (int) (Math.random() * 100);
@@ -265,10 +286,10 @@ public class SplashScreen extends GameScreen {
                             objectWidth, objectHeight, assetManager.getBitmap("card2"), this);
                     mSprites[idx] = card2;
                 }
-
             }
         }
     }
+
     public static int getScreenWidth() {
         return Resources.getSystem().getDisplayMetrics().widthPixels + 128;
     }
@@ -276,7 +297,7 @@ public class SplashScreen extends GameScreen {
     public static int getScreenHeight() {
         return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
-}
 
+}
 
 

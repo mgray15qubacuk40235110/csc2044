@@ -16,6 +16,7 @@ import java.util.List;
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.R;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
+import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
 import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
@@ -227,6 +228,15 @@ public class SimCardsScreen extends GameScreen {
             checkTouchActions(mCards, touchEvents, input);
         }
 
+        playBackgroundMusic();
+
+    }
+
+    private void playBackgroundMusic() {
+        AudioManager audioManager = getGame().getAudioManager();
+        if(!audioManager.isMusicPlaying())
+            audioManager.playMusic(
+                    getGame().getAssetManager().getMusic("SpaceBackgroundMusic"));
     }
 
     /**

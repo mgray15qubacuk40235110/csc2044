@@ -69,6 +69,11 @@
       "type": "Bitmap",
       "name": "BackArrowSelected",
       "file": "img/BackArrowSelected.png"
+    },
+    {
+      "type": "Music",
+      "name": "Rise",
+      "file": "sound/Rise.wav"
     }
   ]
 }

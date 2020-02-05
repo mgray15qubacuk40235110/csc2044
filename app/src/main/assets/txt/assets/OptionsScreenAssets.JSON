@@ -18,6 +18,11 @@
       "type": "Music",
       "name": "Wow",
       "file": "sound/Wow.mp3"
+    },
+    {
+      "type": "Music",
+      "name": "Rise",
+      "file": "sound/Rise.wav"
     }
   ]
 }

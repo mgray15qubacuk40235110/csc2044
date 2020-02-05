@@ -20,7 +20,16 @@
       "type": "Bitmap",
       "name": "BackArrowSelected",
       "file": "img/BackArrowSelected.png"
+    },
+    {
+      "type": "Music",
+      "name": "Rise",
+      "file": "sound/Rise.wav"
+    },
+    {
+      "type": "Music",
+      "name": "SpaceBackgroundMusic",
+      "file": "sound/Resonance.mp3"
     }
-
   ]
 }
