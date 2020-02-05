@@ -123,7 +123,6 @@ public class SimCardsScreen extends GameScreen {
         mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
 
         float layerWidth = mDefaultLayerViewport.halfWidth * 2.0f;
-        float layerHeight = mDefaultLayerViewport.halfHeight * 2.0f;
 
         // Load the various images used by the cards
         mGame.getAssetManager().loadAssets("txt/assets/CardDemoScreenAssets.JSON");
@@ -228,7 +227,7 @@ public class SimCardsScreen extends GameScreen {
             checkTouchActions(mCards, touchEvents, input);
         }
 
-        playBackgroundMusic();
+        //playBackgroundMusic();
 
     }
 

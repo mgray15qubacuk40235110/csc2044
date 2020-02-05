@@ -59,7 +59,8 @@ public class SplashScreen extends GameScreen {
     private GameObject Background;
 
     // Audio Manager
-    AudioManager audioManager = getGame().getAudioManager();
+    AudioManager audioManager;
+    boolean soundPlayed = false;
 
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
@@ -69,6 +70,7 @@ public class SplashScreen extends GameScreen {
         super("SplashScreen", game);
 
         // Background
+        mGame.getAssetManager().loadAssets("txt/assets/SplashScreenAssets.JSON");
         assetManager.loadAndAddBitmap("splash", "img/splashv5.png");
 
         float height = game.getScreenHeight();
@@ -77,14 +79,10 @@ public class SplashScreen extends GameScreen {
         mDefaultLayerViewport.set(getScreenWidth() / 2, getScreenHeight() / 2, getScreenWidth() / 2, getScreenHeight() / 2);
         mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
 
-        assetManager.loadAndAddBitmap("arrow", "img/UpArrow.png");
-        assetManager.loadAndAddBitmap("card1", "img/CardBackground.png");
-        assetManager.loadAndAddBitmap("card2", "img/CardBackground1.png");
         assetManager.loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
         assetManager.loadAndAddBitmap("GameLogo", "img/GameLogo.png");
 
         mSplashScreenButton = new PushButton(60, 60, width, height, "splash", this);
-        createGameObjectAndSprites();
 
         // Create the card background
         mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
@@ -96,65 +94,17 @@ public class SplashScreen extends GameScreen {
                 mDefaultScreenViewport.right / 2.5f, mDefaultScreenViewport.bottom / 2.5f,
                 getGame().getAssetManager().getBitmap("GameLogo"), this);
 
+        audioManager = getGame().getAudioManager();
     }
 
-    // Loading Sound
-
-//    private void playBackgroundMusic() {
-//        while (framesRemaining > 0)
-//            audioManager.playMusic(
-//                    getGame().getAssetManager().getMusic("Rise"));
-//    }
 
     public void update(ElapsedTime elapsedTime) {
         checkIfTimeToMove(elapsedTime);
-        checkIfButtonPushedToMove(elapsedTime);
-        checkCard(elapsedTime);
 
-        // playBackgroundMusic();
-    }
-
-
-
-    public int getFramesRemaining() {
-        return framesRemaining;
-    }
-
-    public void setFramesRemaining(int framesRemaining) {
-        this.framesRemaining = framesRemaining;
-    }
-
-    private void checkIfTimeToMove(ElapsedTime elapsedTime) {
-        //When the frames get to 0 then automatically begin the game
-
-        framesRemaining--;
-        if (framesRemaining <= 0) {
-            moveToMenuScreen(elapsedTime);
+        if (!soundPlayed) {
+            soundPlayed = true;
+            playBackgroundMusic();
         }
-    }
-
-    private void checkIfButtonPushedToMove(ElapsedTime elapsedTime) {
-        Input input = mGame.getInput();
-
-        List<TouchEvent> touchEvents = input.getTouchEvents();
-        if (touchEvents.size() > 0) {
-
-            //Updating button to go to the card demo screen if clicked
-            moveToMenuScreen(elapsedTime);
-        }
-    }
-
-    private void moveToMenuScreen(ElapsedTime elapsedTime) {
-        //Move to the card screen after an event
-
-
-        mSplashScreenButton.update(elapsedTime);
-        mGame.getScreenManager().addScreen(new SimCardsScreen(mGame));
-
-        //If the user clicks the screen then the user has chosen to ready up and will be moved to play area
-        if (mSplashScreenButton.isPushTriggered())
-            mGame.getScreenManager().addScreen(new SimCardsScreen(mGame));
-
     }
 
     @Override
@@ -166,128 +116,43 @@ public class SplashScreen extends GameScreen {
         mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         mLogo.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
-        textPaint.setColor(Color.WHITE);
-        graphics2D.drawText("Loading...", 375.0f, 725.0f, textPaint);
-
         textPaint.setColor(Color.BLACK);
         graphics2D.drawRect(185.0f, 785, mDefaultScreenViewport.right - 185.0f, 915, textPaint);
 
         textPaint.setColor(Color.WHITE);
         graphics2D.drawRect(200.0f, 800, mDefaultScreenViewport.right - 200.0f, 900, textPaint);
 
-        textPaint.setColor(Color.BLACK);
+        textPaint.setColor(Color.MAGENTA);
         graphics2D.drawRect(210.0f, 810, 210 + loadingCounter, 890, textPaint);
         loadingCounter = loadingCounter + 13.15f;
 
-        counter(elapsedTime, graphics2D);
-        //drawSprites(elapsedTime,graphics2D);
-
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(100.0f);
+        graphics2D.drawText("Loading...", 235.0f, 765.0f, textPaint);
     }
 
-    //Reduce number drawn to screen
-    public void counter(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
+    private void checkIfTimeToMove(ElapsedTime elapsedTime) {
+        //When the frames get to 0 then automatically begin the game
 
-        int mColour = mColourChoices[(int) (elapsedTime.totalTime % mColourChoices.length)];
-
-        float textSize =
-                ViewportHelper.convertXDistanceFromLayerToScreen(
-                        mDefaultLayerViewport.getHeight() * 0.05f,
-                        mDefaultLayerViewport, mDefaultScreenViewport);
-        textPaint.setTextSize(textSize * 1.5f);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-
-        textPaint.setColor(mColour);
-    }
-
-    public void checkCard(ElapsedTime elapsedTime) {
-
-        Random random = new Random();
-
-        Input input = mGame.getInput();
-        Bitmap arrow = mGame.getAssetManager().getBitmap("arrow");
-
-        for (int idx = 0; idx < mGameObjects.length; idx++) {
-            GameObject trigger = mGameObjects[idx];
-            trigger.setBitmap(arrow);
-
-            Sprite card = mSprites[idx];
-            if ((card.position.y - card.getHeight() / 2.0f)
-                    - (trigger.position.y + trigger.getHeight() / 2.0f) < JUMP_TRIGGER_DISTANCE)
-                card.velocity.y =
-                        random.nextInt((int) (JUMP_STRENGTH_MAX - JUMP_STRENGTH_MIN)) +
-                                JUMP_STRENGTH_MIN;
-
+        framesRemaining--;
+        if (framesRemaining <= 0) {
+            moveToMenuScreen(elapsedTime);
         }
-        float groundHeight = (mDefaultLayerViewport.getWidth()
-                - mDefaultLayerViewport.getHeight() * 0.10f) / GAMEOBJECT_DENSITY;
+    }
 
-        // Update each card sprite
-        for (Sprite card : mSprites) {
+    private void moveToMenuScreen(ElapsedTime elapsedTime) {
 
-            // Apply gravity and update the cards position
-            card.acceleration.y = GRAVITY;
-            card.update(elapsedTime);
-
-            //Velocity
-
-            if (card.position.y - card.getHeight() / 2.0f < groundHeight) {
-                card.position.y = groundHeight + card.getHeight() / 2.0f;
-                card.velocity.y = -card.velocity.y * DAMPENING;
-            }
-        }
+        //Move to the card screen after an event
+        mSplashScreenButton.update(elapsedTime);
+        audioManager.stopMusic();
+        mGame.getScreenManager().addScreen(new SimCardsScreen(mGame));
+        mGame.getScreenManager().removeScreen(this);
 
     }
 
-    public void drawSprites(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
-
-        // Draw each of the card sprites
-        for (Sprite card : mSprites)
-            card.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-
-        // Draw each of the card1 sprites
-        for (Sprite card1 : mSprites)
-            card1.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-    }
-
-    public void createGameObjectAndSprites() {
-        Random random = new Random();
-
-        // Create the game object and sprite entities
-        for (int idx = 0; idx < GAMEOBJECT_DENSITY; idx++) {
-
-            // Determine the size of the card entities based on the entity density
-            float objectWidth = (mDefaultLayerViewport.getWidth()
-                    - mDefaultLayerViewport.getHeight() * 0.10f) / GAMEOBJECT_DENSITY;
-            float objectHeight = objectWidth;
-
-            // Create the card game object trigger
-            GameObject trigger = new GameObject(objectWidth * (idx + 0.5f), objectHeight / 2.0f, objectWidth, objectHeight, assetManager.getBitmap("card1"), this);
-            mGameObjects[idx] = trigger;
-
-            // Create a random card //
-
-            for (int i = 1; i <= 10; i++) {
-                int randomNumber = (int) (Math.random() * 100);
-
-                if (randomNumber <= 49) {
-
-                    // Create the card1 sprite
-                    Sprite card = new Sprite(
-                            objectWidth * (idx + 0.5f),
-                            random.nextInt((int) (mDefaultLayerViewport.getHeight() - objectHeight * 2.0f)) + objectHeight * 1.5f,
-                            objectWidth, objectHeight, assetManager.getBitmap("card1"), this);
-                    mSprites[idx] = card;
-                } else {
-
-                    // Create the card2 sprite
-                    Sprite card2 = new Sprite(
-                            objectWidth * (idx + 0.5f),
-                            random.nextInt((int) (mDefaultLayerViewport.getHeight() - objectHeight * 2.0f)) + objectHeight * 1.5f,
-                            objectWidth, objectHeight, assetManager.getBitmap("card2"), this);
-                    mSprites[idx] = card2;
-                }
-            }
-        }
+    // Loading Sound
+    private void playBackgroundMusic() {
+        audioManager.playMusic(assetManager.getMusic("Rise"));
     }
 
     public static int getScreenWidth() {
