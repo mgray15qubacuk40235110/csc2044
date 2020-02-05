@@ -119,6 +119,16 @@
       "type": "Bitmap",
       "name": "RetroBG",
       "file": "img/RetroBG.gif"
+    },
+    {
+      "type": "Music",
+      "name": "Rise",
+      "file": "sound/Rise.wav"
+    },
+    {
+      "type": "Music",
+      "name": "SpaceBackgroundMusic",
+      "file": "sound/Resonance.mp3"
     }
     ]
 }
