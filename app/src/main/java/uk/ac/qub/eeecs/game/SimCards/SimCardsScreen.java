@@ -132,15 +132,23 @@ public class SimCardsScreen extends GameScreen {
         mControls = new ArrayList<>();
         endTurn = new PushButton(layerWidth - 170.0f, 90.0f, 300.0f, 90.0f,
                 "EndTurn", "EndTurnPressed", this);
+        endTurn.setPlaySounds(true, true);
+
         pause = new PushButton(70.0f, getScreenHeight() - 60.0f, 90.0f, 90.0f,
                 "pauseButton", "pauseButton", this);
+        pause.setPlaySounds(true, true);
+
         mControls.add(endTurn);
         mControls.add(pause);
+
         pausedContinue = new PushButton(mDefaultLayerViewport. halfWidth - 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
                 "PausedContinueButton", "PausedContinueButton", this);
+        pausedContinue.setPlaySounds(true, true);
+
         pausedQuit = new PushButton(mDefaultLayerViewport. halfWidth + 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
                 "PausedQuitButton", "PausedQuitButton", this);
-
+        pausedQuit.setPlaySounds(true, true);
+        
         // Create the card background
         mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
                 mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
