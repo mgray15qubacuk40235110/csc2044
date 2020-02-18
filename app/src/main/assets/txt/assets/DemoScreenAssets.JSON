@@ -2,6 +2,11 @@
   "assets": [
     {
       "type": "Bitmap",
+      "name": "SimCardsMenuBackground2",
+      "file": "img/SimCardsMenuBackground2.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "InputDemoIcon",
       "file": "img/InputDemoIcon.png"
     },

@@ -52,6 +52,8 @@ public class DeckScreen extends GameScreen {
                 mDefaultLayerViewport.getWidth() * 0.95f, mDefaultLayerViewport.getHeight() * 0.10f,
                 mDefaultLayerViewport.getWidth() * 0.075f, mDefaultLayerViewport.getHeight() * 0.10f,
                 "BackArrow", "BackArrowSelected", this);
+        mBackButton.setPlaySounds(true, true);
+
 
         //Define Deck
         mCards = new ArrayList<>();

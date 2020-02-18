@@ -2,6 +2,11 @@
   "assets": [
     {
       "type": "Bitmap",
+      "name": "SimCardsMenuBackground2",
+      "file": "img/SimCardsMenuBackground2.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "CardBackground",
       "file": "img/CardBackground.png"
     },
@@ -229,6 +234,11 @@
       "type": "Bitmap",
       "name": "SonyXperiaPlay",
       "file": "portraits/SonyXperiaPlay.png"
+    },
+    {
+      "type": "Sound",
+      "name": "CardFlipSound",
+      "file": "sound/CardFlip.wav"
     }
-  ]
+    ]
 }

@@ -11,6 +11,11 @@
       "file": "img/UpArrowSelected.png"
     },
     {
+      "type": "Bitmap",
+      "name": "SimCardsMenuBackground2",
+      "file": "img/SimCardsMenuBackground2.png"
+    },
+    {
       "type": "Music",
       "name": "Rise",
       "file": "sound/Rise.wav"
