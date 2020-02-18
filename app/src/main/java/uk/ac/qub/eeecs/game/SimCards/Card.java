@@ -18,7 +18,9 @@ import uk.ac.qub.eeecs.gage.world.Sprite;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.game.spaceDemo.SpaceshipDemoScreen;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Card class that can be drawn using a number of overlapping images.
@@ -45,10 +47,20 @@ public class Card extends Sprite {
     private Bitmap mCardBase;
 
     // Define the card portrait image
-    private Bitmap mCardPortrait;
+    //private Bitmap mCardPortrait;
+    ArrayList<Bitmap> mCardPortrait = new ArrayList<Bitmap>();
+
+    // Array List functionality
+    // *************************
+   // bitmapArray.add(myBitMap); // Add a bitmap
+    //bitmapArray.get(0); // Get first bitmap
+    //****************************
 
     //Define the back of card image
     private Bitmap mCardBack;
+
+    //Random portrait storage
+    private Bitmap portraitChosen;
 
     // Define the card digit images
     private Bitmap[] mCardDigits = new Bitmap[10];
@@ -96,6 +108,7 @@ public class Card extends Sprite {
         maxVelocity = 700.0f;
         maxAngularVelocity = 200.0f;
         maxAngularAcceleration = 500.0f;
+        Random rand = new Random();
 
         AssetManager assetManager = gameScreen.getGame().getAssetManager();
         assetManager.loadAndAddBitmap("CardBackground2", "img/CardBackground2.png");
@@ -103,8 +116,29 @@ public class Card extends Sprite {
         // Store the common card base image
         mCardBase = assetManager.getBitmap("CardBackground2");
 
-        // Store the card portrait image
-        mCardPortrait = assetManager.getBitmap("CardPortrait");
+        // Store the card portrait images
+        mCardPortrait.add(assetManager.getBitmap("BlackBerryCurve"));
+        mCardPortrait.add(assetManager.getBitmap("BlackBerryQ10"));
+        mCardPortrait.add(assetManager.getBitmap("GoogleNexus"));
+        mCardPortrait.add(assetManager.getBitmap("HuaweiP20Lite"));
+        mCardPortrait.add(assetManager.getBitmap("HuaweiY9Prime"));
+        mCardPortrait.add(assetManager.getBitmap("iphone4"));
+        mCardPortrait.add(assetManager.getBitmap("iphone5c"));
+        mCardPortrait.add(assetManager.getBitmap("iphone11pro"));
+        mCardPortrait.add(assetManager.getBitmap("iphoneXR"));
+        mCardPortrait.add(assetManager.getBitmap("JCB"));
+        mCardPortrait.add(assetManager.getBitmap("LenovoK6"));
+        mCardPortrait.add(assetManager.getBitmap("LenovoK8Plus"));
+        mCardPortrait.add(assetManager.getBitmap("MotorollaRAZR"));
+        mCardPortrait.add(assetManager.getBitmap("Nokia3310"));
+        mCardPortrait.add(assetManager.getBitmap("NokiaFlip"));
+        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyNote8"));
+        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS7"));
+        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS8"));
+        mCardPortrait.add(assetManager.getBitmap("SonyEricsson"));
+        mCardPortrait.add(assetManager.getBitmap("SonyXperiaPlay"));
+
+        portraitChosen = mCardPortrait.get(rand.nextInt(20));
 
         //Store back of card image
         mCardBack = assetManager.getBitmap("backOfCard");
@@ -128,6 +162,7 @@ public class Card extends Sprite {
         maxVelocity = 700.0f;
         maxAngularVelocity = 200.0f;
         maxAngularAcceleration = 500.0f;
+        Random rand = new Random();
 
         AssetManager assetManager = gameScreen.getGame().getAssetManager();
         assetManager.loadAndAddBitmap("CardBackground2", "img/CardBackground2.png");
@@ -135,8 +170,29 @@ public class Card extends Sprite {
         // Store the common card base image
         mCardBase = assetManager.getBitmap("CardBackground2");
 
-        // Store the card portrait image
-        mCardPortrait = assetManager.getBitmap("CardPortrait");
+        // Store the card portrait images
+        mCardPortrait.add(assetManager.getBitmap("BlackBerryCurve"));
+        mCardPortrait.add(assetManager.getBitmap("BlackBerryQ10"));
+        mCardPortrait.add(assetManager.getBitmap("GoogleNexus"));
+        mCardPortrait.add(assetManager.getBitmap("HuaweiP20Lite"));
+        mCardPortrait.add(assetManager.getBitmap("HuaweiY9Prime"));
+        mCardPortrait.add(assetManager.getBitmap("iphone4"));
+        mCardPortrait.add(assetManager.getBitmap("iphone5c"));
+        mCardPortrait.add(assetManager.getBitmap("iphone11pro"));
+        mCardPortrait.add(assetManager.getBitmap("iphoneXR"));
+        mCardPortrait.add(assetManager.getBitmap("JCB"));
+        mCardPortrait.add(assetManager.getBitmap("LenovoK6"));
+        mCardPortrait.add(assetManager.getBitmap("LenovoK8Plus"));
+        mCardPortrait.add(assetManager.getBitmap("MotorollaRAZR"));
+        mCardPortrait.add(assetManager.getBitmap("Nokia3310"));
+        mCardPortrait.add(assetManager.getBitmap("NokiaFlip"));
+        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyNote8"));
+        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS7"));
+        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS8"));
+        mCardPortrait.add(assetManager.getBitmap("SonyEricsson"));
+        mCardPortrait.add(assetManager.getBitmap("SonyXperiaPlay"));
+
+        portraitChosen = mCardPortrait.get(rand.nextInt(20));
 
         //Store back of card image
         mCardBack = assetManager.getBitmap("backOfCard");
@@ -173,8 +229,8 @@ public class Card extends Sprite {
                      LayerViewport layerViewport, ScreenViewport screenViewport) {
 
         // Draw the portrait
-        drawBitmap(mCardPortrait, mPortraitOffset, mPortraitScale,
-                graphics2D, layerViewport, screenViewport);
+        drawBitmap(portraitChosen, mPortraitOffset, mPortraitScale,
+                    graphics2D, layerViewport, screenViewport);
 
         // Draw the card base background
         mBitmap = mCardBase;
