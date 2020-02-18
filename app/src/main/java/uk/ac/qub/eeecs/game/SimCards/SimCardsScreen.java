@@ -234,7 +234,7 @@ public class SimCardsScreen extends GameScreen {
             checkTouchActions(mCards, touchEvents, input);
         }
 
-        //playBackgroundMusic();
+        playBackgroundMusic();
 
     }
 
@@ -242,7 +242,7 @@ public class SimCardsScreen extends GameScreen {
         AudioManager audioManager = getGame().getAudioManager();
         if(!audioManager.isMusicPlaying())
             audioManager.playMusic(
-                    getGame().getAssetManager().getMusic("SpaceBackgroundMusic"));
+                    getGame().getAssetManager().getMusic("Resonance"));
     }
 
     /**
