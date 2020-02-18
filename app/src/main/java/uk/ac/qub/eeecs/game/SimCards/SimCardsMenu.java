@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 
 import java.util.List;
+import java.util.Random;
 
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
@@ -56,21 +57,30 @@ public class SimCardsMenu extends GameScreen {
         assetManager.loadAndAddBitmap("PlayGameButton", "img/PlayGame.png");
         assetManager.loadAndAddBitmap("ViewDeckButton", "img/ViewDeck.png");
         assetManager.loadAndAddBitmap("QuitGameButton", "img/QuitGame.png");
+
+        assetManager.loadAndAddBitmap("PlayGameButtonPushed", "img/PlayGamePushed.png");
+        assetManager.loadAndAddBitmap("ViewDeckButtonPushed", "img/ViewDeckPushed.png");
+        assetManager.loadAndAddBitmap("QuitGameButtonPushed", "img/QuitGamePushed.png");
+
         assetManager.loadAndAddBitmap("GameLogo", "img/GameLogo.png");
-        assetManager.loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
+        assetManager.loadAndAddBitmap("SimCardsMenuBackground2", "img/SimCardsMenuBackground2.png");
 
         // Define the spacing that will be used to position the buttons
         float offS = (mDefaultScreenViewport.bottom / 8) + 20.0f;
 
         //Define buttons
+
         mPlayButton = new PushButton(mDefaultScreenViewport.right / 2, mDefaultScreenViewport.bottom / 2 - 100.0f,
-                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "PlayGameButton", this);
+                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "PlayGameButton", "PlayGameButtonPushed",this);
+        mPlayButton.setPlaySounds(true, true);
 
         mDeckButton = new PushButton(mDefaultScreenViewport.right / 2, mDefaultScreenViewport.bottom / 2 - 100.0f - offS,
-                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "ViewDeckButton", this);
+                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "ViewDeckButton", "ViewDeckButtonPushed", this);
+        mDeckButton.setPlaySounds(true, true);
 
         mQuitButton = new PushButton(mDefaultScreenViewport.right / 2, mDefaultScreenViewport.bottom / 2 - 100.0f - (2 * offS),
-                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "QuitGameButton", this);
+                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "QuitGameButton", "QuitGameButtonPushed",  this);
+        mQuitButton.setPlaySounds(true, true);
 
         //Define logo
         mLogo = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom - 270.0f,
@@ -80,7 +90,7 @@ public class SimCardsMenu extends GameScreen {
         //Define Background
         mBackground = new GameObject(mDefaultLayerViewport.halfWidth,
                 mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
-                .getAssetManager().getBitmap("Background"), this);
+                .getAssetManager().getBitmap("SimCardsMenuBackground2"), this);
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -129,7 +139,19 @@ public class SimCardsMenu extends GameScreen {
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
 
         // Clear the screen and draw the buttons
-        graphics2D.clear(Color.BLACK);
+        // graphics2D.clear(Color.BLACK);
+
+        boolean colourToggleOn = true;
+
+        if (colourToggleOn) {
+            String colourArray[] = {"#9901FF", "#B94FFF", "#CA01FE", "#DA4AFF",
+                    "#FF00F9", "#FD50F9", "#FF00C6", "#FD56D8", "#FD009E", "#FD55BE"};
+
+            Random i = new Random();
+            int c = i.nextInt(8 - 1) + 1;
+
+            graphics2D.clear(Color.parseColor(colourArray[c]));
+        }
 
         //Draw Background + Logo
         mBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);

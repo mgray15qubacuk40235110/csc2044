@@ -81,14 +81,17 @@ public class MenuScreen extends GameScreen {
                 spacingX * 0.50f, spacingY * 1.3f, spacingX, spacingY,
                 "SpaceDemoIcon", "SpaceDemoIconSelected",this);
         mSpaceshipDemoButton.setPlaySounds(true, true);
+
         mPlatformDemoButton = new PushButton(
                 spacingX * 1.83f, spacingY * 1.3f, spacingX, spacingY,
                 "PlatformDemoIcon", "PlatformDemoIconSelected", this);
         mPlatformDemoButton.setPlaySounds(true, true);
+
         mCardDemoButton = new PushButton(
                 spacingX * 3.17f, spacingY * 1.3f, spacingX, spacingY,
                 "CardDemoIcon", "CardDemoIconSelected", this);
         mCardDemoButton.setPlaySounds(true, true);
+
         mDemosButton = new PushButton(
                 spacingX * 4.50f, spacingY * 1.3f, spacingX, spacingY,
                 "DemosIcon", "DemosIconSelected", this);
@@ -97,6 +100,7 @@ public class MenuScreen extends GameScreen {
         mPerformanceScreenButton = new PushButton(
                 spacingX * 4.05f, spacingY * 2.5f, spacingX, spacingY,
                 "PerformanceIcon", "PerformanceIcon", this);
+
         mPerformanceScreenButton.setPlaySounds(true, true);
         mPerformanceScreenButton.setHeight(50);
         mPerformanceScreenButton.setWidth(50);

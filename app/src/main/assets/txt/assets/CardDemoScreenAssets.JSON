@@ -2,6 +2,11 @@
   "assets": [
     {
       "type": "Bitmap",
+      "name": "SimCardsMenuBackground2",
+      "file": "img/SimCardsMenuBackground2.png"
+    },
+    {
+      "type": "Bitmap",
       "name": "CardBackground",
       "file": "img/CardBackground.png"
     },
@@ -129,6 +134,111 @@
       "type": "Music",
       "name": "SpaceBackgroundMusic",
       "file": "sound/Resonance.mp3"
+    },
+    {
+      "type": "Bitmap",
+      "name": "BlackBerryCurve",
+      "file": "portraits/BlackBerryCurve.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "BlackBerryQ10",
+      "file": "portraits/BlackBerryQ10.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "GoogleNexus",
+      "file": "portraits/GoogleNexus.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "HuaweiP20Lite",
+      "file": "portraits/HuaweiP20Lite.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "HuaweiY9Prime",
+      "file": "portraits/HuaweiY9Prime.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "iphone4",
+      "file": "portraits/iPhone4.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "iphone5c",
+      "file": "portraits/iPhone5c.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "iphone11pro",
+      "file": "portraits/iPhone11Pro.jpg"
+    },
+    {
+      "type": "Bitmap",
+      "name": "iphoneXR",
+      "file": "portraits/iPhoneXR.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "JCB",
+      "file": "portraits/JCB.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "LenovoK6",
+      "file": "portraits/LenovoK6.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "LenovoK8Plus",
+      "file": "portraits/LenovoK8Plus.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "MotorollaRAZR",
+      "file": "portraits/MotorollaRAZR.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "Nokia3310",
+      "file": "portraits/Nokia3310.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "NokiaFlip",
+      "file": "portraits/NokiaFlip.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "SamsungGalaxyNote8",
+      "file": "portraits/Samsung Galaxy Note 8.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "SamsungGalaxyS7",
+      "file": "portraits/Samsung Galaxy S7.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "SamsungGalaxyS8",
+      "file": "portraits/Samsung Galaxy S8.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "SonyEricsson",
+      "file": "portraits/SonyEricsson.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "SonyXperiaPlay",
+      "file": "portraits/SonyXperiaPlay.png"
+    },
+    {
+      "type": "Sound",
+      "name": "CardFlipSound",
+      "file": "sound/CardFlip.wav"
     }
     ]
 }
