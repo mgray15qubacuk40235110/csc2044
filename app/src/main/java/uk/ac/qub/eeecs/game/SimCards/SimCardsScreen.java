@@ -15,6 +15,7 @@ import java.util.List;
 
 import uk.ac.qub.eeecs.gage.Game;
 import uk.ac.qub.eeecs.gage.R;
+import uk.ac.qub.eeecs.gage.engine.AssetManager;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 import uk.ac.qub.eeecs.gage.engine.graphics.IGraphics2D;
@@ -81,7 +82,11 @@ public class SimCardsScreen extends GameScreen {
     TouchEvent lastTouchEvent;
     int lastTouchEventType;
 
+    AssetManager assetManager = mGame.getAssetManager();
 
+    // Audio Manager
+    AudioManager audioManager;
+    boolean soundPlayed = false;
 
     //Enabling text output
     private Paint textPaint = new Paint();
@@ -191,6 +196,8 @@ public class SimCardsScreen extends GameScreen {
             mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
             mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
         }
+
+        audioManager = getGame().getAudioManager();
 
     }
 
@@ -315,6 +322,7 @@ public class SimCardsScreen extends GameScreen {
                                 for (int i2 = 0; i2 < mCards.size(); i2++) {
                                     if (i2 != i && (dragging[i2] || flipCard[i2])) {
                                         dragging[i] = false;
+
                                     }
                                 }
                             }
@@ -334,6 +342,12 @@ public class SimCardsScreen extends GameScreen {
             }
 
             if (flipCard[i]) {
+
+                if (!soundPlayed) {
+                    soundPlayed = true;
+                    audioManager.play(assetManager.getSound("CardFlipSound"));
+                }
+                soundPlayed = false;
 
                 if (!flippingBack[i]) {
                     shrinkCard();
@@ -452,6 +466,7 @@ public class SimCardsScreen extends GameScreen {
         pausedContinue.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
     }
+
 }
 
 

@@ -134,6 +134,11 @@
       "type": "Music",
       "name": "SpaceBackgroundMusic",
       "file": "sound/Resonance.mp3"
+    },
+    {
+      "type": "Sound",
+      "name": "CardFlipSound",
+      "file": "sound/CardFlip.wav"
     }
     ]
 }
