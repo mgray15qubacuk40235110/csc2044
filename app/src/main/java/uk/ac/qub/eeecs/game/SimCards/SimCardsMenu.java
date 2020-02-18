@@ -57,6 +57,11 @@ public class SimCardsMenu extends GameScreen {
         assetManager.loadAndAddBitmap("PlayGameButton", "img/PlayGame.png");
         assetManager.loadAndAddBitmap("ViewDeckButton", "img/ViewDeck.png");
         assetManager.loadAndAddBitmap("QuitGameButton", "img/QuitGame.png");
+
+        assetManager.loadAndAddBitmap("PlayGameButtonPushed", "img/PlayGamePushed.png");
+        assetManager.loadAndAddBitmap("ViewDeckButtonPushed", "img/ViewDeckPushed.png");
+        assetManager.loadAndAddBitmap("QuitGameButtonPushed", "img/QuitGamePushed.png");
+
         assetManager.loadAndAddBitmap("GameLogo", "img/GameLogo.png");
         assetManager.loadAndAddBitmap("SimCardsMenuBackground2", "img/SimCardsMenuBackground2.png");
 
@@ -64,20 +69,18 @@ public class SimCardsMenu extends GameScreen {
         float offS = (mDefaultScreenViewport.bottom / 8) + 20.0f;
 
         //Define buttons
+
         mPlayButton = new PushButton(mDefaultScreenViewport.right / 2, mDefaultScreenViewport.bottom / 2 - 100.0f,
-                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "PlayGameButton", this);
+                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "PlayGameButton", "PlayGameButtonPushed",this);
         mPlayButton.setPlaySounds(true, true);
 
-
         mDeckButton = new PushButton(mDefaultScreenViewport.right / 2, mDefaultScreenViewport.bottom / 2 - 100.0f - offS,
-                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "ViewDeckButton", this);
+                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "ViewDeckButton", "ViewDeckButtonPushed", this);
         mDeckButton.setPlaySounds(true, true);
 
-
         mQuitButton = new PushButton(mDefaultScreenViewport.right / 2, mDefaultScreenViewport.bottom / 2 - 100.0f - (2 * offS),
-                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "QuitGameButton", this);
+                mDefaultScreenViewport.right / 3.5F, mDefaultScreenViewport.bottom / 8, "QuitGameButton", "QuitGameButtonPushed",  this);
         mQuitButton.setPlaySounds(true, true);
-
 
         //Define logo
         mLogo = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom - 270.0f,
