@@ -1,20 +1,13 @@
 package uk.ac.qub.eeecs.game.SimCards;
 
-import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Typeface;
-import android.os.Build;
-import android.view.Display;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import uk.ac.qub.eeecs.gage.Game;
-import uk.ac.qub.eeecs.gage.R;
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
 import uk.ac.qub.eeecs.gage.engine.ElapsedTime;
 import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
@@ -23,18 +16,8 @@ import uk.ac.qub.eeecs.gage.engine.input.Input;
 import uk.ac.qub.eeecs.gage.engine.input.TouchEvent;
 import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
-import uk.ac.qub.eeecs.gage.util.SteeringBehaviours;
-import uk.ac.qub.eeecs.gage.util.Vector2;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
-import uk.ac.qub.eeecs.game.SplashScreen;
-
-
-/**
- * Starter class for Card game stories
- *
- * @version 1.0
- */
 
 public class SimCardsScreen extends GameScreen {
 
@@ -46,7 +29,14 @@ public class SimCardsScreen extends GameScreen {
     private GameObject mCardBackground;
     private GameObject mPauseMenu;
 
-    // Define a card to be displayed
+    //Define health & health bars
+    private GameObject userHealthBar;
+    private GameObject aiHealthBar;
+    private int userHealth = 50;
+    private int AIHealth = 50;
+    private final int MAX_HEALTH = 50;
+
+    // Define cards & their properties
     private Card currentCard;
     private Card[] cards = new Card[5];
     private Card[] AIcards = new Card[5];
@@ -58,6 +48,8 @@ public class SimCardsScreen extends GameScreen {
     private int cardOffset;
     private boolean[] flippingBack = new boolean[cards.length];
     private boolean cardsDealt = false;
+    private boolean[] rearFacing = new boolean[cards.length];
+    private boolean[] flipCard = new boolean[cards.length];
 
     //Buttons
     private PushButton endTurn;
@@ -72,31 +64,17 @@ public class SimCardsScreen extends GameScreen {
     private boolean mTouchIdExists;
     private float[] mTouchLocation = new float[2];
     private boolean[] dragging = new boolean[cards.length];
+    private TouchEvent lastTouchEvent;
+    private int lastTouchEventType;
 
-    public boolean[] getRearFacing() {
-        return rearFacing;
-    }
-
-    private boolean[] rearFacing = new boolean[cards.length];
-    private boolean[] flipCard = new boolean[cards.length];
-    TouchEvent lastTouchEvent;
-    int lastTouchEventType;
-
-    AssetManager assetManager = mGame.getAssetManager();
+    private AssetManager assetManager = mGame.getAssetManager();
 
     // Audio Manager
-    AudioManager audioManager;
-    boolean soundPlayed = false;
+    private AudioManager audioManager;
+    private boolean soundPlayed = false;
 
     //Enabling text output
     private Paint textPaint = new Paint();
-    /**
-     * A history of touch events will be maintained - this is held
-     * within a list that will be trimmed to ensure it doesn't exceed
-     * the history maximum length.
-     */
-    private static final int TOUCH_EVENT_HISTORY_SIZE = 30;
-    private List<String> mTouchEventsInfo = new LinkedList<>();
 
     /**
      * Width and height of the level
@@ -135,7 +113,7 @@ public class SimCardsScreen extends GameScreen {
 
         //Creating buttons
         mControls = new ArrayList<>();
-        endTurn = new PushButton(layerWidth - 170.0f, 90.0f, 300.0f, 90.0f,
+        endTurn = new PushButton(layerWidth - 110.0f, mDefaultScreenViewport.bottom /2 - 190, 200.0f, 60.0f,
                 "EndTurn", "EndTurnPressed", this);
         endTurn.setPlaySounds(true, true);
 
@@ -164,6 +142,15 @@ public class SimCardsScreen extends GameScreen {
                 mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 1.5f, mDefaultLayerViewport.halfHeight * 1.5f, getGame()
                 .getAssetManager().getBitmap("PauseMenu"), this);
 
+        //Create User Health Bar
+        userHealthBar = new GameObject(mDefaultScreenViewport.right - 350, mDefaultScreenViewport.top + 70, 650, 400,
+                getGame().getAssetManager().getBitmap("HealthBar2"), this);
+
+        //Create AI Health Bar
+        aiHealthBar = new GameObject(mDefaultScreenViewport.left + 420, mDefaultScreenViewport.bottom - 110, 650, 400,
+                getGame().getAssetManager().getBitmap("HealthBar2"), this);
+
+
         // Create cards
         mCards = new ArrayList<>();
         cardOffset = 20;
@@ -186,15 +173,15 @@ public class SimCardsScreen extends GameScreen {
         mDeckCards = new ArrayList<>();
         cardOffset = 0;
         for (int i = 0; i < 3; i++) {
-            deckCards[i] = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 + cardOffset), this);
+            deckCards[i] = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f + cardOffset), this);
             mDeckCards.add(deckCards[i]);
             cardOffset = cardOffset - 10;
         }
 
         //Moving all cards to deck location for dealing animation
         for (int i = 0; i <5; i++) {
-            mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
-            mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2 - 30));
+            mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
+            mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
         }
 
         audioManager = getGame().getAudioManager();
@@ -213,8 +200,8 @@ public class SimCardsScreen extends GameScreen {
      */
     @Override
     public void update(ElapsedTime elapsedTime) {
-        // Process any touch events occurring since the last update
 
+        // Process any touch events occurring since the last update
         Input input = mGame.getInput();
 
         //Checking all push buttons for an update(click)
@@ -246,13 +233,6 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
-    private void playBackgroundMusic() {
-        AudioManager audioManager = getGame().getAudioManager();
-        if(!audioManager.isMusicPlaying())
-            audioManager.playMusic(
-                    getGame().getAssetManager().getMusic("Resonance"));
-    }
-
     /**
      * Draw the card demo screen
      *
@@ -268,6 +248,11 @@ public class SimCardsScreen extends GameScreen {
 
         //Draw the background
         mCardBackground.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+
+        //Draw Health Bars
+        userHealthBar.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        aiHealthBar.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        drawHealth(elapsedTime, graphics2D, userHealth, AIHealth);
 
         // Draw the cards
         if (mCards.size() > 0) {
@@ -306,7 +291,7 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
-    public void checkTouchActions(List<Card> mCards, List<TouchEvent> touchEvents, Input input) {
+    private void checkTouchActions(List<Card> mCards, List<TouchEvent> touchEvents, Input input) {
 
         for (int i = 0; i < mCards.size(); i++) {
             currentCard = mCards.get(i);
@@ -416,7 +401,7 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
-    public void dealCards(ElapsedTime elapsedTime) {
+    private void dealCards(ElapsedTime elapsedTime) {
 
             //Deal the users cards
             for (int i = 0; i < 5; i++) {
@@ -436,7 +421,7 @@ public class SimCardsScreen extends GameScreen {
             }
     }
 
-    public void managePause(ElapsedTime elapsedTime) {
+    private void managePause(ElapsedTime elapsedTime) {
         if (gamePaused) {
             pausedContinue.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
             pausedQuit.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -457,14 +442,66 @@ public class SimCardsScreen extends GameScreen {
         }
     }
 
-    public void drawPause(ElapsedTime elapsedTime, IGraphics2D graphics2D, int screenHeight, int screenWidth) {
+    private void drawPause(ElapsedTime elapsedTime, IGraphics2D graphics2D, int screenHeight, int screenWidth) {
         mPauseMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         textPaint.setColor(Color.WHITE);
         textPaint.setTextSize(screenHeight / 12.0f);
-        textPaint.setTextAlign(Paint.Align.CENTER);
-        graphics2D.drawText("PAUSE MENU", screenWidth / 2, screenHeight / 4.0f, textPaint);
+        graphics2D.drawText("PAUSE MENU", screenWidth / 2.65f, screenHeight / 4.0f, textPaint);
         pausedContinue.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+    }
+
+    private void drawHealth(ElapsedTime elapsedTime, IGraphics2D graphics2D, int userHealth, int AIHealth) {
+
+        textPaint.setColor(Color.GREEN);
+
+        //Drawing the user's health
+        if (userHealth == 0 || userHealth == 1) {
+            graphics2D.drawRect(mDefaultScreenViewport.right - 553.5f, mDefaultScreenViewport.bottom - 73.4f,
+                    (mDefaultScreenViewport.right - 553.5f) + (9.17f * userHealth), mDefaultScreenViewport.bottom - 63, textPaint);
+        } else if (userHealth >= 2) {
+            graphics2D.drawRect(mDefaultScreenViewport.right - 540, mDefaultScreenViewport.bottom - 83.8f,
+                    (mDefaultScreenViewport.right - 540) + (8.9f * userHealth), mDefaultScreenViewport.bottom - 63, textPaint);
+            graphics2D.drawRect(mDefaultScreenViewport.right - 553.5f, mDefaultScreenViewport.bottom - 73.4f,
+                    (mDefaultScreenViewport.right - 553.5f) + (9.17f * userHealth), mDefaultScreenViewport.bottom - 63, textPaint);
+            graphics2D.drawRect(mDefaultScreenViewport.right - 530, mDefaultScreenViewport.bottom - 115,
+                    (mDefaultScreenViewport.right - 530) + (8.7f * userHealth), mDefaultScreenViewport.bottom - 63, textPaint);
+        }
+
+        //Drawing the AI's health
+        if (AIHealth == 0 || AIHealth == 1) {
+            graphics2D.drawRect(mDefaultScreenViewport.left + 216, mDefaultScreenViewport.top + 108,
+                    (mDefaultScreenViewport.left + 216) + (9.17f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
+        } else if (AIHealth >= 2) {
+            graphics2D.drawRect(mDefaultScreenViewport.left + 216, mDefaultScreenViewport.top + 108,
+                    (mDefaultScreenViewport.left + 216) + (9.17f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
+            graphics2D.drawRect(mDefaultScreenViewport.left + 229.5f, mDefaultScreenViewport.top + 97.6f,
+                    (mDefaultScreenViewport.left + 229.5f) + (8.9f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
+            graphics2D.drawRect(mDefaultScreenViewport.left + 239.5f, mDefaultScreenViewport.top + 66.4f,
+                    (mDefaultScreenViewport.left + 239.5f) + (8.7f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
+        }
+
+        //Displaying health values via text
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(35.0f);
+
+        graphics2D.drawText("Health: " + String.valueOf(userHealth) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.right - 530,
+                mDefaultScreenViewport.bottom - 135, textPaint);
+
+        graphics2D.drawText("AI Health: " + String.valueOf(AIHealth) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.left + 245,
+                mDefaultScreenViewport.top + 165, textPaint);
+
+    }
+
+    private void playBackgroundMusic() {
+        AudioManager audioManager = getGame().getAudioManager();
+        if(!audioManager.isMusicPlaying())
+            audioManager.playMusic(
+                    getGame().getAssetManager().getMusic("Resonance"));
+    }
+
+    public boolean[] getRearFacing() {
+        return rearFacing;
     }
 
 }

@@ -126,6 +126,16 @@
       "file": "img/RetroBG.gif"
     },
     {
+      "type": "Bitmap",
+      "name": "HealthBar",
+      "file": "img/HealthBar.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "HealthBar2",
+      "file": "img/HealthBar2.png"
+    },
+    {
       "type": "Music",
       "name": "Rise",
       "file": "sound/Rise.wav"

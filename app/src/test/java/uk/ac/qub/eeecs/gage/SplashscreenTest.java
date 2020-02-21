@@ -9,8 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import uk.ac.qub.eeecs.gage.engine.ScreenManager;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
-import uk.ac.qub.eeecs.game.OptionsScreen;
-import uk.ac.qub.eeecs.game.SplashScreen;
+import uk.ac.qub.eeecs.game.SimCards.SplashScreen;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;

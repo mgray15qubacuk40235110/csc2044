@@ -9,13 +9,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import uk.ac.qub.eeecs.gage.engine.AssetManager;
-import uk.ac.qub.eeecs.gage.engine.ScreenManager;
 import uk.ac.qub.eeecs.gage.engine.audio.AudioManager;
 import uk.ac.qub.eeecs.gage.engine.io.FileIO;
 import uk.ac.qub.eeecs.game.DemoGame;
 import uk.ac.qub.eeecs.game.SimCards.Card;
 import uk.ac.qub.eeecs.game.SimCards.SimCardsScreen;
-import uk.ac.qub.eeecs.game.SplashScreen;
+import uk.ac.qub.eeecs.game.SimCards.SplashScreen;
 
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
