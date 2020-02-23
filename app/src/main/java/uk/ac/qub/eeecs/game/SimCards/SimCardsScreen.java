@@ -252,7 +252,7 @@ public class SimCardsScreen extends GameScreen {
         //Draw Health Bars
         userHealthBar.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         aiHealthBar.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-        drawHealth(elapsedTime, graphics2D, userHealth, AIHealth);
+        drawHealth(graphics2D, userHealth, AIHealth);
 
         // Draw the cards
         if (mCards.size() > 0) {
@@ -451,7 +451,31 @@ public class SimCardsScreen extends GameScreen {
         pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
     }
 
-    private void drawHealth(ElapsedTime elapsedTime, IGraphics2D graphics2D, int userHealth, int AIHealth) {
+    private void manageUserHealth(int damage) {
+
+        if (damage > 0) {
+            if (userHealth <= damage) {
+                userHealth = 0;
+            } else {
+                userHealth -= damage;
+            }
+        }
+
+    }
+
+    private void manageAIHealth(int damage) {
+
+        if (damage > 0) {
+            if (AIHealth <= damage) {
+                AIHealth = 0;
+            } else {
+                AIHealth -= damage;
+            }
+        }
+
+    }
+
+    private void drawHealth(IGraphics2D graphics2D, int userHealth, int AIHealth) {
 
         textPaint.setColor(Color.GREEN);
 

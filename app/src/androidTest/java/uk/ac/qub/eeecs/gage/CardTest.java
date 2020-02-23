@@ -32,7 +32,6 @@ public class  CardTest {
     @Before
     public void setUp() {
         context = InstrumentationRegistry.getTargetContext();
-        game = new DemoGame();
         game.mFileIO = new FileIO(context);
         game.mAssetManager = new AssetManager(game);
         game.mAudioManager = new AudioManager(game);

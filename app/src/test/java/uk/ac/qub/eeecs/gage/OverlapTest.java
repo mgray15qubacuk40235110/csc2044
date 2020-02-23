@@ -21,7 +21,6 @@ import uk.ac.qub.eeecs.gage.util.BoundingBox;
 import uk.ac.qub.eeecs.gage.util.CollisionDetector;
 import uk.ac.qub.eeecs.gage.util.Vector2;
 import uk.ac.qub.eeecs.gage.world.GameObject;
-import uk.ac.qub.eeecs.game.MenuScreen;
 import uk.ac.qub.eeecs.game.platformDemo.Platform;
 import uk.ac.qub.eeecs.game.platformDemo.PlatformDemoScreen;
 import uk.ac.qub.eeecs.game.spaceDemo.SpaceshipDemoScreen;
@@ -71,11 +70,6 @@ public class OverlapTest {
         Platform testPlatform = new Platform(platformX, platformY , platformWidth, platformHeight, "platform", platformDemoScreen);
 
         assertTrue(overlap(mPlatforms, testPlatform));
-    }
-
-    @Test
-    public void Test_Test() {
-    assertTrue(1 == 1);
     }
 
     public boolean overlap(ArrayList<Platform> mPlatforms, Platform plat) {
