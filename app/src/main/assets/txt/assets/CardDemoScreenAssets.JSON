@@ -246,6 +246,21 @@
       "file": "portraits/SonyXperiaPlay.png"
     },
     {
+      "type": "Bitmap",
+      "name": "CardOutline",
+      "file": "img/CardOutline.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "Banner",
+      "file": "img/banner.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "VersusSymbol",
+      "file": "img/VersusSymbol.png"
+    },
+    {
       "type": "Sound",
       "name": "CardFlipSound",
       "file": "sound/CardFlip.wav"

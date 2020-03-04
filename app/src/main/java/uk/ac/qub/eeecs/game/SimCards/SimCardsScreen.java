@@ -25,9 +25,14 @@ public class SimCardsScreen extends GameScreen {
     // Properties
     // /////////////////////////////////////////////////////////////////////////
 
-    //Define the background of phones
+    //Define the gamescreen of phones
     private GameObject mCardBackground;
     private GameObject mPauseMenu;
+    private GameObject attackCardSlot;
+    private GameObject attackBanner;
+    private GameObject defendCardSlot;
+    private GameObject defendBanner;
+    private GameObject versusSymbol;
 
     //Define health & health bars
     private GameObject userHealthBar;
@@ -50,6 +55,7 @@ public class SimCardsScreen extends GameScreen {
     private boolean cardsDealt = false;
     private boolean[] rearFacing = new boolean[cards.length];
     private boolean[] flipCard = new boolean[cards.length];
+    private boolean cardInPlay = false;
 
     //Buttons
     private PushButton endTurn;
@@ -67,10 +73,13 @@ public class SimCardsScreen extends GameScreen {
     private TouchEvent lastTouchEvent;
     private int lastTouchEventType;
 
+    //Useful data
+    int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+
     private AssetManager assetManager = mGame.getAssetManager();
 
     // Audio Manager
-    private AudioManager audioManager;
+    private AudioManager audioManager = getGame().getAudioManager();
     private boolean soundPlayed = false;
 
     //Enabling text output
@@ -150,6 +159,27 @@ public class SimCardsScreen extends GameScreen {
         aiHealthBar = new GameObject(mDefaultScreenViewport.left + 420, mDefaultScreenViewport.bottom - 110, 650, 400,
                 getGame().getAssetManager().getBitmap("HealthBar2"), this);
 
+        //Attack/Defend Object
+        attackCardSlot = new GameObject(mDefaultScreenViewport.width / 3, mDefaultScreenViewport.bottom / 2,
+                (float) 0.69230769 * (screenHeight / 4f), screenHeight / 4,
+                getGame().getAssetManager().getBitmap("CardOutline"), this);
+        attackBanner = new GameObject(mDefaultScreenViewport.width / 2.985f, mDefaultScreenViewport.bottom / 2.45f,
+                (float) 0.93230769 * (screenHeight / 4f), screenHeight / 2.7f,
+                getGame().getAssetManager().getBitmap("Banner"), this);
+
+        defendCardSlot = new GameObject(mDefaultScreenViewport.width / 1.5f, mDefaultScreenViewport.bottom / 2,
+                (float) 0.69230769 * (screenHeight / 4f), screenHeight / 4,
+                getGame().getAssetManager().getBitmap("CardOutline"), this);
+        defendBanner = new GameObject(mDefaultScreenViewport.width / 1.495f, mDefaultScreenViewport.bottom / 2.45f,
+                (float) 0.93230769 * (screenHeight / 4f), screenHeight / 2.7f,
+                getGame().getAssetManager().getBitmap("Banner"), this);
+
+        //Versus Symbol
+        versusSymbol = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom / 2, screenHeight / 5, screenHeight / 5,
+        getGame().getAssetManager().getBitmap("VersusSymbol"), this);
+
+
+
 
         // Create cards
         mCards = new ArrayList<>();
@@ -184,7 +214,6 @@ public class SimCardsScreen extends GameScreen {
             mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
         }
 
-        audioManager = getGame().getAudioManager();
 
     }
 
@@ -284,6 +313,15 @@ public class SimCardsScreen extends GameScreen {
         for (PushButton control : mControls)
             control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
+        //Draw attack/defend
+        if (cardsDealt) {
+            attackCardSlot.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            defendCardSlot.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            attackBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            defendBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            versusSymbol.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        }
+
         //If the game is paused draw the pause menu
         if (gamePaused) {
             drawPause(elapsedTime, graphics2D, screenHeight, screenWidth);
@@ -328,11 +366,11 @@ public class SimCardsScreen extends GameScreen {
 
             if (flipCard[i]) {
 
+                soundPlayed = false;
                 if (!soundPlayed) {
                     soundPlayed = true;
                     audioManager.play(assetManager.getSound("CardFlipSound"));
                 }
-                soundPlayed = false;
 
                 if (!flippingBack[i]) {
                     shrinkCard();
@@ -361,7 +399,7 @@ public class SimCardsScreen extends GameScreen {
             if (touchEvents.size() > 0) {
                 lastTouchEvent = touchEvents.get(touchEvents.size() - 1);
                 lastTouchEventType = lastTouchEvent.type;
-                if (lastTouchEventType == 1) {
+                if (lastTouchEventType == 1 && !cardInPlay) {
                     dragging[i] = false;
                     currentCard.position.x = currentCard.getSpawnX();
                     currentCard.position.y = currentCard.getSpawnY();
