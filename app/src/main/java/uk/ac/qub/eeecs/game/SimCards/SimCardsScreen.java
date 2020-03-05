@@ -320,6 +320,20 @@ public class SimCardsScreen extends GameScreen {
             attackBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             defendBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             versusSymbol.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            textPaint.setColor(Color.BLACK);
+            graphics2D.drawText("A", mDefaultScreenViewport.right / 3.4f, mDefaultScreenViewport.bottom / 1.565f, textPaint);
+            graphics2D.drawText("T", mDefaultScreenViewport.right / 3.27f, mDefaultScreenViewport.bottom / 1.573f, textPaint);
+            graphics2D.drawText("T", mDefaultScreenViewport.right / 3.14f, mDefaultScreenViewport.bottom / 1.581f, textPaint);
+            graphics2D.drawText("A", mDefaultScreenViewport.right / 3.01f, mDefaultScreenViewport.bottom / 1.590f, textPaint);
+            graphics2D.drawText("C", mDefaultScreenViewport.right / 2.88f, mDefaultScreenViewport.bottom / 1.595f, textPaint);
+            graphics2D.drawText("K", mDefaultScreenViewport.right / 2.75f, mDefaultScreenViewport.bottom / 1.592f, textPaint);
+
+            graphics2D.drawText("D", mDefaultScreenViewport.right / 1.60f, mDefaultScreenViewport.bottom / 1.565f, textPaint);
+            graphics2D.drawText("E", mDefaultScreenViewport.right / 1.566f, mDefaultScreenViewport.bottom / 1.573f, textPaint);
+            graphics2D.drawText("F", mDefaultScreenViewport.right / 1.532f, mDefaultScreenViewport.bottom / 1.581f, textPaint);
+            graphics2D.drawText("E", mDefaultScreenViewport.right / 1.498f, mDefaultScreenViewport.bottom / 1.590f, textPaint);
+            graphics2D.drawText("N", mDefaultScreenViewport.right / 1.464f, mDefaultScreenViewport.bottom / 1.595f, textPaint);
+            graphics2D.drawText("D", mDefaultScreenViewport.right / 1.43f, mDefaultScreenViewport.bottom / 1.592f, textPaint);
         }
 
         //If the game is paused draw the pause menu
