@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +44,8 @@ public class cardFlipUnitTest {
         game = new GameTest(1280, 720);
         gameScreen = new SimCardsScreen(game);
         game.getAssetManager();
-
-
+      //  Method[] privateMethod = SimCardsScreen.class.getDeclaredMethod("getCurrentCard", null);
+      //  privateMethod.setAccessible(true);
 
         //  context = InstrumentationRegistry.getTargetContext;
     }

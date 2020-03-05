@@ -56,6 +56,11 @@ public class Card extends Sprite {
     //bitmapArray.get(0); // Get first bitmap
     //****************************
 
+    // Value used to store random number used to pick a card from the array and remove it.
+    private int cardPos;
+    //Bound of array
+    private int arrayBound = 19;
+
     //Define the back of card image
     private Bitmap mCardBack;
 
@@ -138,7 +143,12 @@ public class Card extends Sprite {
         mCardPortrait.add(assetManager.getBitmap("SonyEricsson"));
         mCardPortrait.add(assetManager.getBitmap("SonyXperiaPlay"));
 
-        portraitChosen = mCardPortrait.get(rand.nextInt(20));
+        //Picks random card and removes it to ensure it isnt selected again.
+        cardPos = rand.nextInt(arrayBound);
+        portraitChosen = mCardPortrait.get(cardPos);
+        mCardPortrait.remove(cardPos);
+        arrayBound --;
+        //portraitChosen = mCardPortrait.get(rand.nextInt(20));
 
         //Store back of card image
         mCardBack = assetManager.getBitmap("backOfCard");
@@ -192,7 +202,12 @@ public class Card extends Sprite {
         mCardPortrait.add(assetManager.getBitmap("SonyEricsson"));
         mCardPortrait.add(assetManager.getBitmap("SonyXperiaPlay"));
 
-        portraitChosen = mCardPortrait.get(rand.nextInt(20));
+        //Picks random card and removes it to ensure it isnt selected again.
+        cardPos = rand.nextInt(arrayBound);
+        portraitChosen = mCardPortrait.get(cardPos);
+        mCardPortrait.remove(cardPos);
+        arrayBound --;
+        //portraitChosen = mCardPortrait.get(rand.nextInt(20));
 
         //Store back of card image
         mCardBack = assetManager.getBitmap("backOfCard");
@@ -231,6 +246,7 @@ public class Card extends Sprite {
         // Draw the portrait
         drawBitmap(portraitChosen, mPortraitOffset, mPortraitScale,
                     graphics2D, layerViewport, screenViewport);
+
 
         // Draw the card base background
         mBitmap = mCardBase;

@@ -562,6 +562,12 @@ public class SimCardsScreen extends GameScreen {
                     getGame().getAssetManager().getMusic("Resonance"));
     }
 
+    //Used for testing only
+    public Card getCurrentCard() {
+
+        return currentCard;
+    }
+
     public boolean[] getRearFacing() {
         return rearFacing;
     }
