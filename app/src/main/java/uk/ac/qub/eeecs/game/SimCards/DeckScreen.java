@@ -49,6 +49,8 @@ public class DeckScreen extends GameScreen {
 
         setupViewports();
 
+        Card.resetCards();
+
         // Load in the bitmaps used on the main menu screen
         AssetManager assetManager = mGame.getAssetManager();
         assetManager.loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");

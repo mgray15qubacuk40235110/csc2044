@@ -56,6 +56,7 @@ public class SimCardsScreen extends GameScreen {
     private boolean[] rearFacing = new boolean[cards.length];
     private boolean[] flipCard = new boolean[cards.length];
     private boolean cardInPlay = false;
+    private int intCardInPlay = -1;
 
     //Buttons
     private PushButton endTurn;
@@ -74,7 +75,7 @@ public class SimCardsScreen extends GameScreen {
     private int lastTouchEventType;
 
     //Useful data
-    int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+    private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
     private AssetManager assetManager = mGame.getAssetManager();
 
@@ -85,22 +86,9 @@ public class SimCardsScreen extends GameScreen {
     //Enabling text output
     private Paint textPaint = new Paint();
 
-    /**
-     * Width and height of the level
-     */
-
     // /////////////////////////////////////////////////////////////////////////
     // Constructors
     // /////////////////////////////////////////////////////////////////////////
-
-
-    public static int getScreenWidth() {
-        return Resources.getSystem().getDisplayMetrics().widthPixels + 128;
-    }
-
-    public static int getScreenHeight() {
-        return Resources.getSystem().getDisplayMetrics().heightPixels;
-    }
 
     /**
      * Create the Card game screen
@@ -111,110 +99,18 @@ public class SimCardsScreen extends GameScreen {
     public SimCardsScreen(Game game) {
         super("CardScreen", game);
 
-        mDefaultLayerViewport.set(getScreenWidth() / 2, getScreenHeight() / 2, getScreenWidth() / 2, getScreenHeight() / 2);
+        mDefaultLayerViewport.set(getScreenWidth() / 2, screenHeight / 2, getScreenWidth() / 2, screenHeight / 2);
         mDefaultScreenViewport.set(0, 0, (int) mDefaultLayerViewport.halfWidth * 2, (int) mDefaultLayerViewport.halfHeight * 2);
-
-        float layerWidth = mDefaultLayerViewport.halfWidth * 2.0f;
 
         // Load the various images used by the cards
         mGame.getAssetManager().loadAssets("txt/assets/CardDemoScreenAssets.JSON");
         mGame.getAssetManager().loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
 
-        //Creating buttons
-        mControls = new ArrayList<>();
-        endTurn = new PushButton(layerWidth - 110.0f, mDefaultScreenViewport.bottom /2 - 190, 200.0f, 60.0f,
-                "EndTurn", "EndTurnPressed", this);
-        endTurn.setPlaySounds(true, true);
+        Card.resetCards();
 
-        pause = new PushButton(70.0f, getScreenHeight() - 60.0f, 90.0f, 90.0f,
-                "pauseButton", "pauseButton", this);
-        pause.setPlaySounds(true, true);
+        setUpObjects();
 
-        mControls.add(endTurn);
-        mControls.add(pause);
-
-        pausedContinue = new PushButton(mDefaultLayerViewport. halfWidth - 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
-                "PausedContinueButton", "PausedContinueButton", this);
-        pausedContinue.setPlaySounds(true, true);
-
-        pausedQuit = new PushButton(mDefaultLayerViewport. halfWidth + 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
-                "PausedQuitButton", "PausedQuitButton", this);
-        pausedQuit.setPlaySounds(true, true);
-        
-        // Create the card background
-        mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
-                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
-                .getAssetManager().getBitmap("Background"), this);
-
-        //Create pause menu
-        mPauseMenu = new GameObject(mDefaultLayerViewport.halfWidth,
-                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 1.5f, mDefaultLayerViewport.halfHeight * 1.5f, getGame()
-                .getAssetManager().getBitmap("PauseMenu"), this);
-
-        //Create User Health Bar
-        userHealthBar = new GameObject(mDefaultScreenViewport.right - 350, mDefaultScreenViewport.top + 70, 650, 400,
-                getGame().getAssetManager().getBitmap("HealthBar2"), this);
-
-        //Create AI Health Bar
-        aiHealthBar = new GameObject(mDefaultScreenViewport.left + 420, mDefaultScreenViewport.bottom - 110, 650, 400,
-                getGame().getAssetManager().getBitmap("HealthBar2"), this);
-
-        //Attack/Defend Object
-        attackCardSlot = new GameObject(mDefaultScreenViewport.width / 3, mDefaultScreenViewport.bottom / 2,
-                (float) 0.69230769 * (screenHeight / 4f), screenHeight / 4,
-                getGame().getAssetManager().getBitmap("CardOutline"), this);
-        attackBanner = new GameObject(mDefaultScreenViewport.width / 2.985f, mDefaultScreenViewport.bottom / 2.45f,
-                (float) 0.93230769 * (screenHeight / 4f), screenHeight / 2.7f,
-                getGame().getAssetManager().getBitmap("Banner"), this);
-
-        defendCardSlot = new GameObject(mDefaultScreenViewport.width / 1.5f, mDefaultScreenViewport.bottom / 2,
-                (float) 0.69230769 * (screenHeight / 4f), screenHeight / 4,
-                getGame().getAssetManager().getBitmap("CardOutline"), this);
-        defendBanner = new GameObject(mDefaultScreenViewport.width / 1.495f, mDefaultScreenViewport.bottom / 2.45f,
-                (float) 0.93230769 * (screenHeight / 4f), screenHeight / 2.7f,
-                getGame().getAssetManager().getBitmap("Banner"), this);
-
-        //Versus Symbol
-        versusSymbol = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom / 2, screenHeight / 5, screenHeight / 5,
-        getGame().getAssetManager().getBitmap("VersusSymbol"), this);
-
-
-
-
-        // Create cards
-        mCards = new ArrayList<>();
-        cardOffset = 20;
-        for (int i = 0; i < cards.length; i++) {
-            cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 140), this);
-            cardOffset = cardOffset + (int) cards[i].getWidth() + 20;
-            mCards.add(cards[i]);
-        }
-
-        // Create AI Cards
-        mAICards = new ArrayList<>();
-        cardOffset = -20;
-        for (int i = 0; i < AIcards.length; i++) {
-            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 140), this);
-            cardOffset = cardOffset - (int) AIcards[i].getWidth() - 20;
-            mAICards.add(AIcards[i]);
-        }
-
-        //Add deck
-        mDeckCards = new ArrayList<>();
-        cardOffset = 0;
-        for (int i = 0; i < 3; i++) {
-            deckCards[i] = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f + cardOffset), this);
-            mDeckCards.add(deckCards[i]);
-            cardOffset = cardOffset - 10;
-        }
-
-        //Moving all cards to deck location for dealing animation
-        for (int i = 0; i <5; i++) {
-            mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
-            mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
-        }
-
-
+        setUpCards();
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -310,17 +206,18 @@ public class SimCardsScreen extends GameScreen {
         }
 
         // Draw the controls last of all
-        for (PushButton control : mControls)
-            control.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        if (cardInPlay) {
+            endTurn.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+        }
+        pause.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+
 
         //Draw attack/defend
         if (cardsDealt) {
-            attackCardSlot.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-            defendCardSlot.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-            attackBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-            defendBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-            versusSymbol.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             textPaint.setColor(Color.BLACK);
+
+            attackCardSlot.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            attackBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             graphics2D.drawText("A", mDefaultScreenViewport.right / 3.4f, mDefaultScreenViewport.bottom / 1.565f, textPaint);
             graphics2D.drawText("T", mDefaultScreenViewport.right / 3.27f, mDefaultScreenViewport.bottom / 1.573f, textPaint);
             graphics2D.drawText("T", mDefaultScreenViewport.right / 3.14f, mDefaultScreenViewport.bottom / 1.581f, textPaint);
@@ -328,12 +225,16 @@ public class SimCardsScreen extends GameScreen {
             graphics2D.drawText("C", mDefaultScreenViewport.right / 2.88f, mDefaultScreenViewport.bottom / 1.595f, textPaint);
             graphics2D.drawText("K", mDefaultScreenViewport.right / 2.75f, mDefaultScreenViewport.bottom / 1.592f, textPaint);
 
+            defendCardSlot.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            defendBanner.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
             graphics2D.drawText("D", mDefaultScreenViewport.right / 1.60f, mDefaultScreenViewport.bottom / 1.565f, textPaint);
             graphics2D.drawText("E", mDefaultScreenViewport.right / 1.566f, mDefaultScreenViewport.bottom / 1.573f, textPaint);
             graphics2D.drawText("F", mDefaultScreenViewport.right / 1.532f, mDefaultScreenViewport.bottom / 1.581f, textPaint);
             graphics2D.drawText("E", mDefaultScreenViewport.right / 1.498f, mDefaultScreenViewport.bottom / 1.590f, textPaint);
             graphics2D.drawText("N", mDefaultScreenViewport.right / 1.464f, mDefaultScreenViewport.bottom / 1.595f, textPaint);
             graphics2D.drawText("D", mDefaultScreenViewport.right / 1.43f, mDefaultScreenViewport.bottom / 1.592f, textPaint);
+
+            versusSymbol.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         }
 
         //If the game is paused draw the pause menu
@@ -343,11 +244,121 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels + 128;
+    }
+
+    //Created by Jordan McDonald
+    private void setUpObjects() {
+
+        float layerWidth = mDefaultLayerViewport.halfWidth * 2.0f;
+
+        //Creating buttons
+        mControls = new ArrayList<>();
+        endTurn = new PushButton(layerWidth - 110.0f, mDefaultScreenViewport.bottom /2 - 190, 200.0f, 60.0f,
+                "EndTurn", "EndTurnPressed", this);
+        endTurn.setPlaySounds(true, true);
+
+        pause = new PushButton(70.0f, screenHeight - 60.0f, 90.0f, 90.0f,
+                "pauseButton", "pauseButton", this);
+        pause.setPlaySounds(true, true);
+
+        mControls.add(endTurn);
+        mControls.add(pause);
+
+        pausedContinue = new PushButton(mDefaultLayerViewport. halfWidth - 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
+                "PausedContinueButton", "PausedContinueButton", this);
+        pausedContinue.setPlaySounds(true, true);
+
+        pausedQuit = new PushButton(mDefaultLayerViewport. halfWidth + 300, mDefaultLayerViewport.halfHeight / 2.85f, 350.0f, 105.0f,
+                "PausedQuitButton", "PausedQuitButton", this);
+        pausedQuit.setPlaySounds(true, true);
+
+        // Create the card background
+        mCardBackground = new GameObject(mDefaultLayerViewport.halfWidth,
+                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 2, mDefaultLayerViewport.halfHeight * 2, getGame()
+                .getAssetManager().getBitmap("Background"), this);
+
+        //Create pause menu
+        mPauseMenu = new GameObject(mDefaultLayerViewport.halfWidth,
+                mDefaultLayerViewport.halfHeight, mDefaultLayerViewport.halfWidth * 1.5f, mDefaultLayerViewport.halfHeight * 1.5f, getGame()
+                .getAssetManager().getBitmap("PauseMenu"), this);
+
+        //Create User Health Bar
+        userHealthBar = new GameObject(mDefaultScreenViewport.right - 350, mDefaultScreenViewport.top + 70, 650, 400,
+                getGame().getAssetManager().getBitmap("HealthBar2"), this);
+
+        //Create AI Health Bar
+        aiHealthBar = new GameObject(mDefaultScreenViewport.left + 420, mDefaultScreenViewport.bottom - 110, 650, 400,
+                getGame().getAssetManager().getBitmap("HealthBar2"), this);
+
+        //Attack/Defend Object
+        attackCardSlot = new GameObject(mDefaultScreenViewport.width / 3, mDefaultScreenViewport.bottom / 2,
+                (float) 0.69230769 * (screenHeight / 4f), screenHeight / 4,
+                getGame().getAssetManager().getBitmap("CardOutline"), this);
+        attackBanner = new GameObject(mDefaultScreenViewport.width / 2.985f, mDefaultScreenViewport.bottom / 2.45f,
+                (float) 0.93230769 * (screenHeight / 4f), screenHeight / 2.7f,
+                getGame().getAssetManager().getBitmap("Banner"), this);
+
+        defendCardSlot = new GameObject(mDefaultScreenViewport.width / 1.5f, mDefaultScreenViewport.bottom / 2,
+                (float) 0.69230769 * (screenHeight / 4f), screenHeight / 4,
+                getGame().getAssetManager().getBitmap("CardOutline"), this);
+        defendBanner = new GameObject(mDefaultScreenViewport.width / 1.495f, mDefaultScreenViewport.bottom / 2.45f,
+                (float) 0.93230769 * (screenHeight / 4f), screenHeight / 2.7f,
+                getGame().getAssetManager().getBitmap("Banner"), this);
+
+        //Versus Symbol
+        versusSymbol = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom / 2, screenHeight / 5, screenHeight / 5,
+                getGame().getAssetManager().getBitmap("VersusSymbol"), this);
+
+    }
+
+    //Created by Jordan McDonald
+    private void setUpCards() {
+
+        // Create cards
+        mCards = new ArrayList<>();
+        cardOffset = 20;
+        for (int i = 0; i < cards.length; i++) {
+            cards[i] = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 140), this);
+            cardOffset = cardOffset + (int) cards[i].getWidth() + 20;
+            mCards.add(cards[i]);
+        }
+
+        // Create AI Cards
+        mAICards = new ArrayList<>();
+        cardOffset = -20;
+        for (int i = 0; i < AIcards.length; i++) {
+            AIcards[i] = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 140), this);
+            cardOffset = cardOffset - (int) AIcards[i].getWidth() - 20;
+            mAICards.add(AIcards[i]);
+        }
+
+        //Add deck
+        mDeckCards = new ArrayList<>();
+        cardOffset = 0;
+        for (int i = 0; i < 3; i++) {
+            deckCards[i] = new Card((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f + cardOffset), this);
+            mDeckCards.add(deckCards[i]);
+            cardOffset = cardOffset - 10;
+        }
+
+        //Moving all cards to deck location for dealing animation
+        for (int i = 0; i <5; i++) {
+            mCards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
+            mAICards.get(i).setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
+        }
+
+    }
+
+    //Created by Jordan McDonald
     private void checkTouchActions(List<Card> mCards, List<TouchEvent> touchEvents, Input input) {
 
+        //Check each card
         for (int i = 0; i < mCards.size(); i++) {
             currentCard = mCards.get(i);
             mTouchIdExists = input.existsTouch(0);
+            //Check if card being dragged
             if (mTouchIdExists && !flipCard[i]) {
                 mTouchLocation[0] = input.getTouchX(0);
                 mTouchLocation[1] = (mDefaultLayerViewport.halfHeight * 2.0f) - input.getTouchY(0);
@@ -366,61 +377,88 @@ public class SimCardsScreen extends GameScreen {
                         }
                     }
                 }
+            //Check if card being tapped
             } else if (!flipCard[i]){
                 for (TouchEvent indexTouchEvent : touchEvents) {
                     if (indexTouchEvent.type == 5) {
                         if ((indexTouchEvent.x >= currentCard.getLeft()) & (indexTouchEvent.x <= (currentCard.getLeft() + currentCard.getWidth()))) {
                             if ((((mDefaultLayerViewport.halfHeight * 2.0f) - indexTouchEvent.y) >= currentCard.getBottom()) & (((mDefaultLayerViewport.halfHeight * 2.0f) - indexTouchEvent.y) <= (currentCard.getBottom() + currentCard.getHeight()))) {
-                                flipCard[i] = true;
+                                //If card is in play then reset it
+                                if (i == intCardInPlay) {
+                                    intCardInPlay = -1;
+                                    cardInPlay = false;
+                                    currentCard.position.x = currentCard.getSpawnX();
+                                    currentCard.position.y = currentCard.getSpawnY();
+                                //Simply flip any card not in play
+                                } else {
+                                    flipCard[i] = true;
+                                }
                             }
                         }
                     }
                 }
             }
 
+            //If card being tapped
             if (flipCard[i]) {
-
-                soundPlayed = false;
-                if (!soundPlayed) {
-                    soundPlayed = true;
-                    audioManager.play(assetManager.getSound("CardFlipSound"));
-                }
-
-                if (!flippingBack[i]) {
-                    shrinkCard();
-                }
-
-                if (currentCard.getWidth() < 90.0f) {
-                    rearFacing[i] = !rearFacing[i];
-                    flippingBack[i] = !flippingBack[i];
-                }
-
-                if (flippingBack[i]) {
-                    growCard();
-                }
-
-                if (currentCard.getWidth() == currentCard.getDefaultCardWidth()) {
-                    flippingBack[i] = false;
-                    flipCard[i] = false;
-                }
+                flipCurrentCard(currentCard, i);
             }
 
-            if (dragging[i]) {
+            //If the current card is being dragged and not in a slot follow user's finger
+            if (dragging[i] && i != intCardInPlay) {
                 currentCard.position.x = mTouchLocation[0];
                 currentCard.position.y = mTouchLocation[1];
             }
 
-            if (touchEvents.size() > 0) {
+            //Figuring out what to do when a card being dragged is released
+            if (touchEvents.size() > 0 && dragging[i]) {
                 lastTouchEvent = touchEvents.get(touchEvents.size() - 1);
                 lastTouchEventType = lastTouchEvent.type;
+                //If a card is released and no card is in a slot
                 if (lastTouchEventType == 1 && !cardInPlay) {
-                    dragging[i] = false;
-                    currentCard.position.x = currentCard.getSpawnX();
-                    currentCard.position.y = currentCard.getSpawnY();
+                    //Dragged to attack slot
+                    if ((currentCard.position.x >= (attackCardSlot.position.x - attackCardSlot.getWidth() / 2))
+                            && (currentCard.position.x <= (attackCardSlot.position.x + attackCardSlot.getWidth() / 2))
+                            && (currentCard.position.y >= (attackCardSlot.position.y - attackCardSlot.getHeight() / 2))
+                            && (currentCard.position.y <= (attackCardSlot.position.y + attackCardSlot.getHeight() / 2))) {
+
+                        dragging[i] = false;
+                        cardInPlay = true;
+                        intCardInPlay = i;
+                        currentCard.position.x = attackCardSlot.position.x;
+                        currentCard.position.y = attackCardSlot.position.y;
+
+                    }
+                    //Dragged to defend slot
+                    else if ((currentCard.position.x >= (defendCardSlot.position.x - defendCardSlot.getWidth() / 2))
+                            && (currentCard.position.x <= (defendCardSlot.position.x + defendCardSlot.getWidth() / 2))
+                            && (currentCard.position.y >= (defendCardSlot.position.y - defendCardSlot.getHeight() / 2))
+                            && (currentCard.position.y <= (defendCardSlot.position.y + defendCardSlot.getHeight() / 2))) {
+
+                        dragging[i] = false;
+                        cardInPlay = true;
+                        intCardInPlay = i;
+                        currentCard.position.x = defendCardSlot.position.x;
+                        currentCard.position.y = defendCardSlot.position.y;
+                    }
+                    //Not dragged to either slot
+                    else {
+                        dragging[i] = false;
+                        currentCard.position.x = currentCard.getSpawnX();
+                        currentCard.position.y = currentCard.getSpawnY();
+                    }
+                }
+                //Card released while a card is already in a slot
+                else if (lastTouchEventType == 1 && cardInPlay)  {
+                    if (i != intCardInPlay) {
+                        dragging[i] = false;
+                        currentCard.position.x = currentCard.getSpawnX();
+                        currentCard.position.y = currentCard.getSpawnY();
+                    }
                 }
             }
 
-
+            //Making sure a card cannot leave the confines of the visible screen
             BoundingBox playerBound = currentCard.getBound();
             if (playerBound.getLeft() < 0)
                 currentCard.position.x -= playerBound.getLeft();
@@ -431,9 +469,40 @@ public class SimCardsScreen extends GameScreen {
                 currentCard.position.y -= playerBound.getBottom();
             else if (playerBound.getTop() > (mDefaultLayerViewport.halfHeight * 2.0f))
                 currentCard.position.y -= (playerBound.getTop() - (mDefaultLayerViewport.halfHeight * 2.0f));
+
         }
     }
 
+    //Created by Michael Gray
+    public void flipCurrentCard(Card currentCard, int i) {
+
+        soundPlayed = false;
+        if (!soundPlayed) {
+            soundPlayed = true;
+            audioManager.play(assetManager.getSound("CardFlipSound"));
+        }
+
+        if (!flippingBack[i]) {
+            shrinkCard();
+        }
+
+        if (currentCard.getWidth() < 90.0f) {
+            rearFacing[i] = !rearFacing[i];
+            flippingBack[i] = !flippingBack[i];
+        }
+
+        if (flippingBack[i]) {
+            growCard();
+        }
+
+        if (currentCard.getWidth() == currentCard.getDefaultCardWidth()) {
+            flippingBack[i] = false;
+            flipCard[i] = false;
+        }
+
+    }
+
+    //Created by Michael Gray
     public void shrinkCard(){
 
         if (currentCard.getWidth() > currentCard.getDefaultCardWidth() * 0.2){
@@ -442,6 +511,7 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    //Created by Michael Gray
     public void growCard(){
 
         if (currentCard.getWidth() < currentCard.getDefaultCardWidth()) {
@@ -453,17 +523,18 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    //Created by Jordan McDonald
     private void dealCards(ElapsedTime elapsedTime) {
 
             //Deal the users cards
             for (int i = 0; i < 5; i++) {
-                mCards.get(i).update(elapsedTime, i);
+                mCards.get(i).deal(elapsedTime, i);
             }
 
             //Deal the AI cards once the users cards are dealt
             if (mCards.get(0).position.x == mCards.get(0).getSpawnX() && mCards.get(0).position.y == mCards.get(0).getSpawnY()) {
                 for (int i = 5; i < 10; i++) {
-                    mAICards.get(i - 5).update(elapsedTime, i);
+                    mAICards.get(i - 5).deal(elapsedTime, i);
                 }
             }
 
@@ -473,6 +544,7 @@ public class SimCardsScreen extends GameScreen {
             }
     }
 
+    //Created by Jordan McDonald
     private void managePause(ElapsedTime elapsedTime) {
         if (gamePaused) {
             pausedContinue.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
@@ -494,6 +566,7 @@ public class SimCardsScreen extends GameScreen {
         }
     }
 
+    //Created by Jordan McDonald
     private void drawPause(ElapsedTime elapsedTime, IGraphics2D graphics2D, int screenHeight, int screenWidth) {
         mPauseMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         textPaint.setColor(Color.WHITE);
@@ -503,6 +576,7 @@ public class SimCardsScreen extends GameScreen {
         pausedQuit.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
     }
 
+    //Created by Jordan McDonald
     private void manageUserHealth(int damage) {
 
         if (damage > 0) {
@@ -515,6 +589,7 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    //Created by Jordan McDonald
     private void manageAIHealth(int damage) {
 
         if (damage > 0) {
@@ -527,11 +602,11 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    //Created by Jordan McDonald
     private void drawHealth(IGraphics2D graphics2D, int userHealth, int AIHealth) {
 
-        textPaint.setColor(Color.GREEN);
-
         //Drawing the user's health
+        textPaint.setColor(Color.GREEN);
         if (userHealth == 0 || userHealth == 1) {
             graphics2D.drawRect(mDefaultScreenViewport.right - 553.5f, mDefaultScreenViewport.bottom - 73.4f,
                     (mDefaultScreenViewport.right - 553.5f) + (9.17f * userHealth), mDefaultScreenViewport.bottom - 63, textPaint);
@@ -545,6 +620,7 @@ public class SimCardsScreen extends GameScreen {
         }
 
         //Drawing the AI's health
+        textPaint.setColor(Color.GRAY);
         if (AIHealth == 0 || AIHealth == 1) {
             graphics2D.drawRect(mDefaultScreenViewport.left + 216, mDefaultScreenViewport.top + 108,
                     (mDefaultScreenViewport.left + 216) + (9.17f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
@@ -569,6 +645,7 @@ public class SimCardsScreen extends GameScreen {
 
     }
 
+    //Created by Jamie Finnegan
     private void playBackgroundMusic() {
         AudioManager audioManager = getGame().getAudioManager();
         if(!audioManager.isMusicPlaying())
@@ -576,15 +653,8 @@ public class SimCardsScreen extends GameScreen {
                     getGame().getAssetManager().getMusic("Resonance"));
     }
 
-    //Used for testing only
-    public Card getCurrentCard() {
-
-        return currentCard;
-    }
-
-    public boolean[] getRearFacing() {
-        return rearFacing;
-    }
+    //Created by Michael Gray
+    public boolean[] getRearFacing() { return rearFacing;}
 
 }
 

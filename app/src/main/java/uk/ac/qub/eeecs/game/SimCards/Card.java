@@ -47,19 +47,15 @@ public class Card extends Sprite {
     private Bitmap mCardBase;
 
     // Define the card portrait image
-    //private Bitmap mCardPortrait;
-    ArrayList<Bitmap> mCardPortrait = new ArrayList<Bitmap>();
-
-    // Array List functionality
-    // *************************
-   // bitmapArray.add(myBitMap); // Add a bitmap
-    //bitmapArray.get(0); // Get first bitmap
-    //****************************
+    private static ArrayList<Bitmap> mCardPortrait = new ArrayList<Bitmap>();
 
     // Value used to store random number used to pick a card from the array and remove it.
     private int cardPos;
     //Bound of array
-    private int arrayBound = 19;
+    private static int arrayBound = 20;
+    //Manages which cards are in use
+    private static boolean[] inUse = new boolean[arrayBound];
+    private boolean portraitValid = false;
 
     //Define the back of card image
     private Bitmap mCardBack;
@@ -85,7 +81,7 @@ public class Card extends Sprite {
 
     // Define the health and attack values
     private int mAttack;
-    private int mHealth;
+    private int mDefence;
 
     //Record where card is first defined
     private float spawnX;
@@ -113,53 +109,8 @@ public class Card extends Sprite {
         maxVelocity = 700.0f;
         maxAngularVelocity = 200.0f;
         maxAngularAcceleration = 500.0f;
-        Random rand = new Random();
 
-        AssetManager assetManager = gameScreen.getGame().getAssetManager();
-        assetManager.loadAndAddBitmap("CardBackground2", "img/CardBackground2.png");
-
-        // Store the common card base image
-        mCardBase = assetManager.getBitmap("CardBackground2");
-
-        // Store the card portrait images
-        mCardPortrait.add(assetManager.getBitmap("BlackBerryCurve"));
-        mCardPortrait.add(assetManager.getBitmap("BlackBerryQ10"));
-        mCardPortrait.add(assetManager.getBitmap("GoogleNexus"));
-        mCardPortrait.add(assetManager.getBitmap("HuaweiP20Lite"));
-        mCardPortrait.add(assetManager.getBitmap("HuaweiY9Prime"));
-        mCardPortrait.add(assetManager.getBitmap("iphone4"));
-        mCardPortrait.add(assetManager.getBitmap("iphone5c"));
-        mCardPortrait.add(assetManager.getBitmap("iphone11pro"));
-        mCardPortrait.add(assetManager.getBitmap("iphoneXR"));
-        mCardPortrait.add(assetManager.getBitmap("JCB"));
-        mCardPortrait.add(assetManager.getBitmap("LenovoK6"));
-        mCardPortrait.add(assetManager.getBitmap("LenovoK8Plus"));
-        mCardPortrait.add(assetManager.getBitmap("MotorollaRAZR"));
-        mCardPortrait.add(assetManager.getBitmap("Nokia3310"));
-        mCardPortrait.add(assetManager.getBitmap("NokiaFlip"));
-        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyNote8"));
-        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS7"));
-        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS8"));
-        mCardPortrait.add(assetManager.getBitmap("SonyEricsson"));
-        mCardPortrait.add(assetManager.getBitmap("SonyXperiaPlay"));
-
-        //Picks random card and removes it to ensure it isnt selected again.
-        cardPos = rand.nextInt(arrayBound);
-        portraitChosen = mCardPortrait.get(cardPos);
-        mCardPortrait.remove(cardPos);
-        arrayBound --;
-        //portraitChosen = mCardPortrait.get(rand.nextInt(20));
-
-        //Store back of card image
-        mCardBack = assetManager.getBitmap("backOfCard");
-
-        // Store each of the damage/health digits
-        for(int digit = 0; digit <= 9; digit++)
-            mCardDigits[digit] = assetManager.getBitmap(String.valueOf(digit));
-
-        // Set default attack and health values
-        mAttack = 1;
-        mHealth = 2;
+        setUpImages(gameScreen);
 
         spawnX = x;
         spawnY = y;
@@ -172,63 +123,17 @@ public class Card extends Sprite {
         maxVelocity = 700.0f;
         maxAngularVelocity = 200.0f;
         maxAngularAcceleration = 500.0f;
-        Random rand = new Random();
 
-        AssetManager assetManager = gameScreen.getGame().getAssetManager();
-        assetManager.loadAndAddBitmap("CardBackground2", "img/CardBackground2.png");
-
-        // Store the common card base image
-        mCardBase = assetManager.getBitmap("CardBackground2");
-
-        // Store the card portrait images
-        mCardPortrait.add(assetManager.getBitmap("BlackBerryCurve"));
-        mCardPortrait.add(assetManager.getBitmap("BlackBerryQ10"));
-        mCardPortrait.add(assetManager.getBitmap("GoogleNexus"));
-        mCardPortrait.add(assetManager.getBitmap("HuaweiP20Lite"));
-        mCardPortrait.add(assetManager.getBitmap("HuaweiY9Prime"));
-        mCardPortrait.add(assetManager.getBitmap("iphone4"));
-        mCardPortrait.add(assetManager.getBitmap("iphone5c"));
-        mCardPortrait.add(assetManager.getBitmap("iphone11pro"));
-        mCardPortrait.add(assetManager.getBitmap("iphoneXR"));
-        mCardPortrait.add(assetManager.getBitmap("JCB"));
-        mCardPortrait.add(assetManager.getBitmap("LenovoK6"));
-        mCardPortrait.add(assetManager.getBitmap("LenovoK8Plus"));
-        mCardPortrait.add(assetManager.getBitmap("MotorollaRAZR"));
-        mCardPortrait.add(assetManager.getBitmap("Nokia3310"));
-        mCardPortrait.add(assetManager.getBitmap("NokiaFlip"));
-        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyNote8"));
-        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS7"));
-        mCardPortrait.add(assetManager.getBitmap("SamsungGalaxyS8"));
-        mCardPortrait.add(assetManager.getBitmap("SonyEricsson"));
-        mCardPortrait.add(assetManager.getBitmap("SonyXperiaPlay"));
-
-        //Picks random card and removes it to ensure it isnt selected again.
-        cardPos = rand.nextInt(arrayBound);
-        portraitChosen = mCardPortrait.get(cardPos);
-        mCardPortrait.remove(cardPos);
-        arrayBound --;
-        //portraitChosen = mCardPortrait.get(rand.nextInt(20));
-
-        //Store back of card image
-        mCardBack = assetManager.getBitmap("backOfCard");
-
-        // Store each of the damage/health digits
-        for(int digit = 0; digit <= 9; digit++)
-            mCardDigits[digit] = assetManager.getBitmap(String.valueOf(digit));
-
-        // Set default attack and health values
-        mAttack = 1;
-        mHealth = 2;
+        setUpImages(gameScreen);
 
         spawnX = x;
         spawnY = y;
     }
+
+
     // /////////////////////////////////////////////////////////////////////////
     // Methods
     // /////////////////////////////////////////////////////////////////////////
-
-    public float getSpawnX() {return spawnX;}
-    public float getSpawnY() {return spawnY;}
 
     /**
      * Draw the game platform
@@ -257,10 +162,13 @@ public class Card extends Sprite {
                 graphics2D, layerViewport, screenViewport);
 
         // Draw the attack value
-        drawBitmap(mCardDigits[mHealth], mHealthOffset, mHealthScale,
+        drawBitmap(mCardDigits[mDefence], mHealthOffset, mHealthScale,
                 graphics2D, layerViewport, screenViewport);
     }
 
+
+    //Used to draw the back of the card
+    //Created by Michael Gray
     public void backDraw(ElapsedTime elapsedTime, IGraphics2D graphics2D,
                          LayerViewport layerViewport, ScreenViewport screenViewport) {
 
@@ -268,9 +176,41 @@ public class Card extends Sprite {
         super.draw(elapsedTime, graphics2D, layerViewport, screenViewport);
     }
 
-    public float getLeft() {return (position.x - (DEFAULT_CARD_WIDTH / 2));}
-    public float getRight() {return (position.x + (DEFAULT_CARD_WIDTH / 2));}
-    public float getBottom() {return (position.y - (DEFAULT_CARD_HEIGHT / 2));}
+
+    /**
+     * This method is used for dealing cards
+     *
+     * @param elapsedTime    Elapsed time information
+     * @param cardPosition   Used for seeking method
+     */
+
+    //Created by Jordan McDonald
+    public void deal(ElapsedTime elapsedTime, int cardPosition) {
+
+        Vector2 targposition;
+
+        //Determine deal position
+        if (cardPosition < 5) {
+            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().left + 90 + 20 + ((20 + DEFAULT_CARD_WIDTH) * (cardPosition)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().top + 140 );
+        } else if (cardPosition < 10) {
+            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().right - 90 - 20 - ((20 + DEFAULT_CARD_WIDTH) * (cardPosition - 5)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().bottom - 140 );
+        } else {
+            targposition = new Vector2(Vector2.Zero);
+        }
+
+        // Seek towards the deal position
+        if ((Math.abs(this.position.x - targposition.x) >= 20) || (Math.abs(this.position.y - targposition.y) >= 20)) {
+            SteeringBehaviours.seek(this, targposition, acceleration);
+        } else {
+            this.velocity.set(Vector2.Zero);
+            this.acceleration.set(Vector2.Zero);
+            this.position.set(targposition);
+        }
+
+        // Call the sprite's superclass to apply the determined accelerations
+        super.update(elapsedTime);
+    }
+
 
 
     private BoundingBox bound = new BoundingBox();
@@ -329,42 +269,165 @@ public class Card extends Sprite {
         }
     }
 
-    /**
-     * Update the AI Spaceship
-     *
-     * @param elapsedTime Elapsed time information
-     */
+    //Created by Jordan McDonald & Michael Gray
+    private void setUpImages(GameScreen gameScreen) {
 
-    public void update(ElapsedTime elapsedTime, int cardPosition) {
+        Random rand = new Random();
+        AssetManager assetManager = gameScreen.getGame().getAssetManager();
+        assetManager.loadAndAddBitmap("CardBackground2", "img/CardBackground2.png");
 
-        Vector2 targposition;
+        // Store the common card base image
+        mCardBase = assetManager.getBitmap("CardBackground2");
 
-        if (cardPosition < 5) {
-            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().left + 90 + 20 + ((20 + DEFAULT_CARD_WIDTH) * (cardPosition)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().top + 140 );
-        } else if (cardPosition < 10) {
-            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().right - 90 - 20 - ((20 + DEFAULT_CARD_WIDTH) * (cardPosition - 5)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().bottom - 140 );
-        } else {
-            targposition = new Vector2(Vector2.Zero);
+        //Get card portrait
+        do {
+
+            cardPos = rand.nextInt(arrayBound);
+
+            if (!inUse[cardPos]) {
+                portraitValid = true;
+                inUse[cardPos] = true;
+            }
+
+            switch(cardPos) {
+                case 0 :
+                    portraitChosen = assetManager.getBitmap("BlackBerryCurve");
+                    mAttack = 4;
+                    mDefence = 4;
+                    break;
+                case 1 :
+                    portraitChosen = assetManager.getBitmap("BlackBerryQ10");
+                    mAttack = 5;
+                    mDefence = 4;
+                    break;
+                case 2 :
+                    portraitChosen = assetManager.getBitmap("GoogleNexus");
+                    mAttack = 7;
+                    mDefence = 4;
+                    break;
+                case 3 :
+                    portraitChosen = assetManager.getBitmap("HuaweiP20Lite");
+                    mAttack = 7;
+                    mDefence = 5;
+                    break;
+                case 4 :
+                    portraitChosen = assetManager.getBitmap("HuaweiY9Prime");
+                    mAttack = 8;
+                    mDefence = 5;
+                    break;
+                case 5 :
+                    portraitChosen = assetManager.getBitmap("iphone4");
+                    mAttack = 7;
+                    mDefence = 2;
+                    break;
+                case 6 :
+                    portraitChosen = assetManager.getBitmap("iphone5c");
+                    mAttack = 7;
+                    mDefence = 3;
+                    break;
+                case 7 :
+                    portraitChosen = assetManager.getBitmap("iphone11pro");
+                    mAttack = 9;
+                    mDefence = 4;
+                    break;
+                case 8 :
+                    portraitChosen = assetManager.getBitmap("iphoneXR");
+                    mAttack = 8;
+                    mDefence = 6;
+                    break;
+                case 9 :
+                    portraitChosen = assetManager.getBitmap("JCB");
+                    mAttack = 1;
+                    mDefence = 9;
+                    break;
+                case 10 :
+                    portraitChosen = assetManager.getBitmap("LenovoK6");
+                    mAttack = 6;
+                    mDefence = 4;
+                    break;
+                case 11 :
+                    portraitChosen = assetManager.getBitmap("LenovoK8Plus");
+                    mAttack = 7;
+                    mDefence = 4;
+                    break;
+                case 12 :
+                    portraitChosen = assetManager.getBitmap("MotorollaRAZR");
+                    mAttack = 4;
+                    mDefence = 3;
+                    break;
+                case 13 :
+                    portraitChosen = assetManager.getBitmap("Nokia3310");
+                    mAttack = 1;
+                    mDefence = 9;
+                    break;
+                case 14 :
+                    portraitChosen = assetManager.getBitmap("NokiaFlip");
+                    mAttack = 2;
+                    mDefence = 7;
+                    break;
+                case 15 :
+                    portraitChosen = assetManager.getBitmap("SamsungGalaxyNote8");
+                    mAttack = 8;
+                    mDefence = 4;
+                    break;
+                case 16 :
+                    portraitChosen = assetManager.getBitmap("SamsungGalaxyS7");
+                    mAttack = 7;
+                    mDefence = 3;
+                    break;
+                case 17 :
+                    portraitChosen = assetManager.getBitmap("SamsungGalaxyS8");
+                    mAttack = 8;
+                    mDefence = 2;
+                    break;
+                case 18 :
+                    portraitChosen = assetManager.getBitmap("SonyEricsson");
+                    mAttack = 3;
+                    mDefence = 8;
+                    break;
+                case 19 :
+                    portraitChosen = assetManager.getBitmap("SonyXperiaPlay");
+                    mAttack = 8;
+                    mDefence = 6;
+                    break;
+            }
+
+        } while (!portraitValid);
+
+        //Store back of card image
+        mCardBack = assetManager.getBitmap("backOfCard");
+
+        // Store each of the damage/health digits
+        for(int digit = 0; digit <= 9; digit++)
+            mCardDigits[digit] = assetManager.getBitmap(String.valueOf(digit));
+
+    }
+
+    //Created by Jordan McDonald
+    public static void resetCards() {
+        for (int i = 0; i < arrayBound; i ++) {
+            inUse[i] = false;
         }
-
-
-
-        // Seek towards the deal position
-        if ((Math.abs(this.position.x - targposition.x) >= 20) || (Math.abs(this.position.y - targposition.y) >= 20)) {
-            SteeringBehaviours.seek(this, targposition, acceleration);
-        } else {
-            this.velocity.set(Vector2.Zero);
-            this.acceleration.set(Vector2.Zero);
-            this.position.set(targposition);
-        }
-
-        // Call the sprite's superclass to apply the determined accelerations
-        super.update(elapsedTime);
     }
 
     public int getDefaultCardWidth(){
         return this.DEFAULT_CARD_WIDTH;
     }
+
+    public int getmAttack() {return mAttack;}
+
+    public int getmDefence() {return mDefence;}
+
+    public float getSpawnX() {return spawnX;}
+
+    public float getSpawnY() {return spawnY;}
+
+    public float getLeft() {return (position.x - (DEFAULT_CARD_WIDTH / 2));}
+
+    public float getRight() {return (position.x + (DEFAULT_CARD_WIDTH / 2));}
+
+    public float getBottom() {return (position.y - (DEFAULT_CARD_HEIGHT / 2));}
+
 
 }
 
