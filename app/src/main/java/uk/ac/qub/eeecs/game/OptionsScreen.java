@@ -176,8 +176,10 @@ public class OptionsScreen extends GameScreen {
 
             else if (colourToggle.isPushTriggered())
                     colourToggleOn = !colourToggleOn;
+
             else if (musicToggle.isPushTriggered())
                     audioManager.playMusic(getGame().getAssetManager().getMusic("Wow"));
+
             else if (pauseMusic.isPushTriggered())
                 if (audioManager.isMusicPlaying()) {
                     audioManager.pauseMusic();
@@ -220,7 +222,6 @@ public class OptionsScreen extends GameScreen {
         colourToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         controlsMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         statsToggle.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-
 
     }
 
