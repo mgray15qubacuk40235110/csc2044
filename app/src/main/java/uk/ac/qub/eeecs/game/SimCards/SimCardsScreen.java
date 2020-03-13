@@ -18,6 +18,7 @@ import uk.ac.qub.eeecs.gage.ui.PushButton;
 import uk.ac.qub.eeecs.gage.util.BoundingBox;
 import uk.ac.qub.eeecs.gage.world.GameObject;
 import uk.ac.qub.eeecs.gage.world.GameScreen;
+import uk.ac.qub.eeecs.game.SimCards.AI;
 
 public class SimCardsScreen extends GameScreen {
 
@@ -38,15 +39,14 @@ public class SimCardsScreen extends GameScreen {
     private GameObject userHealthBar;
     private GameObject aiHealthBar;
     private int userHealth = 50;
-    private int AIHealth = 50;
-    private final int MAX_HEALTH = 50;
+    public static final int MAX_HEALTH = 50;
 
     // Define cards & their properties
     private Card currentCard;
     private Card[] cards = new Card[5];
     private Card[] AIcards = new Card[5];
     private Card[] deckCards = new Card[4];
-    private Card testCard;
+    private Card currentAICard;
     private List<Card> mCards;
     private List<Card> mAICards;
     private List<Card> mDeckCards;
@@ -55,8 +55,13 @@ public class SimCardsScreen extends GameScreen {
     private boolean cardsDealt = false;
     private boolean[] rearFacing = new boolean[cards.length];
     private boolean[] flipCard = new boolean[cards.length];
+
+    //Manages game state
     private boolean cardInPlay = false;
+    private boolean attackCardInPlay = false;
+    private boolean defenceCardInPLay = false;
     private int intCardInPlay = -1;
+    private int AIintCardInPlay = -1;
 
     //Buttons
     private PushButton endTurn;
@@ -106,10 +111,12 @@ public class SimCardsScreen extends GameScreen {
         mGame.getAssetManager().loadAssets("txt/assets/CardDemoScreenAssets.JSON");
         mGame.getAssetManager().loadAndAddBitmap("Background", "img/SimCardsMenuBackground.png");
 
+        //Set defaults
         Card.resetCards();
+        AI.setAIHealth(50);
 
+        //Set up game screen
         setUpObjects();
-
         setUpCards();
     }
 
@@ -134,6 +141,10 @@ public class SimCardsScreen extends GameScreen {
             control.update(elapsedTime, mDefaultLayerViewport, mDefaultScreenViewport);
         }
 
+        if (endTurn.isPushTriggered()) {
+
+        }
+
         //Checking if game is paused or unpaused
         managePause(elapsedTime);
 
@@ -150,8 +161,12 @@ public class SimCardsScreen extends GameScreen {
         }
 
         //Once cards have been dealt the user can now interact with cards
+        //Once the user has placed his card the AI card is decided
         if (cardsDealt && mCards.size() > 0 && !gamePaused && unpauseCounter == 0) {
             checkTouchActions(mCards, touchEvents, input);
+            if (cardInPlay) {
+                takeAITurn();
+            }
         }
 
         playBackgroundMusic();
@@ -177,7 +192,7 @@ public class SimCardsScreen extends GameScreen {
         //Draw Health Bars
         userHealthBar.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
         aiHealthBar.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
-        drawHealth(graphics2D, userHealth, AIHealth);
+        drawHealth(graphics2D, userHealth, AI.getAIHealth());
 
         // Draw the cards
         if (mCards.size() > 0) {
@@ -241,6 +256,11 @@ public class SimCardsScreen extends GameScreen {
         if (gamePaused) {
             drawPause(elapsedTime, graphics2D, screenHeight, screenWidth);
         }
+
+        //Test data
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(30.0f);
+        graphics2D.drawText("Card in play: " + Boolean.toString(cardInPlay), mDefaultScreenViewport.right / 2.2f, mDefaultScreenViewport.bottom / 4, textPaint);
 
     }
 
@@ -387,6 +407,8 @@ public class SimCardsScreen extends GameScreen {
                                 if (i == intCardInPlay) {
                                     intCardInPlay = -1;
                                     cardInPlay = false;
+                                    attackCardInPlay = false;
+                                    defenceCardInPLay = false;
                                     currentCard.position.x = currentCard.getSpawnX();
                                     currentCard.position.y = currentCard.getSpawnY();
                                 //Simply flip any card not in play
@@ -424,6 +446,8 @@ public class SimCardsScreen extends GameScreen {
 
                         dragging[i] = false;
                         cardInPlay = true;
+                        attackCardInPlay = true;
+                        defenceCardInPLay = false;
                         intCardInPlay = i;
                         currentCard.position.x = attackCardSlot.position.x;
                         currentCard.position.y = attackCardSlot.position.y;
@@ -437,6 +461,8 @@ public class SimCardsScreen extends GameScreen {
 
                         dragging[i] = false;
                         cardInPlay = true;
+                        defenceCardInPLay = true;
+                        attackCardInPlay = false;
                         intCardInPlay = i;
                         currentCard.position.x = defendCardSlot.position.x;
                         currentCard.position.y = defendCardSlot.position.y;
@@ -471,6 +497,21 @@ public class SimCardsScreen extends GameScreen {
                 currentCard.position.y -= (playerBound.getTop() - (mDefaultLayerViewport.halfHeight * 2.0f));
 
         }
+    }
+
+    //Created by Jordan McDonald
+    private void takeAITurn() {
+
+        if (attackCardInPlay) {
+            currentAICard = AI.playDefence(mAICards, mCards.get(intCardInPlay).getmAttack(), userHealth);
+            currentAICard.position.x = defendCardSlot.position.x;
+            currentAICard.position.y = defendCardSlot.position.y;
+        } else if (defenceCardInPLay) {
+            currentAICard = AI.playAttack(mAICards, mCards.get(intCardInPlay).getmDefence(), userHealth);
+        } else {
+            currentAICard = AI.takeTurn(mAICards);
+        }
+
     }
 
     //Created by Michael Gray
@@ -590,19 +631,6 @@ public class SimCardsScreen extends GameScreen {
     }
 
     //Created by Jordan McDonald
-    private void manageAIHealth(int damage) {
-
-        if (damage > 0) {
-            if (AIHealth <= damage) {
-                AIHealth = 0;
-            } else {
-                AIHealth -= damage;
-            }
-        }
-
-    }
-
-    //Created by Jordan McDonald
     private void drawHealth(IGraphics2D graphics2D, int userHealth, int AIHealth) {
 
         //Drawing the user's health
@@ -621,10 +649,10 @@ public class SimCardsScreen extends GameScreen {
 
         //Drawing the AI's health
         textPaint.setColor(Color.GRAY);
-        if (AIHealth == 0 || AIHealth == 1) {
+        if (AI.getAIHealth() == 0 || AI.getAIHealth() == 1) {
             graphics2D.drawRect(mDefaultScreenViewport.left + 216, mDefaultScreenViewport.top + 108,
                     (mDefaultScreenViewport.left + 216) + (9.17f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
-        } else if (AIHealth >= 2) {
+        } else if (AI.getAIHealth() >= 2) {
             graphics2D.drawRect(mDefaultScreenViewport.left + 216, mDefaultScreenViewport.top + 108,
                     (mDefaultScreenViewport.left + 216) + (9.17f * AIHealth), mDefaultScreenViewport.top + 118.4f, textPaint);
             graphics2D.drawRect(mDefaultScreenViewport.left + 229.5f, mDefaultScreenViewport.top + 97.6f,
@@ -640,7 +668,7 @@ public class SimCardsScreen extends GameScreen {
         graphics2D.drawText("Health: " + String.valueOf(userHealth) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.right - 530,
                 mDefaultScreenViewport.bottom - 135, textPaint);
 
-        graphics2D.drawText("AI Health: " + String.valueOf(AIHealth) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.left + 245,
+        graphics2D.drawText("AI Health: " + String.valueOf(AI.getAIHealth()) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.left + 245,
                 mDefaultScreenViewport.top + 165, textPaint);
 
     }
