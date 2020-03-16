@@ -635,7 +635,7 @@ intCardInPlay = i;
             growCard();
         }
 
-        if (currentCard.getWidth() == currentCard.getDefaultCardWidth()) {
+        if (currentCard.getWidth() == Card.getDefaultCardWidth()) {
             flippingBack[i] = false;
             flipCard[i] = false;
         }
@@ -645,7 +645,7 @@ intCardInPlay = i;
     //Created by Michael Gray
     public void shrinkCard(){
 
-        if (currentCard.getWidth() > currentCard.getDefaultCardWidth() * 0.2){
+        if (currentCard.getWidth() > Card.getDefaultCardWidth() * 0.2){
             currentCard.setWidth((currentCard.getWidth() / 1500) * 1000);
         }
 
@@ -654,11 +654,11 @@ intCardInPlay = i;
     //Created by Michael Gray
     public void growCard(){
 
-        if (currentCard.getWidth() < currentCard.getDefaultCardWidth()) {
+        if (currentCard.getWidth() < Card.getDefaultCardWidth()) {
             currentCard.setWidth((currentCard.getWidth() / 1000) * 1500);
         }
-        if (currentCard.getWidth() > currentCard.getDefaultCardWidth()) {
-            currentCard.setWidth(currentCard.getDefaultCardWidth());
+        if (currentCard.getWidth() > Card.getDefaultCardWidth()) {
+            currentCard.setWidth(Card.getDefaultCardWidth());
         }
 
     }
@@ -764,10 +764,10 @@ intCardInPlay = i;
         textPaint.setColor(Color.WHITE);
         textPaint.setTextSize(35.0f);
 
-        graphics2D.drawText("Health: " + String.valueOf(userHealth) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.right - 530,
+        graphics2D.drawText("Health: " + userHealth + "/" + MAX_HEALTH, mDefaultScreenViewport.right - 530,
                 mDefaultScreenViewport.bottom - 135, textPaint);
 
-        graphics2D.drawText("AI Health: " + String.valueOf(AI.getAIHealth()) + "/" + String.valueOf(MAX_HEALTH), mDefaultScreenViewport.left + 245,
+        graphics2D.drawText("AI Health: " + AI.getAIHealth() + "/" + MAX_HEALTH, mDefaultScreenViewport.left + 245,
                 mDefaultScreenViewport.top + 165, textPaint);
 
     }
@@ -782,6 +782,9 @@ intCardInPlay = i;
 
     //Created by Michael Gray
     public boolean[] getRearFacing() { return rearFacing;}
+
+    //Created by Michael Gray
+    public Card getCurrentCard() { return currentCard; }
 
 }
 

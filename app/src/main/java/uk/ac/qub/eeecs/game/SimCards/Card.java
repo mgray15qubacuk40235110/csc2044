@@ -37,7 +37,7 @@ public class Card extends Sprite {
     // /////////////////////////////////////////////////////////////////////////
 
     // Define the default card width and height
-    private static final int DEFAULT_CARD_HEIGHT = (int) (Resources.getSystem().getDisplayMetrics().heightPixels / 4);
+    private static final int DEFAULT_CARD_HEIGHT = 1080 / 4;
     private static final int DEFAULT_CARD_WIDTH = (int) (0.69230769 * DEFAULT_CARD_HEIGHT);
 
     private int card_height;
@@ -191,9 +191,9 @@ public class Card extends Sprite {
 
         //Determine deal position
         if (cardPosition < 5) {
-            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().left + 90 + 20 + ((20 + DEFAULT_CARD_WIDTH) * (cardPosition)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().top + 140 );
+            targposition = new Vector2(mGameScreen.getDefaultScreenViewport().left + 90 + 20 + ((20 + DEFAULT_CARD_WIDTH) * (cardPosition)), mGameScreen.getDefaultScreenViewport().top + 140 );
         } else if (cardPosition < 10) {
-            targposition = new Vector2(((SimCardsScreen) mGameScreen).getDefaultScreenViewport().right - 90 - 20 - ((20 + DEFAULT_CARD_WIDTH) * (cardPosition - 5)), ((SimCardsScreen) mGameScreen).getDefaultScreenViewport().bottom - 140 );
+            targposition = new Vector2(mGameScreen.getDefaultScreenViewport().right - 90 - 20 - ((20 + DEFAULT_CARD_WIDTH) * (cardPosition - 5)), mGameScreen.getDefaultScreenViewport().bottom - 140 );
         } else {
             targposition = new Vector2(Vector2.Zero);
         }

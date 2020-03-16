@@ -55,7 +55,7 @@ public class  CardTest {
     @Test
     public void cardWidthTest() {
         Card testCard = new Card(300.0f, 300.0f, splashScreen);
-        assertTrue(testCard.getDefaultCardWidth() == (testCard.getRight() - testCard.getLeft()));
+        assertTrue(Card.getDefaultCardWidth() == (testCard.getRight() - testCard.getLeft()));
     }
 
 }

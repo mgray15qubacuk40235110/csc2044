@@ -85,4 +85,5 @@ public class cardFlipUnitTest {
             assertEquals(simCards.getCurrentCard().getWidth(), (simCards.getCurrentCard().getWidth() / 1500) * 1000);
         }
     }
+
 }

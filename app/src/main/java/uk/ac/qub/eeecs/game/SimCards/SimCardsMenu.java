@@ -143,7 +143,7 @@ public class SimCardsMenu extends GameScreen {
         boolean colourToggleOn = true;
 
         if (colourToggleOn) {
-            String colourArray[] = {"#9901FF", "#B94FFF", "#CA01FE", "#DA4AFF",
+            String[] colourArray = {"#9901FF", "#B94FFF", "#CA01FE", "#DA4AFF",
                     "#FF00F9", "#FD50F9", "#FF00C6", "#FD56D8", "#FD009E", "#FD55BE"};
 
             Random i = new Random();

@@ -207,7 +207,7 @@ public class OptionsScreen extends GameScreen {
     public void draw(ElapsedTime elapsedTime, IGraphics2D graphics2D) {
 
        if (colourToggleOn) {
-           String colourArray[] = {"#FF3333", "#FCFA00", "#70FC00", "#00FCD6", "#0078FC", "#A100FC", "#FC00D2", "#FC9300"};
+           String[] colourArray = {"#FF3333", "#FCFA00", "#70FC00", "#00FCD6", "#0078FC", "#A100FC", "#FC00D2", "#FC9300"};
 
            Random i = new Random();
            int c = i.nextInt(8 - 1) + 1;

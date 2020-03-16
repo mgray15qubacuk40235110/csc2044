@@ -145,7 +145,7 @@ public class ControlsMenu extends GameScreen {
         returnToMenu.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
 
         // Textual controls
-        String colourArray[] = {"#EE00FF", "#EC01FC", "#E501F5", "#E201F2", "#E001F0", "#DE01EE", "#DB00EA",
+        String[] colourArray = {"#EE00FF", "#EC01FC", "#E501F5", "#E201F2", "#E001F0", "#DE01EE", "#DB00EA",
                 "#D801E7", "#D501E4", "#D101E0", "#CB02D9", "#C701D5", "#C401D2", "#C401D2", "#C701D5",
                 "#CB02D9", "#D101E0", "#D501E4", "#D801E7", "#DB00EA", "#DE01EE", "#DD01EC", "#E001F0",
                 "#E201F2", "#E501F5", "#EC01FC", "#EE00FF"};
