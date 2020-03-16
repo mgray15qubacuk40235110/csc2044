@@ -410,10 +410,6 @@ public class Card extends Sprite {
         }
     }
 
-    public int getDefaultCardWidth(){
-        return this.DEFAULT_CARD_WIDTH;
-    }
-
     public int getmAttack() {return mAttack;}
 
     public int getmDefence() {return mDefence;}
@@ -427,6 +423,8 @@ public class Card extends Sprite {
     public float getRight() {return (position.x + (DEFAULT_CARD_WIDTH / 2));}
 
     public float getBottom() {return (position.y - (DEFAULT_CARD_HEIGHT / 2));}
+
+    public static float getDefaultCardWidth() {return DEFAULT_CARD_WIDTH;}
 
 
 }

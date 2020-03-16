@@ -34,6 +34,8 @@ public class SimCardsScreen extends GameScreen {
     private GameObject defendCardSlot;
     private GameObject defendBanner;
     private GameObject versusSymbol;
+    private GameObject yourTurn;
+    private GameObject aiTurn;
 
     //Define health & health bars
     private GameObject userHealthBar;
@@ -63,6 +65,8 @@ public class SimCardsScreen extends GameScreen {
 
     boolean endTurnSelected;
     private boolean cardsDealt = false;
+    private boolean userTurn = true;
+    private int cardCounter = 0;
 
     //Buttons
     private PushButton endTurnButton;
@@ -145,7 +149,7 @@ public class SimCardsScreen extends GameScreen {
 
         if (endTurnButton.isPushTriggered()) {
             endTurnSelected = true;
-            endTurn();
+            endTurn(elapsedTime);
         }
 
         //Checking if game is paused or unpaused
@@ -257,17 +261,18 @@ public class SimCardsScreen extends GameScreen {
             graphics2D.drawText("D", mDefaultScreenViewport.right / 1.43f, mDefaultScreenViewport.bottom / 1.592f, textPaint);
 
             versusSymbol.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+
+            if (userTurn) {
+                yourTurn.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            } else {
+                aiTurn.draw(elapsedTime, graphics2D, mDefaultLayerViewport, mDefaultScreenViewport);
+            }
         }
 
         //If the game is paused draw the pause menu
         if (gamePaused) {
             drawPause(elapsedTime, graphics2D, screenHeight, screenWidth);
         }
-
-        //Test data
-        textPaint.setColor(Color.WHITE);
-        textPaint.setTextSize(30.0f);
-        graphics2D.drawText("Card in play: " + Boolean.toString(cardInPlay), mDefaultScreenViewport.right / 2.2f, mDefaultScreenViewport.bottom / 4, textPaint);
 
     }
 
@@ -337,6 +342,12 @@ public class SimCardsScreen extends GameScreen {
         //Versus Symbol
         versusSymbol = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom / 2, screenHeight / 5, screenHeight / 5,
                 getGame().getAssetManager().getBitmap("VersusSymbol"), this);
+
+        //Turn Symbols
+        yourTurn = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom / 1.5f, screenHeight / 3.7f, screenHeight / 7,
+                getGame().getAssetManager().getBitmap("YourTurn"), this);
+        aiTurn = new GameObject(mDefaultScreenViewport.width / 2, mDefaultScreenViewport.bottom / 1.5f, screenHeight / 3.7f, screenHeight / 7,
+                getGame().getAssetManager().getBitmap("AITurn"), this);
 
     }
 
@@ -477,7 +488,7 @@ public class SimCardsScreen extends GameScreen {
                         dragging[i] = false;
                         cardInPlay = true;
                         defenceCardInPLay = true;
-                        intCardInPlay = i;
+intCardInPlay = i;
                         currentCard.position.x = defendCardSlot.position.x;
                         currentCard.position.y = defendCardSlot.position.y;
                     }
@@ -543,7 +554,7 @@ public class SimCardsScreen extends GameScreen {
     }
 
     //Created by Jordan McDonald
-    private void endTurn() {
+    private void endTurn(ElapsedTime elapsedTime) {
 
         int damage;
 
@@ -563,6 +574,41 @@ public class SimCardsScreen extends GameScreen {
                 AI.manageAIHealth(damage);
             } else { manageUserHealth(damage); }
 
+        }
+
+        mCards.remove(intCardInPlay);
+        mAICards.remove(AIintCardInPlay);
+
+        //Making new Cards
+        int cardOffset = 20 + (intCardInPlay * (int) (Card.getDefaultCardWidth() + 20));
+        Card userReplacementCard = new Card((mDefaultScreenViewport.left + 90 + cardOffset), (mDefaultScreenViewport.top + 140), this);
+
+        cardOffset = -20 + (AIintCardInPlay * (int) (-Card.getDefaultCardWidth() - 20));
+        Card aiReplacementCard = new Card((mDefaultScreenViewport.right - 90 + cardOffset), (mDefaultScreenViewport.bottom - 140), this);
+
+        mCards.add(intCardInPlay, userReplacementCard);
+        mAICards.add(AIintCardInPlay, aiReplacementCard);
+
+        //userReplacementCard.setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
+        //aiReplacementCard.setPosition((mDefaultScreenViewport.right - 110), (mDefaultScreenViewport.bottom / 2.0f - 30));
+        //userReplacementCard.deal(elapsedTime, intCardInPlay);
+        //aiReplacementCard.deal(elapsedTime, AIintCardInPlay + 5);
+
+        //Moving on to next turn
+        userTurn = !userTurn;
+        endTurnSelected = false;
+        intCardInPlay = -1;
+        AIintCardInPlay = -1;
+        cardInPlay = false;
+        attackCardInPlay = false;
+        defenceCardInPLay = false;
+        aiCardInPlay = false;
+
+        cardCounter++;
+
+        if (cardCounter == 4) {
+            Card.resetCards();
+            cardCounter = 0;
         }
 
     }
@@ -636,16 +682,6 @@ public class SimCardsScreen extends GameScreen {
             if (mAICards.get(4).position.x == mAICards.get(4).getSpawnX() && mAICards.get(4).position.y == mAICards.get(4).getSpawnY()) {
                 cardsDealt = true;
             }
-    }
-
-    //Created by Jordan McDonald
-    private void dealCard(ElapsedTime elapsedTime, int cardPosition) {
-
-        Card card;
-
-        if (cardPosition < 5) {
-
-        }
     }
 
     //Created by Jordan McDonald

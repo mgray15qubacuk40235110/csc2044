@@ -261,6 +261,16 @@
       "file": "img/VersusSymbol.png"
     },
     {
+      "type": "Bitmap",
+      "name": "YourTurn",
+      "file": "img/YourTurn.png"
+    },
+    {
+      "type": "Bitmap",
+      "name": "AITurn",
+      "file": "img/AITurn.png"
+    },
+    {
       "type": "Sound",
       "name": "CardFlipSound",
       "file": "sound/CardFlip.wav"
